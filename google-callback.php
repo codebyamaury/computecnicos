@@ -1,8 +1,9 @@
 <?php
 require_once __DIR__ . '/vendor/autoload.php';
 require_once __DIR__ . '/app/Core/bootstrap.php';
-session_start();
-
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 $client = new Google_Client();
 $client->setClientId($_ENV['GOOGLE_CLIENT_ID'] ?? 'TU_CLIENT_ID'); // Reemplaza por tu Client ID o usa env
 $client->setClientSecret($_ENV['GOOGLE_CLIENT_SECRET'] ?? 'TU_CLIENT_SECRET'); // Reemplaza por tu Client Secret o usa env
