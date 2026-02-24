@@ -375,22 +375,22 @@ $step_confirm = 'pending';
                                 <div class="checkout-form-group">
                                     <label class="checkout-form-label">Nombre completo *</label>
                                     <input type="text" name="nombre" class="checkout-form-input"
-                                        value="<?php echo htmlspecialchars($nombre); ?>" required>
+                                        value="<?php echo e($nombre); ?>" required>
                                 </div>
                                 <div class="checkout-form-group">
                                     <label class="checkout-form-label">Correo electrónico *</label>
                                     <input type="email" name="email" class="checkout-form-input"
-                                        value="<?php echo htmlspecialchars($email); ?>" required>
+                                        value="<?php echo e($email); ?>" required>
                                 </div>
                                 <div class="checkout-form-group">
                                     <label class="checkout-form-label">Teléfono</label>
                                     <input type="text" name="telefono" class="checkout-form-input"
-                                        value="<?php echo htmlspecialchars($telefono); ?>">
+                                        value="<?php echo e($telefono); ?>">
                                 </div>
                                 <div class="checkout-form-group full-width">
                                     <label class="checkout-form-label">Dirección de envío *</label>
                                     <input type="text" name="direccion" class="checkout-form-input"
-                                        value="<?php echo htmlspecialchars($direccion); ?>" required>
+                                        value="<?php echo e($direccion); ?>" required>
                                 </div>
                             </div>
                         </div>
