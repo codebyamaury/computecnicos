@@ -107,8 +107,8 @@ if (isset($_SESSION['usuario'])) {
     $stmt->execute([$id_usuario]);
     $u = $stmt->fetch();
     if ($u) {
-        $telefono = $u['telefono'];
-        $direccion = $u['direccion'];
+        $telefono = $u['telefono'] ?? '';
+        $direccion = $u['direccion'] ?? '';
     }
 }
 
@@ -140,8 +140,8 @@ if (!$carrito_vacio && $_SERVER['REQUEST_METHOD'] === 'POST') {
             $pdo->beginTransaction();
 
             // Insertar pedido
-            $stmt = $pdo->prepare('INSERT INTO pedidos (id_usuario, fecha, estado, total, direccion_envio) VALUES (?, NOW(), "pendiente", ?, ?)');
-            $stmt->execute([$id_usuario, $total, $direccion]);
+            $stmt = $pdo->prepare('INSERT INTO pedidos (id_usuario, fecha, estado, total, direccion_envio) VALUES (?, NOW(), ?, ?, ?)');
+            $stmt->execute([$id_usuario, 'pendiente', $total, $direccion]);
             $id_pedido = $pdo->lastInsertId();
 
             // Insertar detalles
