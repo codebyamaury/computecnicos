@@ -1,0 +1,892 @@
+/* ============================================================================
+   RESPONSIVE GLOBAL — COMPUTÉCNICOS
+   Archivo centralizado de media queries para todo el proyecto.
+   Complementa los responsive existentes en cada CSS individual.
+   Breakpoints: 1280 · 1024 · 768 · 640 · 480 · 360
+   ============================================================================ */
+
+/* ─────────────────────────────────────
+   UTILIDADES RESPONSIVE GLOBALES
+   ───────────────────────────────────── */
+
+/* Evitar horizontal overflow en todo el sitio */
+html,
+body {
+    overflow-x: hidden;
+    -webkit-text-size-adjust: 100%;
+}
+
+/* Imágenes responsive por defecto */
+img {
+    max-width: 100%;
+    height: auto;
+}
+
+/* Tablas scrolleables si desbordan */
+.table-responsive {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* ─────────────────────────────────────
+   BREAKPOINT: ≤1280px (Laptop pequeña)
+   ───────────────────────────────────── */
+@media (max-width: 1280px) {
+
+    /* Index: categorías pro grid */
+    .categories-pro-grid {
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        gap: 1.5rem;
+    }
+
+    /* Index: advantages grid */
+    .advantages-grid {
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+    }
+
+    /* Producto: combo grid */
+    .prod-combo-grid {
+        grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    }
+}
+
+/* ─────────────────────────────────────
+   BREAKPOINT: ≤1024px (Tablet horizontal)
+   ───────────────────────────────────── */
+@media (max-width: 1024px) {
+
+    /* Hero Section */
+    .hero-title {
+        font-size: 3rem;
+        letter-spacing: 2px;
+    }
+
+    .hero-subtitle {
+        font-size: 1rem;
+    }
+
+    .hero-btn {
+        padding: 0.85rem 2rem;
+        font-size: 0.85rem;
+    }
+
+    /* Section titles */
+    .section-title {
+        font-size: 2rem;
+    }
+
+    /* Categorías pro grid */
+    .categories-pro-grid {
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    }
+
+    .category-card-pro {
+        height: 220px;
+    }
+
+    /* Featured grid */
+    .featured-grid {
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    }
+
+    /* Newsletter terminal */
+    .terminal-container {
+        max-width: 95%;
+    }
+
+    /* Admin tables */
+    .adm-table-wrap {
+        border-radius: 0.5rem;
+    }
+
+    /* Admin quick grid */
+    .adm-quick-grid {
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    }
+
+    /* Contact grid: already handled */
+
+    /* Product detail: prod-gallery unstick */
+    .prod-gallery {
+        position: static;
+    }
+}
+
+/* ─────────────────────────────────────
+   BREAKPOINT: ≤768px (Tablet vertical)
+   ───────────────────────────────────── */
+@media (max-width: 768px) {
+
+    /* ── INDEX ─────────────────────── */
+    .hero-section {
+        min-height: auto;
+        padding: 3rem 1rem;
+    }
+
+    .hero-title {
+        font-size: 2.2rem;
+        letter-spacing: 1px;
+    }
+
+    .hero-subtitle {
+        font-size: 0.95rem;
+        padding-left: 0.75rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .hero-buttons {
+        flex-direction: column;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .hero-btn {
+        width: 80%;
+        max-width: 300px;
+        text-align: center;
+        padding: 0.85rem 1.5rem;
+    }
+
+    .section-title {
+        font-size: 1.75rem;
+        letter-spacing: 1px;
+    }
+
+    .section-title::after {
+        width: 40%;
+    }
+
+    /* Future panels - stack vertical */
+    .future-panels-container {
+        flex-direction: column;
+        height: auto;
+    }
+
+    .future-panel {
+        min-height: 180px;
+    }
+
+    .panel-text h3 {
+        font-size: 1.2rem;
+    }
+
+    .panel-text p {
+        opacity: 1;
+        transform: none;
+    }
+
+    .panel-number {
+        font-size: 5rem;
+    }
+
+    /* Categories pro grid */
+    .categories-pro-grid {
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+    }
+
+    .category-card-pro {
+        height: 200px;
+    }
+
+    .cat-pro-info h3 {
+        font-size: 1.2rem;
+        letter-spacing: 1px;
+    }
+
+    /* Advantages section */
+    .advantages-section {
+        padding: 3rem 1rem;
+    }
+
+    .advantages-grid {
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 1.25rem;
+    }
+
+    .advantage-card {
+        padding: 1.5rem;
+    }
+
+    .advantage-title {
+        font-size: 1rem;
+    }
+
+    /* Newsletter */
+    .newsletter-section {
+        padding: 3rem 1rem;
+    }
+
+    .terminal-body {
+        padding: 1.25rem;
+    }
+
+    .terminal-form {
+        flex-direction: column;
+    }
+
+    .terminal-input {
+        min-width: auto;
+        width: 100%;
+    }
+
+    .terminal-btn {
+        width: 100%;
+        text-align: center;
+    }
+
+    /* Featured grid */
+    .featured-grid,
+    .services-grid {
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        gap: 1.25rem;
+    }
+
+    .service-card {
+        padding: 1.5rem;
+    }
+
+    /* ── REGISTRO ──────────────────── */
+    .register-form-container {
+        padding: 2rem 1.5rem;
+        margin: 0 0.5rem;
+        border-radius: 1rem;
+    }
+
+    .register-form {
+        grid-template-columns: 1fr;
+    }
+
+    .register-title {
+        font-size: 1.5rem;
+    }
+
+    /* ── LOGIN ─────────────────────── */
+    .login-form-container {
+        padding: 2rem 1.5rem;
+        margin: 0 0.5rem;
+        border-radius: 1rem;
+    }
+
+    .login-title {
+        font-size: 1.5rem;
+    }
+
+    /* ── CATEGORÍAS ────────────────── */
+    .categories-header {
+        padding: 2rem 1rem;
+    }
+
+    .categories-title {
+        font-size: 1.75rem;
+    }
+
+    .categories-grid {
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 1.25rem;
+    }
+
+    .categories-filters-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .categories-filters {
+        padding: 1.25rem;
+    }
+
+    .category-info {
+        padding: 1.25rem;
+    }
+
+    /* ── CONTACTO ──────────────────── */
+    .contact-hero {
+        padding: 4rem 1rem 2.5rem;
+    }
+
+    .contact-card {
+        padding: 1.5rem;
+    }
+
+    .map-container {
+        height: 250px;
+    }
+
+    /* ── SERVICIOS ─────────────────── */
+    .service-action-btn {
+        padding: 0.65rem 1.25rem;
+        letter-spacing: 1px;
+        font-size: 0.85rem;
+    }
+
+    /* ── FOOTER ────────────────────── */
+    footer .container {
+        grid-template-columns: 1fr 1fr !important;
+        gap: 1.5rem !important;
+    }
+
+    footer h3 {
+        font-size: 0.95rem;
+    }
+
+    /* ── ADMIN ─────────────────────── */
+    .adm-table th,
+    .adm-table td {
+        padding: 0.6rem 0.75rem;
+        font-size: 0.78rem;
+    }
+
+    /* Admin chart grid */
+    .adm-chart-grid {
+        grid-template-columns: 1fr;
+    }
+
+    /* Admin forms */
+    .adm-form {
+        padding: 1.5rem;
+    }
+
+    .adm-form-row {
+        grid-template-columns: 1fr;
+    }
+
+    /* Admin quick grid */
+    .adm-quick-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    /* ── PRODUCTO DETALLE ──────────── */
+    .prod-combo-section {
+        padding: 2rem 0;
+    }
+
+    .prod-combo-header h2 {
+        font-size: 1.4rem;
+    }
+
+    .prod-reviews-section {
+        padding: 2rem 1rem;
+    }
+
+    .prod-reviews-header h2 {
+        font-size: 1.25rem;
+    }
+
+    /* ── GLASS CARD (Login Modal) ──── */
+    .glass-title {
+        font-size: 1.4rem;
+        letter-spacing: 2px;
+    }
+
+    .glass-card {
+        max-width: 95%;
+    }
+}
+
+/* ─────────────────────────────────────
+   BREAKPOINT: ≤640px (Móvil grande)
+   ───────────────────────────────────── */
+@media (max-width: 640px) {
+
+    /* ── INDEX ─────────────────────── */
+    .hero-title {
+        font-size: 1.8rem;
+        letter-spacing: 0;
+    }
+
+    .hero-subtitle {
+        font-size: 0.85rem;
+    }
+
+    .hero-btn {
+        width: 90%;
+        padding: 0.75rem 1.25rem;
+        font-size: 0.8rem;
+        clip-path: polygon(6% 0, 100% 0, 100% 70%, 94% 100%, 0 100%, 0 30%);
+    }
+
+    .section-title {
+        font-size: 1.5rem;
+    }
+
+    /* Categories pro */
+    .categories-pro-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 0.75rem;
+    }
+
+    .category-card-pro {
+        height: 180px;
+    }
+
+    .cat-pro-icon {
+        width: 40px;
+        height: 40px;
+        margin-bottom: 0.75rem;
+    }
+
+    .cat-pro-info h3 {
+        font-size: 0.95rem;
+        letter-spacing: 0.5px;
+    }
+
+    .cat-pro-info p {
+        font-size: 0.75rem;
+        margin-bottom: 0.75rem;
+    }
+
+    /* Advantages */
+    .advantages-grid {
+        grid-template-columns: 1fr;
+    }
+
+    /* Future panels */
+    .future-panel {
+        min-height: 150px;
+    }
+
+    .panel-icon {
+        width: 40px;
+        height: 40px;
+    }
+
+    .panel-text h3 {
+        font-size: 1rem;
+        letter-spacing: 1px;
+    }
+
+    /* Service card */
+    .service-card {
+        padding: 1.25rem;
+    }
+
+    .service-icon {
+        width: 55px;
+        height: 55px;
+    }
+
+    /* Featured grid */
+    .featured-grid {
+        grid-template-columns: 1fr;
+    }
+
+    /* Tech cards */
+    .card-info {
+        padding: 1rem;
+    }
+
+    .card-title {
+        font-size: 1rem;
+    }
+
+    .card-price {
+        font-size: 1.25rem;
+    }
+
+    /* ── REGISTRO ──────────────────── */
+    .register-form-container {
+        padding: 1.5rem 1.25rem;
+    }
+
+    .register-logo {
+        width: 3rem;
+        height: 3rem;
+        font-size: 1.5rem;
+    }
+
+    .register-title {
+        font-size: 1.35rem;
+    }
+
+    .register-subtitle {
+        font-size: 0.875rem;
+    }
+
+    /* ── LOGIN ─────────────────────── */
+    .login-form-container {
+        padding: 1.5rem 1.25rem;
+    }
+
+    .login-logo {
+        width: 3rem;
+        height: 3rem;
+        font-size: 1.5rem;
+    }
+
+    .login-title {
+        font-size: 1.35rem;
+    }
+
+    /* ── CATEGORÍAS ────────────────── */
+    .categories-title {
+        font-size: 1.5rem;
+    }
+
+    .categories-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .category-image {
+        height: 160px;
+    }
+
+    .category-name {
+        font-size: 1.25rem;
+    }
+
+    .category-actions {
+        flex-direction: column;
+    }
+
+    /* ── CONTACTO ──────────────────── */
+    .contact-hero {
+        padding: 3rem 1rem 2rem;
+    }
+
+    .contact-card {
+        padding: 1.25rem;
+    }
+
+    .info-item {
+        padding-bottom: 1.25rem;
+        margin-bottom: 1.25rem;
+    }
+
+    .info-content h4 {
+        font-size: 1rem;
+    }
+
+    .info-content p {
+        font-size: 0.85rem;
+    }
+
+    .map-container {
+        height: 220px;
+    }
+
+    /* ── FOOTER ────────────────────── */
+    footer .container {
+        grid-template-columns: 1fr !important;
+        gap: 1.25rem !important;
+    }
+
+    footer .text-center.text-gray-500 {
+        font-size: 0.7rem;
+    }
+
+    /* ── PRODUCTO DETALLE ──────────── */
+    .prod-combo-controls {
+        flex-direction: column;
+    }
+
+    .prod-combo-select {
+        max-width: 100%;
+    }
+
+    .prod-combo-btn {
+        width: 100%;
+    }
+
+    .prod-combo-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .prod-reviews-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    /* ── ADMIN ─────────────────────── */
+    .admin-content {
+        padding: 1rem 0.75rem;
+    }
+
+    .adm-quick-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .adm-card {
+        padding: 1rem;
+        border-radius: 0.75rem;
+    }
+
+    .adm-kpi {
+        padding: 1rem;
+    }
+
+    .adm-kpi-value {
+        font-size: 1.5rem;
+    }
+}
+
+/* ─────────────────────────────────────
+   BREAKPOINT: ≤480px (Móvil)
+   ───────────────────────────────────── */
+@media (max-width: 480px) {
+
+    /* ── INDEX ─────────────────────── */
+    .hero-title {
+        font-size: 1.5rem;
+    }
+
+    .hero-section {
+        padding: 2.5rem 0.75rem;
+    }
+
+    .hero-subtitle {
+        font-size: 0.8rem;
+        padding-left: 0.5rem;
+    }
+
+    /* Categories pro */
+    .categories-pro-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .category-card-pro {
+        height: 170px;
+    }
+
+    /* Newsletter */
+    .terminal-header {
+        padding: 0.4rem 0.75rem;
+    }
+
+    .terminal-body {
+        padding: 1rem;
+    }
+
+    .terminal-text {
+        font-size: 0.85rem;
+    }
+
+    /* Future panels */
+    .panel-content {
+        padding: 1.25rem;
+    }
+
+    /* Service grid */
+    .services-grid {
+        grid-template-columns: 1fr;
+    }
+
+    /* ── REGISTRO ──────────────────── */
+    .register-form-container {
+        padding: 1.25rem 1rem;
+        border-radius: 0.75rem;
+    }
+
+    /* ── LOGIN ─────────────────────── */
+    .login-form-container {
+        padding: 1.25rem 1rem;
+        border-radius: 0.75rem;
+    }
+
+    /* ── CATEGORÍAS ────────────────── */
+    .categories-header {
+        padding: 1.5rem 0.75rem;
+    }
+
+    .categories-title {
+        font-size: 1.3rem;
+    }
+
+    .category-info {
+        padding: 1rem;
+    }
+
+    /* ── CONTACTO ──────────────────── */
+    .contact-hero {
+        padding: 2.5rem 0.75rem 1.5rem;
+    }
+
+    .form-input,
+    .form-textarea {
+        padding: 0.85rem;
+        font-size: 0.9rem;
+    }
+
+    .submit-btn {
+        padding: 0.85rem;
+        font-size: 0.9rem;
+    }
+
+    /* ── CHECKOUT ──────────────────── */
+    .checkout-container {
+        padding: 1.5rem 0.75rem 3rem;
+    }
+
+    .checkout-coupon-form {
+        flex-direction: column;
+    }
+
+    .checkout-coupon-btn {
+        width: 100%;
+    }
+
+    .checkout-security {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    /* ── GLASS CARD (Login Modal) ──── */
+    .glass-title {
+        font-size: 1.2rem;
+        letter-spacing: 1px;
+    }
+
+    .glass-icon {
+        width: 50px;
+        height: 50px;
+    }
+
+    .glass-tab-btn {
+        padding: 0.6rem 0.75rem;
+        font-size: 0.75rem;
+    }
+}
+
+/* ─────────────────────────────────────
+   BREAKPOINT: ≤360px (Móvil pequeño)
+   ───────────────────────────────────── */
+@media (max-width: 360px) {
+    .hero-title {
+        font-size: 1.3rem;
+    }
+
+    .hero-btn {
+        padding: 0.65rem 1rem;
+        font-size: 0.75rem;
+        letter-spacing: 1px;
+    }
+
+    .section-title {
+        font-size: 1.25rem;
+    }
+
+    .register-form-container,
+    .login-form-container {
+        padding: 1rem 0.75rem;
+    }
+
+    .cart-hero-title {
+        font-size: 1.5rem;
+    }
+
+    .checkout-title {
+        font-size: 1.3rem;
+    }
+
+    .perfil-name {
+        font-size: 1.3rem;
+    }
+
+    .pedidos-title {
+        font-size: 1.3rem;
+    }
+}
+
+/* ─────────────────────────────────────
+   LANDSCAPE MÓVIL  
+   Para pantallas cortas como móviles en horizontal
+   ───────────────────────────────────── */
+@media (max-height: 500px) and (orientation: landscape) {
+    .hero-section {
+        min-height: auto;
+        padding: 2rem 1rem;
+    }
+
+    .hero-title {
+        font-size: 2rem;
+    }
+
+    .hero-subtitle {
+        margin-bottom: 1.25rem;
+    }
+
+    .contact-hero,
+    .products-hero,
+    .cart-hero,
+    .pedidos-hero {
+        padding: 2rem 1rem 1.5rem;
+    }
+}
+
+/* ─────────────────────────────────────
+   MEJORAS PARA TABLAS EN MÓVIL
+   ───────────────────────────────────── */
+@media (max-width: 768px) {
+
+    /* Order table scroll */
+    .order-table {
+        display: block;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    /* Admin tables scroll */
+    .adm-table {
+        display: block;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        min-width: 600px;
+    }
+
+    .adm-table-wrap {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+}
+
+/* ─────────────────────────────────────
+   MEJORAS PARA PRINT / ACCESIBILIDAD
+   ───────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+/* ─────────────────────────────────────
+   TOUCH DEVICE IMPROVEMENTS
+   ───────────────────────────────────── */
+@media (hover: none) and (pointer: coarse) {
+
+    /* Remove hover transforms on touch devices to avoid sticky states */
+    .tech-card:hover {
+        transform: none;
+    }
+
+    .product-card:hover {
+        transform: none;
+    }
+
+    .category-card-pro:hover {
+        transform: none;
+    }
+
+    /* Larger click/tap targets */
+    .main-menu-link {
+        padding: 0.75rem 1rem;
+    }
+
+    .cart-quantity-btn {
+        width: 44px;
+        height: 44px;
+    }
+
+    .prod-qty-btn {
+        width: 48px;
+        height: 48px;
+    }
+
+    /* Make overlays visible on touch since hover won't work */
+    .product-overlay {
+        display: none;
+    }
+}
