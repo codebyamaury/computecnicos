@@ -52,7 +52,13 @@ function base_url(): string {
         $sub = trim(substr($basePath, strlen($docRoot)), '/');
         if ($sub !== '') { $projectSubdir = '/' . $sub; }
     }
-    // Retornar siempre la raíz del proyecto, independiente del directorio del script
+    // Si es entorno de producción, forzar el dominio oficial para que los Redirect URIs de Google Oauth siempre coincidan
+    // sin importar si Vercel cargó la página desde un subdominio generado aleatoriamente.
+    if ($scheme === 'https' && strpos($host, 'vercel.app') !== false) {
+        return "https://computecnicos-kappa.vercel.app";
+    }
+
+    // Retornar siempre la raíz del proyecto, independiente del directorio del script en local
     return "$scheme://$host$projectSubdir";
 }
 
