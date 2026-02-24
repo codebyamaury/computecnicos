@@ -142,8 +142,8 @@ $labels = [
                                 <tr>
                                     <td>
                                         <div class="order-product-cell">
-                                            <img src="<?= htmlspecialchars($detalle['imagen'] ?: 'https://via.placeholder.com/60x40?text=Prod') ?>" alt="<?= htmlspecialchars($detalle['nombre']) ?>" class="order-product-img">
-                                            <span class="order-product-name"><?= htmlspecialchars($detalle['nombre']) ?></span>
+                                            <img src="<?= htmlspecialchars($detalle['imagen'] ?? 'https://via.placeholder.com/60x40?text=Prod') ?>" alt="<?= htmlspecialchars($detalle['nombre'] ?? '') ?>" class="order-product-img">
+                                            <span class="order-product-name"><?= htmlspecialchars($detalle['nombre'] ?? '') ?></span>
                                         </div>
                                     </td>
                                     <td><?= $detalle['cantidad'] ?></td>
@@ -197,7 +197,7 @@ $labels = [
                                         <strong><?= $labels[$h['estado']] ?? ucfirst($h['estado']) ?></strong> —
                                         <?= date('d/m/Y H:i', strtotime($h['fecha'])) ?>
                                         <?php if ($h['comentario']): ?>
-                                            <span style="color:#666;margin-left:4px">(<?= htmlspecialchars($h['comentario']) ?>)</span>
+                                            <span style="color:#666;margin-left:4px">(<?= htmlspecialchars($h['comentario'] ?? '') ?>)</span>
                                         <?php endif; ?>
                                     </div>
                                     <?php endforeach; ?>
@@ -213,8 +213,8 @@ $labels = [
                         <div class="order-tracking-box">
                             <div class="order-tracking-label">Número de guía</div>
                             <div class="order-tracking-value">
-                                <span class="order-tracking-code"><?= htmlspecialchars($pedido['numero_guia']) ?></span>
-                                <button class="btn-copy" onclick="navigator.clipboard.writeText('<?= htmlspecialchars($pedido['numero_guia'], ENT_QUOTES, 'UTF-8') ?>');this.textContent='✓ Copiado';setTimeout(()=>this.textContent='Copiar',1500)">Copiar</button>
+                                <span class="order-tracking-code"><?= htmlspecialchars($pedido['numero_guia'] ?? '') ?></span>
+                                <button class="btn-copy" onclick="navigator.clipboard.writeText('<?= htmlspecialchars($pedido['numero_guia'] ?? '', ENT_QUOTES, 'UTF-8') ?>');this.textContent='✓ Copiado';setTimeout(()=>this.textContent='Copiar',1500)">Copiar</button>
                             </div>
                         </div>
                         <?php endif; ?>

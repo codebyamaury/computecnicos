@@ -140,7 +140,7 @@ function require_admin(): void {
 }
 
 // Helper pequeño para limpiar texto
-function e(string $text): string { return htmlspecialchars($text, ENT_QUOTES, 'UTF-8'); }
+function e(?string $text): string { return htmlspecialchars($text ?? '', ENT_QUOTES, 'UTF-8'); }
 
 // Nota: Este bootstrap no cambia rutas ni includes en páginas existentes.
 // Podemos ir incorporándolo gradualmente con: require_once __DIR__ . '/bootstrap.php';

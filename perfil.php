@@ -101,7 +101,7 @@ include 'includes/header.php';
             <div class="perfil-avatar-wrapper">
                 <div class="perfil-avatar" id="avatar-container">
                     <?php if ($usuario['foto']): ?>
-                        <img src="<?php echo htmlspecialchars($usuario['foto']); ?>" alt="Foto de perfil" id="avatar-img">
+                        <img src="<?php echo htmlspecialchars($usuario['foto'] ?? ''); ?>" alt="Foto de perfil" id="avatar-img">
                     <?php else: ?>
                         <span id="avatar-letter"><?php echo strtoupper(substr($usuario['nombre'], 0, 1)); ?></span>
                     <?php endif; ?>
@@ -248,7 +248,7 @@ include 'includes/header.php';
                 <!-- Avatar preview -->
                 <div class="perfil-modal-avatar-area">
                     <?php if ($usuario['foto']): ?>
-                        <img src="<?php echo htmlspecialchars($usuario['foto']); ?>" alt="Foto" class="perfil-modal-avatar" id="foto-preview">
+                        <img src="<?php echo htmlspecialchars($usuario['foto'] ?? ''); ?>" alt="Foto" class="perfil-modal-avatar" id="foto-preview">
                     <?php else: ?>
                         <div class="perfil-modal-avatar perfil-modal-avatar-letter" id="foto-preview-letter"><?php echo strtoupper(substr($usuario['nombre'], 0, 1)); ?></div>
                     <?php endif; ?>
@@ -260,7 +260,7 @@ include 'includes/header.php';
                 <label class="perfil-label">Correo electrónico</label>
                 <input type="email" name="email" class="perfil-input" value="<?php echo htmlspecialchars($usuario['email']); ?>" required>
                 <label class="perfil-label">Teléfono</label>
-                <input type="text" name="telefono" class="perfil-input" value="<?php echo htmlspecialchars($usuario['telefono']); ?>">
+                <input type="text" name="telefono" class="perfil-input" value="<?php echo htmlspecialchars($usuario['telefono'] ?? ''); ?>">
                 <button type="submit" class="perfil-btn primary w-full" id="btn-personal">
                     <span id="btn-personal-text">Guardar cambios</span>
                     <span id="btn-personal-spinner" class="hidden">Guardando…</span>
@@ -306,7 +306,7 @@ include 'includes/header.php';
                 <input type="hidden" name="ajax" value="1">
                 <input type="hidden" name="accion" value="direccion">
                 <label class="perfil-label">Dirección de envío</label>
-                <input type="text" name="direccion" class="perfil-input" value="<?php echo htmlspecialchars($usuario['direccion']); ?>" required>
+                <input type="text" name="direccion" class="perfil-input" value="<?php echo htmlspecialchars($usuario['direccion'] ?? ''); ?>" required>
                 <button type="submit" class="perfil-btn primary w-full" id="btn-direccion">
                     <span id="btn-direccion-text">Guardar dirección</span>
                     <span id="btn-direccion-spinner" class="hidden">Guardando…</span>
