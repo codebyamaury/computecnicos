@@ -305,9 +305,6 @@ include __DIR__ . '/includes/header.php';
     </section>
 </main>
 
-<!-- Overlay para filtros móviles -->
-<div id="mobile-filter-overlay" class="mobile-filter-overlay hidden"></div>
-
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const searchInput = document.querySelector('.search-hero-input');
@@ -319,32 +316,21 @@ document.addEventListener('DOMContentLoaded', function() {
     // ── Búsqueda en tiempo real ──────────────────────────────────────────
     const productCards = document.querySelectorAll('.product-card');
     const countNumber  = document.querySelector('.count-number');
-    const noProducts   = document.querySelector('.no-products');
     const productsGrid = document.querySelector('.products-grid');
-
     let debounceTimer;
 
     function filterProducts(query) {
         const q = query.trim().toLowerCase();
         let visible = 0;
-
         productCards.forEach(card => {
             const name     = (card.querySelector('.product-name')?.textContent     || '').toLowerCase();
             const category = (card.querySelector('.product-category')?.textContent || '').toLowerCase();
             const brand    = (card.querySelector('.product-brand')?.textContent    || '').toLowerCase();
-
             const match = !q || name.includes(q) || category.includes(q) || brand.includes(q);
-
-            if (match) {
-                card.style.display = '';
-                visible++;
-            } else {
-                card.style.display = 'none';
-            }
+            card.style.display = match ? '' : 'none';
+            if (match) visible++;
         });
-
         if (countNumber) countNumber.textContent = visible;
-
         if (productsGrid) {
             if (visible === 0 && productCards.length > 0) {
                 let noResultsMsg = document.getElementById('realtime-no-results');
@@ -352,15 +338,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     noResultsMsg = document.createElement('div');
                     noResultsMsg.id = 'realtime-no-results';
                     noResultsMsg.className = 'no-products';
-                    noResultsMsg.innerHTML = `
-                        <div class="no-products-icon">
-                            <svg class="w-16 h-16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
-                                    d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                            </svg>
-                        </div>
-                        <h3>No se encontraron productos</h3>
-                        <p>Intenta con otro término de búsqueda.</p>`;
+                    noResultsMsg.innerHTML = '<div class="no-products-icon"><svg class="w-16 h-16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg></div><h3>No se encontraron productos</h3><p>Intenta con otro término de búsqueda.</p>';
                     productsGrid.parentNode.insertBefore(noResultsMsg, productsGrid.nextSibling);
                 }
                 noResultsMsg.style.display = '';
@@ -375,12 +353,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
     if (searchInput && productCards.length > 0) {
         if (searchInput.value) filterProducts(searchInput.value);
-
         searchInput.addEventListener('input', function() {
             clearTimeout(debounceTimer);
             debounceTimer = setTimeout(() => filterProducts(this.value), 250);
         });
-
         const searchForm = searchInput.closest('form');
         if (searchForm) {
             searchForm.addEventListener('submit', function(e) {
@@ -395,66 +371,74 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // ── Toggle filtros en móvil (ROBUSTO) ─────────────────────────────────
-    const filterToggle   = document.getElementById('mobile-filter-toggle');
-    const filtersSidebar = document.getElementById('filters-sidebar');
-    const filterOverlay  = document.getElementById('mobile-filter-overlay');
-    const filterClose    = document.getElementById('mobile-filter-close');
+    // ── FILTROS MOBILE — Sin overlay separado ────────────────────────────
+    var filterToggle  = document.getElementById('mobile-filter-toggle');
+    var sidebar       = document.getElementById('filters-sidebar');
+    var filterClose   = document.getElementById('mobile-filter-close');
+    var isFilterOpen  = false;
 
-    function openFilters() {
-        if (!filtersSidebar) return;
-        filtersSidebar.classList.add('show');
-        if (filterOverlay) filterOverlay.classList.remove('hidden');
+    function abrirFiltros() {
+        if (!sidebar) return;
+        isFilterOpen = true;
+        sidebar.style.left = '0';
         document.body.style.overflow = 'hidden';
+        // Crear backdrop oscuro como hijo del body
+        var bd = document.getElementById('filter-backdrop');
+        if (!bd) {
+            bd = document.createElement('div');
+            bd.id = 'filter-backdrop';
+            bd.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:55;';
+            bd.addEventListener('click', cerrarFiltros);
+            bd.addEventListener('touchend', function(e) { e.preventDefault(); cerrarFiltros(); });
+            document.body.appendChild(bd);
+        } else {
+            bd.style.display = 'block';
+        }
     }
 
-    function closeFilters() {
-        if (!filtersSidebar) return;
-        filtersSidebar.classList.remove('show');
-        if (filterOverlay) filterOverlay.classList.add('hidden');
+    function cerrarFiltros() {
+        if (!sidebar) return;
+        isFilterOpen = false;
+        sidebar.style.left = '-100%';
         document.body.style.overflow = '';
+        var bd = document.getElementById('filter-backdrop');
+        if (bd) bd.style.display = 'none';
     }
 
-    // Abrir filtros
+    // Abrir
     if (filterToggle) {
         filterToggle.addEventListener('click', function(e) {
+            e.preventDefault();
             e.stopPropagation();
-            openFilters();
+            if (isFilterOpen) {
+                cerrarFiltros();
+            } else {
+                abrirFiltros();
+            }
         });
     }
 
-    // Cerrar con botón X
+    // Cerrar con X
     if (filterClose) {
         filterClose.addEventListener('click', function(e) {
+            e.preventDefault();
             e.stopPropagation();
-            closeFilters();
+            cerrarFiltros();
         });
     }
 
-    // Cerrar al hacer click en el overlay
-    if (filterOverlay) {
-        filterOverlay.addEventListener('click', function(e) {
-            e.stopPropagation();
-            closeFilters();
+    // Clicks dentro del sidebar NO deben cerrar nada
+    if (sidebar) {
+        ['click','touchstart','touchend','mousedown','mouseup','pointerdown','pointerup'].forEach(function(evt) {
+            sidebar.addEventListener(evt, function(e) {
+                e.stopPropagation();
+            });
         });
     }
 
-    // IMPORTANTE: Evitar que clicks dentro del sidebar se propaguen y lo cierren
-    if (filtersSidebar) {
-        filtersSidebar.addEventListener('click', function(e) {
-            e.stopPropagation();
-        });
-        // También para touch events en móvil
-        filtersSidebar.addEventListener('touchstart', function(e) {
-            e.stopPropagation();
-        });
-    }
-
-    // Cerrar con Escape
+    // Escape
     document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape' && filtersSidebar && filtersSidebar.classList.contains('show')) {
-            closeFilters();
-        }
+        if (e.key === 'Escape' && isFilterOpen) cerrarFiltros();
     });
 });
 </script>

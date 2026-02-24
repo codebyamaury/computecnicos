@@ -750,21 +750,6 @@
     }
 }
 
-/* Overlay móvil */
-.mobile-filter-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.7);
-    z-index: 45;
-    transition: opacity 0.3s ease;
-}
-
-.mobile-filter-overlay.hidden {
-    display: none !important;
-    opacity: 0;
-    pointer-events: none;
-}
-
 /* Sidebar móvil */
 @media (max-width: 1023px) {
     .filters-sidebar {
@@ -779,10 +764,6 @@
         border-left: none;
         overflow-y: auto;
         transition: left 0.3s ease;
-    }
-
-    .filters-sidebar.show {
-        left: 0;
     }
 
     .products-hero {
