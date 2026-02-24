@@ -8,7 +8,7 @@ if (!isset($_SESSION['usuario']) || $_SESSION['usuario']['rol'] !== 'admin') {
 $usuario = $_SESSION['usuario'];
 
 // Verificar si columna numero_guia existe
-$stmt = $pdo->prepare('SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = "pedidos" AND COLUMN_NAME = "numero_guia"');
+$stmt = $pdo->prepare("SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'pedidos' AND COLUMN_NAME = 'numero_guia'");
 $stmt->execute();
 $col_guia_disponible = (int)$stmt->fetchColumn() > 0;
 

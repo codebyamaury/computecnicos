@@ -34,7 +34,7 @@ if (isset($_GET['eliminar'])) {
     exit;
 }
 
-$productos  = $pdo->query('SELECT p.*, c.nombre AS categoria, m.nombre AS marca, (SELECT GROUP_CONCAT(url_imagen SEPARATOR ",") FROM imagenes_producto WHERE id_producto = p.id) AS imagenes_galeria FROM productos p LEFT JOIN categorias c ON p.id_categoria = c.id LEFT JOIN marcas m ON p.id_marca = m.id ORDER BY p.fecha_creacion DESC')->fetchAll();
+$productos  = $pdo->query("SELECT p.*, c.nombre AS categoria, m.nombre AS marca, (SELECT GROUP_CONCAT(url_imagen SEPARATOR ',') FROM imagenes_producto WHERE id_producto = p.id) AS imagenes_galeria FROM productos p LEFT JOIN categorias c ON p.id_categoria = c.id LEFT JOIN marcas m ON p.id_marca = m.id ORDER BY p.fecha_creacion DESC")->fetchAll();
 $categorias = $pdo->query('SELECT id, nombre FROM categorias ORDER BY nombre')->fetchAll();
 $marcas     = $pdo->query('SELECT id, nombre FROM marcas ORDER BY nombre')->fetchAll();
 
