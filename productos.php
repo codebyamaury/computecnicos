@@ -371,41 +371,78 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // ── FILTROS MOBILE — Sin overlay separado ────────────────────────────
+    // ── FILTROS MOBILE — SOLUCIÓN ROBUSTA ─────────────────────────────────
+    // Mover sidebar a document.body cuando se abre para eliminar
+    // TODOS los problemas de stacking context de padres con transform/z-index
     var filterToggle  = document.getElementById('mobile-filter-toggle');
     var sidebar       = document.getElementById('filters-sidebar');
     var filterClose   = document.getElementById('mobile-filter-close');
     var isFilterOpen  = false;
+    var sidebarOriginalParent = null;
+    var sidebarOriginalNext = null;
 
     function abrirFiltros() {
         if (!sidebar) return;
         isFilterOpen = true;
-        sidebar.style.left = '0';
-        document.body.style.overflow = 'hidden';
-        // Crear backdrop oscuro como hijo del body
+
+        // 1. Guardar posición original del sidebar en el DOM
+        sidebarOriginalParent = sidebar.parentNode;
+        sidebarOriginalNext = sidebar.nextSibling;
+
+        // 2. Crear backdrop como hijo directo de body
         var bd = document.getElementById('filter-backdrop');
         if (!bd) {
             bd = document.createElement('div');
             bd.id = 'filter-backdrop';
-            bd.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:55;';
-            bd.addEventListener('click', cerrarFiltros);
-            bd.addEventListener('touchend', function(e) { e.preventDefault(); cerrarFiltros(); });
+            bd.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;width:100vw;height:100vh;background:rgba(0,0,0,0.75);z-index:9990;cursor:pointer;';
             document.body.appendChild(bd);
+            bd.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                cerrarFiltros();
+            });
         } else {
             bd.style.display = 'block';
+        }
+
+        // 3. Mover sidebar a document.body (escapa de todo stacking context)
+        document.body.appendChild(sidebar);
+
+        // 4. Forzar estilos inline (ignorar cualquier CSS de padre)
+        sidebar.style.cssText = 'position:fixed !important;top:0 !important;left:0 !important;width:300px;max-width:85vw;height:100vh !important;z-index:9995 !important;overflow-y:auto;background:rgba(14,14,14,0.98);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-right:1px solid rgba(255,0,0,0.15);transition:none;';
+
+        document.body.style.overflow = 'hidden';
+
+        // 5. Re-renderizar iconos de Lucide dentro del sidebar
+        if (typeof lucide !== 'undefined') {
+            setTimeout(function() { lucide.createIcons(); }, 50);
         }
     }
 
     function cerrarFiltros() {
         if (!sidebar) return;
         isFilterOpen = false;
-        sidebar.style.left = '-100%';
-        document.body.style.overflow = '';
+
+        // 1. Devolver sidebar a su posición original en el DOM
+        if (sidebarOriginalParent) {
+            if (sidebarOriginalNext) {
+                sidebarOriginalParent.insertBefore(sidebar, sidebarOriginalNext);
+            } else {
+                sidebarOriginalParent.appendChild(sidebar);
+            }
+        }
+
+        // 2. Resetear estilos inline (volver al CSS normal del archivo)
+        sidebar.style.cssText = '';
+
+        // 3. Ocultar backdrop
         var bd = document.getElementById('filter-backdrop');
         if (bd) bd.style.display = 'none';
+
+        document.body.style.overflow = '';
     }
 
-    // Abrir
+    // Botón "Filtros"
     if (filterToggle) {
         filterToggle.addEventListener('click', function(e) {
             e.preventDefault();
@@ -418,7 +455,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Cerrar con X
+    // Botón X cerrar
     if (filterClose) {
         filterClose.addEventListener('click', function(e) {
             e.preventDefault();
@@ -427,16 +464,16 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Clicks dentro del sidebar NO deben cerrar nada
+    // BLOQUEAR todos los eventos dentro del sidebar para que no cierren nada
     if (sidebar) {
-        ['click','touchstart','touchend','mousedown','mouseup','pointerdown','pointerup'].forEach(function(evt) {
-            sidebar.addEventListener(evt, function(e) {
+        ['click','touchstart','touchend','mousedown','mouseup','pointerdown','pointerup'].forEach(function(evtName) {
+            sidebar.addEventListener(evtName, function(e) {
                 e.stopPropagation();
-            });
+            }, true); // useCapture = true para interceptar ANTES que cualquier hijo
         });
     }
 
-    // Escape
+    // Escape cierra
     document.addEventListener('keydown', function(e) {
         if (e.key === 'Escape' && isFilterOpen) cerrarFiltros();
     });
