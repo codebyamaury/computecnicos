@@ -27,24 +27,9 @@ if (isset($_GET['code'])) {
             if (!$usuario) {
                 // Usuario no registrado: crear cuenta automáticamente con Google
                 $foto_final = $foto;
-                if (!empty($foto)) {
-                    $profilesDir = __DIR__ . '/uploads/profiles/';
-                    if (!is_dir($profilesDir)) {
-                        @mkdir($profilesDir, 0777, true);
-                    }
-                    // Usar nombre de archivo por email hash para evitar colisiones
-                    $filename = 'profile_' . md5($email) . '.jpg';
-                    $targetPath = $profilesDir . $filename;
-                    try {
-                        $imgData = @file_get_contents($foto);
-                        if ($imgData !== false) {
-                            @file_put_contents($targetPath, $imgData);
-                            $foto_final = 'uploads/profiles/' . $filename;
-                        }
-                    } catch (Exception $e) {
-                        $foto_final = $foto;
-                    }
-                }
+                // En Vercel no guardamos fotos localmente (filesystem efímero)
+                // Usaremos directamente la URL provista por Google.
+                $foto_final = $foto;
 
                 // Generar contraseña aleatoria (requerida por NOT NULL)
                 $randomPass = bin2hex(random_bytes(8));
@@ -74,31 +59,9 @@ if (isset($_GET['code'])) {
                 // Usuario existe - actualizar foto y nombre con los datos de Google
                 // Intentar descargar y guardar la foto localmente para mayor fiabilidad
                 $foto_final = $foto;
-                if (!empty($foto)) {
-                    $profilesDir = __DIR__ . '/uploads/profiles/';
-                    if (!is_dir($profilesDir)) {
-                        @mkdir($profilesDir, 0777, true);
-                    }
-                    $targetPath = $profilesDir . 'profile_' . $usuario['id'] . '.jpg';
-                    // Si hay una foto local anterior distinta, eliminarla
-                    $oldFoto = $usuario['foto'] ?? '';
-                    $oldLocalPath = (!empty($oldFoto) && strpos($oldFoto, 'uploads/profiles/') === 0) ? (__DIR__ . '/' . $oldFoto) : '';
-                    $newRelative = 'uploads/profiles/' . 'profile_' . $usuario['id'] . '.jpg';
-                    if ($oldLocalPath && $oldFoto !== $newRelative && is_file($oldLocalPath)) {
-                        @unlink($oldLocalPath);
-                    }
-                    try {
-                        $imgData = @file_get_contents($foto);
-                        if ($imgData !== false) {
-                            @file_put_contents($targetPath, $imgData);
-                            // Guardar ruta relativa para uso en HTML
-                            $foto_final = 'uploads/profiles/' . 'profile_' . $usuario['id'] . '.jpg';
-                        }
-                    } catch (Exception $e) {
-                        // Si falla la descarga, usamos la URL de Google directamente
-                        $foto_final = $foto;
-                    }
-                }
+                // En Vercel no podemos descargar la foto y guardarla en local (filesystem efímero).
+                // Pasamos directamente el enlace de Google a la base de datos.
+                $foto_final = $foto;
 
                 $stmt = $pdo->prepare('UPDATE usuarios SET nombre=?, foto=? WHERE id=?');
                 $stmt->execute([$nombre, $foto_final, $usuario['id']]);
