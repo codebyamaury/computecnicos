@@ -2,8 +2,8 @@
 -- Ejecuta este archivo para tener todo listo en una sola importación.
 
 -- Crear/usar base de datos
-CREATE DATABASE IF NOT EXISTS computecnicos CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-USE computecnicos;
+-- CREATE DATABASE IF NOT EXISTS computecnicos CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+-- USE computecnicos;
 
 -- =========================
 -- BASE: Tablas principales
@@ -149,12 +149,12 @@ CREATE TABLE IF NOT EXISTS movimientos_inventario (
 -- =====================================
 -- Agrega columnas para SKU, stock mínimo y costo unitario
 ALTER TABLE productos
-  ADD COLUMN IF NOT EXISTS sku VARCHAR(64) NULL,
-  ADD COLUMN IF NOT EXISTS stock_minimo INT DEFAULT 0,
-  ADD COLUMN IF NOT EXISTS costo_unitario DECIMAL(12,2) DEFAULT NULL;
+  ADD COLUMN sku VARCHAR(64) NULL,
+  ADD COLUMN stock_minimo INT DEFAULT 0,
+  ADD COLUMN costo_unitario DECIMAL(12,2) DEFAULT NULL;
 
 -- Índice para SKU
-CREATE INDEX IF NOT EXISTS idx_productos_sku ON productos(sku);
+CREATE INDEX idx_productos_sku ON productos(sku);
 
 -- =====================================
 -- FEATURE: Facturación electrónica
@@ -194,7 +194,7 @@ CREATE TABLE IF NOT EXISTS comentarios_producto (
 -- =====================================
 -- FEATURE: Impuestos por producto (IVA)
 -- =====================================
-ALTER TABLE productos ADD COLUMN IF NOT EXISTS iva_porcentaje DECIMAL(5,2) NULL DEFAULT 19.00;
+ALTER TABLE productos ADD COLUMN iva_porcentaje DECIMAL(5,2) NULL DEFAULT 19.00;
 
 -- =====================================
 -- FEATURE: Notas crédito
