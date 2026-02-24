@@ -1,0 +1,241 @@
+/* ========================================
+   ESTILOS PRINCIPALES - COMPUTÉCNICOS
+   ======================================== */
+
+/* Variables CSS */
+:root {
+    --primary-color: #ff4747;
+    --primary-hover: #d93636;
+    --bg-dark: #111;
+    --bg-darker: #181818;
+    --bg-card: #222;
+    --bg-card-hover: #232323;
+    --border-color: #333;
+    --text-white: #fff;
+    --text-gray: #gray-400;
+    --shadow-dark: 0 4px 24px 0 #0008;
+    --shadow-red: 0 2px 8px 0 #ff474733;
+    --shadow-red-hover: 0 4px 16px 0 #ff474755;
+}
+
+/* ============== Tailwind rojo overrides (consistencia de tema) ============== */
+.text-red-500,
+.text-red-600 {
+    color: var(--primary-color) !important;
+}
+
+.hover\:text-red-500:hover,
+.hover\:text-red-600:hover {
+    color: var(--primary-color) !important;
+}
+
+.bg-red-600,
+.bg-red-700 {
+    background-color: var(--primary-color) !important;
+}
+
+.hover\:bg-red-600:hover,
+.hover\:bg-red-700:hover {
+    background-color: var(--primary-color) !important;
+}
+
+.border-red-600,
+.border-red-700 {
+    border-color: var(--primary-color) !important;
+}
+
+.accent-red-600,
+.accent-red-700 {
+    accent-color: var(--primary-color) !important;
+}
+
+/* Estilos base */
+body {
+    background: var(--bg-dark);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+/* Navegación principal */
+.main-menu-link {
+    position: relative;
+    color: var(--text-white);
+    transition: color 0.3s;
+    text-decoration: none;
+    padding: 8px 16px;
+}
+
+.main-menu-link:hover,
+.main-menu-link.active-menu {
+    color: var(--primary-color);
+}
+
+.main-menu-link::after {
+    content: '';
+    display: block;
+    width: 0;
+    height: 3px;
+    background: var(--primary-color);
+    border-radius: 2px;
+    position: absolute;
+    left: 0;
+    bottom: -4px;
+    transition: width 0.3s;
+}
+
+.main-menu-link:hover::after,
+.main-menu-link.active-menu::after {
+    width: 100%;
+}
+
+/* Menú activo */
+.active-menu {
+    color: var(--primary-color) !important;
+    position: relative;
+}
+
+.active-menu::after {
+    content: '';
+    display: block;
+    width: 100%;
+    height: 3px;
+    background: var(--primary-color);
+    border-radius: 2px;
+    position: absolute;
+    left: 0;
+    bottom: -4px;
+    transition: all 0.3s;
+}
+
+/* Botones */
+.btn-tech {
+    background: var(--primary-color);
+    color: var(--text-white);
+    font-weight: 600;
+    border-radius: 0.5rem;
+    padding: 0.75rem 0;
+    width: 100%;
+    transition: background 0.3s, box-shadow 0.3s;
+    box-shadow: var(--shadow-red);
+    position: relative;
+    overflow: hidden;
+    border: none;
+    cursor: pointer;
+}
+
+.btn-tech:hover {
+    background: var(--primary-hover);
+    box-shadow: var(--shadow-red-hover);
+}
+
+/* Inputs */
+.input-tech {
+    background: var(--bg-card);
+    border: 1.5px solid var(--border-color);
+    color: var(--text-white);
+    border-radius: 0.5rem;
+    padding: 0.75rem 1rem;
+    transition: border 0.3s, box-shadow 0.3s;
+}
+
+.input-tech:focus {
+    border: 1.5px solid var(--primary-color);
+    outline: none;
+    box-shadow: 0 0 0 2px #ff000055;
+}
+
+/* Cards */
+.card-tech {
+    background: var(--bg-card);
+    border: 1.5px solid var(--border-color);
+    border-radius: 1rem;
+    box-shadow: var(--shadow-dark);
+    animation: fadeInUp 0.7s cubic-bezier(.39, .575, .565, 1) both;
+}
+
+/* Animaciones */
+@keyframes fadeInUp {
+    0% {
+        opacity: 0;
+        transform: translateY(40px);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeIn {
+    0% {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+.animate-fadeIn {
+    animation: fadeIn 0.8s cubic-bezier(.39, .575, .565, 1) both;
+}
+
+/* Spinner */
+.spinner {
+    border: 3px solid var(--text-white);
+    border-top: 3px solid var(--primary-color);
+    border-radius: 50%;
+    width: 22px;
+    height: 22px;
+    animation: spin 1s linear infinite;
+    display: inline-block;
+    vertical-align: middle;
+}
+
+/* Mensajes de error */
+.error-msg {
+    color: var(--primary-color);
+    background: #ff474722;
+    border-radius: 0.5rem;
+    padding: 0.5rem 1rem;
+    margin-bottom: 1rem;
+    font-size: 0.95rem;
+    display: none;
+}
+
+.error-msg.show {
+    display: block !important;
+}
+
+/* Productos */
+.product-title {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-height: 2.7em;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .main-menu-link {
+        padding: 6px 12px;
+    }
+
+    .card-tech {
+        border-radius: 0.75rem;
+    }
+}

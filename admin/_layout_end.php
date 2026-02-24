@@ -1,0 +1,382 @@
+<?php
+/**
+ * Footer compartido del Admin Layout
+ * Cierra los divs abiertos por _layout.php y agrega el JS del sidebar
+ */
+?>
+</div><!-- /admin-main -->
+</div><!-- /admin-layout -->
+
+<script>
+    (function () {
+        const sidebar = document.getElementById('admin-sidebar');
+        const overlay = document.getElementById('admin-overlay');
+        const btnToggle = document.getElementById('btn-sidebar-toggle');
+        const mainContent = document.getElementById('admin-main-content');
+
+        function openSidebar() {
+            sidebar.classList.add('open');
+            sidebar.classList.remove('closed');
+            overlay.classList.add('show');
+            if (window.innerWidth >= 1024) mainContent.style.marginLeft = 'calc(var(--adm-sidebar-w) + var(--adm-sidebar-margin) * 2)';
+        }
+
+        function closeSidebar() {
+            sidebar.classList.remove('open');
+            sidebar.classList.add('closed');
+            overlay.classList.remove('show');
+            if (window.innerWidth >= 1024) mainContent.style.marginLeft = '0';
+        }
+
+        function toggleSidebar() {
+            sidebar.classList.contains('open') ? closeSidebar() : openSidebar();
+        }
+
+        function initSidebar() {
+            if (window.innerWidth >= 1024) {
+                openSidebar();
+                overlay.classList.remove('show');
+            } else {
+                closeSidebar();
+            }
+        }
+
+        if (btnToggle) btnToggle.addEventListener('click', toggleSidebar);
+        if (overlay) overlay.addEventListener('click', closeSidebar);
+
+        window.addEventListener('resize', initSidebar);
+        document.addEventListener('DOMContentLoaded', initSidebar);
+    })();
+</script>
+
+<?php if (!empty($_SESSION['factura_error'])): ?>
+    <?php $factura_err = htmlspecialchars($_SESSION['factura_error']);
+    unset($_SESSION['factura_error']); ?>
+    <style>
+        #factura-toast {
+            position: fixed;
+            bottom: 1.5rem;
+            right: 1.5rem;
+            z-index: 9999;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            background: #1e1e1e;
+            border: 1px solid rgba(239, 68, 68, .35);
+            border-left: 4px solid #ef4444;
+            border-radius: 12px;
+            padding: 1rem 1.1rem 1rem 1rem;
+            min-width: 280px;
+            max-width: 360px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, .55);
+            animation: toastIn .35s cubic-bezier(.21, 1.02, .73, 1) forwards;
+            overflow: hidden;
+        }
+
+        #factura-toast.hide {
+            animation: toastOut .3s ease forwards;
+        }
+
+        @keyframes toastIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px) scale(.96);
+            }
+
+            to {
+                opacity: 1;
+                transform: none;
+            }
+        }
+
+        @keyframes toastOut {
+            to {
+                opacity: 0;
+                transform: translateY(16px) scale(.96);
+            }
+        }
+
+        #factura-toast .t-icon {
+            flex-shrink: 0;
+            width: 36px;
+            height: 36px;
+            background: rgba(239, 68, 68, .12);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #factura-toast .t-icon svg {
+            width: 18px;
+            height: 18px;
+            stroke: #ef4444;
+        }
+
+        #factura-toast .t-body {
+            flex: 1;
+        }
+
+        #factura-toast .t-title {
+            font-weight: 700;
+            font-size: .85rem;
+            color: #fff;
+            margin-bottom: .2rem;
+        }
+
+        #factura-toast .t-msg {
+            font-size: .78rem;
+            color: #999;
+            line-height: 1.45;
+        }
+
+        #factura-toast .t-close {
+            flex-shrink: 0;
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #555;
+            font-size: 1.1rem;
+            line-height: 1;
+            padding: 0;
+            margin-top: 1px;
+            transition: color .15s;
+        }
+
+        #factura-toast .t-close:hover {
+            color: #ef4444;
+        }
+
+        #factura-toast .t-bar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            height: 3px;
+            background: #ef4444;
+            border-radius: 0 0 0 12px;
+            animation: barShrink 5s linear forwards;
+        }
+
+        @keyframes barShrink {
+            from {
+                width: 100%;
+            }
+
+            to {
+                width: 0%;
+            }
+        }
+    </style>
+    <div id="factura-toast">
+        <div class="t-icon">
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                stroke-linejoin="round">
+                <path
+                    d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
+            </svg>
+        </div>
+        <div class="t-body">
+            <div class="t-title">Factura no disponible</div>
+            <div class="t-msg"><?= $factura_err ?></div>
+        </div>
+        <button class="t-close" onclick="closeToast()">&#x2715;</button>
+        <div class="t-bar"></div>
+    </div>
+    <script>
+        function closeToast() {
+            var t = document.getElementById('factura-toast');
+            if (!t) return;
+            t.classList.add('hide');
+            setTimeout(function () { t.remove(); }, 320);
+        }
+        setTimeout(closeToast, 5000);
+    </script>
+<?php endif; ?>
+
+<!-- Utilidad de paginación universal -->
+<script>
+    function initPagination(containerSel, pagDivId, perPage, searchInputId) {
+        perPage = perPage || 10;
+        var container = document.querySelector(containerSel);
+        if (!container) return;
+        var isTable = container.tagName === 'TBODY';
+        var allItems = Array.from(isTable ? container.querySelectorAll('tr') : container.children);
+        var pagDiv = document.getElementById(pagDivId);
+        if (!pagDiv) return;
+        var filtered = allItems.slice();
+        var page = 1;
+        var uid = pagDivId;
+
+        function render() {
+            var total = Math.max(1, Math.ceil(filtered.length / perPage));
+            if (page > total) page = total;
+            var s = (page - 1) * perPage, e = s + perPage;
+            allItems.forEach(function (r) { r.style.display = 'none'; });
+            filtered.slice(s, e).forEach(function (r) { r.style.display = ''; });
+            var h = '';
+            h += '<button onclick="pagNav_' + uid + '(\'prev\')" class="adm-btn" style="font-size:.72rem;padding:.3rem .7rem' + (page <= 1 ? ';opacity:.4;pointer-events:none' : '') + '">← Anterior</button>';
+            for (var i = 1; i <= total; i++) {
+                if (total > 7 && i > 2 && i < total - 1 && Math.abs(i - page) > 1) { if (i === 3 || i === total - 2) h += '<span style="color:#555;font-size:.8rem">…</span>'; continue; }
+                h += '<button onclick="pagNav_' + uid + '(' + i + ')" class="adm-btn' + (i === page ? ' adm-btn-primary' : '') + '" style="font-size:.72rem;padding:.3rem .65rem;min-width:30px">' + i + '</button>';
+            }
+            h += '<button onclick="pagNav_' + uid + '(\'next\')" class="adm-btn" style="font-size:.72rem;padding:.3rem .7rem' + (page >= total ? ';opacity:.4;pointer-events:none' : '') + '">Siguiente →</button>';
+            h += '<span style="color:#555;font-size:.72rem;margin-left:8px">Mostrando ' + (filtered.length ? s + 1 : 0) + '-' + Math.min(e, filtered.length) + ' de ' + filtered.length + '</span>';
+            pagDiv.innerHTML = h;
+        }
+
+        window['pagNav_' + uid] = function (action) {
+            var total = Math.max(1, Math.ceil(filtered.length / perPage));
+            if (action === 'prev') page = Math.max(1, page - 1);
+            else if (action === 'next') page = Math.min(total, page + 1);
+            else page = parseInt(action);
+            render();
+        };
+
+        if (searchInputId) {
+            var inp = document.getElementById(searchInputId);
+            if (inp) inp.addEventListener('input', function () {
+                var q = this.value.toLowerCase().trim();
+                filtered = allItems.filter(function (r) { return !q || r.textContent.toLowerCase().indexOf(q) >= 0; });
+                page = 1;
+                render();
+            });
+        }
+        render();
+    }
+</script>
+
+<!-- Modal universal de confirmación de eliminación -->
+<div id="modal-confirm-del-bg" class="adm-modal-overlay"></div>
+<div id="modal-confirm-del" class="adm-modal hidden">
+    <div class="adm-modal-box" style="max-width:380px;text-align:center">
+        <div
+            style="width:56px;height:56px;background:rgba(239,68,68,.12);border:2px solid rgba(239,68,68,.3);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 1.1rem">
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                stroke-linejoin="round" style="width:26px;height:26px;stroke:#ef4444">
+                <path
+                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+            </svg>
+        </div>
+        <div class="adm-modal-title" id="confirm-del-title" style="margin-bottom:.4rem;font-size:1.1rem">¿Eliminar?
+        </div>
+        <p id="confirm-del-msg" style="color:#888;font-size:.82rem;line-height:1.5;margin-bottom:1.4rem"></p>
+        <div style="display:flex;gap:10px">
+            <button type="button" onclick="cerrarConfirmDel()" class="adm-btn"
+                style="flex:1;justify-content:center">Cancelar</button>
+            <a id="confirm-del-href" href="#" class="adm-btn adm-btn-danger" style="flex:1;justify-content:center">Sí,
+                eliminar</a>
+        </div>
+    </div>
+</div>
+<script>
+    function confirmarEliminar(href, nombre, tipo) {
+        tipo = tipo || 'elemento';
+        document.getElementById('confirm-del-title').textContent = '¿Eliminar ' + tipo + '?';
+        document.getElementById('confirm-del-msg').textContent = '«' + nombre + '» será eliminado permanentemente. Esta acción no se puede deshacer.';
+        document.getElementById('confirm-del-href').href = href;
+        document.getElementById('modal-confirm-del-bg').classList.add('show');
+        document.getElementById('modal-confirm-del').classList.remove('hidden');
+        document.getElementById('modal-confirm-del').classList.add('show');
+        document.body.style.overflow = 'hidden';
+    }
+    function cerrarConfirmDel() {
+        document.getElementById('modal-confirm-del-bg').classList.remove('show');
+        document.getElementById('modal-confirm-del').classList.add('hidden');
+        document.getElementById('modal-confirm-del').classList.remove('show');
+        document.body.style.overflow = '';
+    }
+    document.getElementById('modal-confirm-del-bg').addEventListener('click', cerrarConfirmDel);
+</script>
+
+<script>if (typeof lucide !== 'undefined') lucide.createIcons();</script>
+
+<!-- Admin Particle Background -->
+<script>
+    (function () {
+        const canvas = document.querySelector('.admin-particles-canvas');
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        let W, H;
+
+        function resize() {
+            W = canvas.width = window.innerWidth;
+            H = canvas.height = window.innerHeight;
+        }
+        resize();
+        window.addEventListener('resize', resize);
+
+        const PARTICLE_COUNT = 80;
+        const particles = [];
+
+        for (let i = 0; i < PARTICLE_COUNT; i++) {
+            particles.push({
+                x: Math.random() * (W || 1920),
+                y: Math.random() * (H || 1080),
+                r: Math.random() * 2.5 + 0.5,
+                vx: (Math.random() - 0.5) * 0.3,
+                vy: (Math.random() - 0.5) * 0.3,
+                alpha: Math.random() * 0.25 + 0.08,
+                pulse: Math.random() * Math.PI * 2,
+                pulseSpeed: Math.random() * 0.01 + 0.005
+            });
+        }
+
+        const LINE_DIST = 150;
+
+        function draw() {
+            ctx.clearRect(0, 0, W, H);
+
+            // Draw connection lines
+            for (let i = 0; i < particles.length; i++) {
+                for (let j = i + 1; j < particles.length; j++) {
+                    const dx = particles[i].x - particles[j].x;
+                    const dy = particles[i].y - particles[j].y;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+                    if (dist < LINE_DIST) {
+                        const lineAlpha = (1 - dist / LINE_DIST) * 0.07;
+                        ctx.beginPath();
+                        ctx.moveTo(particles[i].x, particles[i].y);
+                        ctx.lineTo(particles[j].x, particles[j].y);
+                        ctx.strokeStyle = 'rgba(200, 200, 210, ' + lineAlpha + ')';
+                        ctx.lineWidth = 0.6;
+                        ctx.stroke();
+                    }
+                }
+            }
+
+            // Draw particles with subtle pulse
+            for (let i = 0; i < particles.length; i++) {
+                const p = particles[i];
+                p.x += p.vx;
+                p.y += p.vy;
+                p.pulse += p.pulseSpeed;
+
+                // Wrap around
+                if (p.x < -5) p.x = W + 5;
+                if (p.x > W + 5) p.x = -5;
+                if (p.y < -5) p.y = H + 5;
+                if (p.y > H + 5) p.y = -5;
+
+                const pulseAlpha = p.alpha + Math.sin(p.pulse) * 0.06;
+
+                // Soft glow
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.r * 2.5, 0, Math.PI * 2);
+                ctx.fillStyle = 'rgba(160, 165, 175, ' + (pulseAlpha * 0.15) + ')';
+                ctx.fill();
+
+                // Core dot
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+                ctx.fillStyle = 'rgba(190, 195, 205, ' + pulseAlpha + ')';
+                ctx.fill();
+            }
+
+            requestAnimationFrame(draw);
+        }
+        draw();
+    })();
+</script>
+</body>
+
+</html>

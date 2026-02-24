@@ -1,0 +1,419 @@
+/* ========================================
+   ESTILOS ESPECÍFICOS PARA CONTACTO.PHP
+   (Complementan a index.css y comparten estilo con servicios.css)
+   ======================================== */
+
+/* Reutilizamos variables y estilos base de index.css */
+
+/* Hero Section de Contacto (Similar a Servicios) */
+.contact-hero {
+    position: relative;
+    padding: 6rem 0 4rem;
+    text-align: center;
+    overflow: hidden;
+}
+
+.contact-hero::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(circle at center, rgba(255, 0, 0, 0.1) 0%, transparent 70%);
+    z-index: 0;
+    pointer-events: none;
+}
+
+/* Grid Layout para Contacto */
+.contact-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2rem;
+}
+
+@media (min-width: 1024px) {
+    .contact-grid {
+        grid-template-columns: 1.2fr 1fr;
+        /* Más espacio para el formulario en desktop grande */
+        gap: 4rem;
+    }
+}
+
+/* Tarjetas de Contacto (Estilo Tech Card) */
+.contact-card {
+    background: rgba(20, 20, 20, 0.6);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 1rem;
+    padding: 2rem;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.contact-card:hover {
+    border-color: rgba(255, 0, 0, 0.5);
+    box-shadow: 0 0 20px rgba(255, 0, 0, 0.1);
+    transform: translateY(-5px);
+}
+
+.contact-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, #ff0000, transparent);
+    transform: translateX(-100%);
+    transition: transform 0.5s ease;
+}
+
+.contact-card:hover::before {
+    transform: translateX(100%);
+}
+
+/* Formulario Styles */
+.form-group {
+    margin-bottom: 1.5rem;
+    position: relative;
+}
+
+.form-label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: #ccc;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: color 0.3s ease;
+}
+
+.form-input,
+.form-textarea {
+    width: 100%;
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid #333;
+    border-radius: 0.5rem;
+    padding: 1rem;
+    color: #fff;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+.form-input:focus,
+.form-textarea:focus {
+    outline: none;
+    border-color: #ff0000;
+    box-shadow: 0 0 10px rgba(255, 0, 0, 0.2);
+    background: rgba(0, 0, 0, 0.5);
+}
+
+.form-input:focus+.form-label,
+.form-textarea:focus+.form-label,
+.form-input:not(:placeholder-shown)+.form-label,
+.form-textarea:not(:placeholder-shown)+.form-label,
+.form-input.has-content+.form-label,
+.form-textarea.has-content+.form-label {
+    color: #ff0000;
+    transform: translateY(-2.5rem) scale(0.9);
+    background: transparent;
+    padding: 0 0.5rem;
+    left: 0.5rem;
+    top: 1rem;
+    text-shadow: 0 0 5px rgba(0, 0, 0, 0.8);
+}
+
+.form-textarea {
+    resize: vertical;
+    min-height: 150px;
+}
+
+/* Botón de Envío (Estilo Hero Secondary/Primary) */
+.submit-btn {
+    width: 100%;
+    padding: 1rem;
+    background: linear-gradient(45deg, #cc0000, #ff0000);
+    color: white;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border: none;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.submit-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(255, 0, 0, 0.3);
+}
+
+.submit-btn:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* Información de Contacto */
+.info-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.info-item:last-child {
+    margin-bottom: 0;
+    padding-bottom: 0;
+    border-bottom: none;
+}
+
+.info-icon {
+    width: 3rem;
+    height: 3rem;
+    background: rgba(255, 0, 0, 0.1);
+    border: 1px solid rgba(255, 0, 0, 0.3);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #ff0000;
+    flex-shrink: 0;
+    transition: all 0.3s ease;
+}
+
+.info-item:hover .info-icon {
+    background: #ff0000;
+    color: white;
+    transform: rotate(15deg);
+    box-shadow: 0 0 15px rgba(255, 0, 0, 0.4);
+}
+
+.info-content {
+    flex: 1;
+    min-width: 0;
+    padding-right: 0.5rem;
+}
+
+.info-content h4 {
+    color: #fff;
+    font-size: 1.1rem;
+    margin-bottom: 0.25rem;
+    font-weight: 600;
+}
+
+.info-content p {
+    color: #999;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    word-break: break-word;
+}
+
+/* Mapa */
+.map-container {
+    border-radius: 1rem;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    height: 300px;
+    margin-top: 2rem;
+    position: relative;
+}
+
+.map-container::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.5);
+}
+
+/* Animaciones */
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.animate-slide-up {
+    animation: slideUp 0.6s ease-out forwards;
+}
+
+.delay-100 {
+    animation-delay: 0.1s;
+}
+
+.delay-200 {
+    animation-delay: 0.2s;
+}
+
+.delay-300 {
+    animation-delay: 0.3s;
+}
+
+/* ========================================
+   ESTILOS MapCN / MapLibre GL
+   ======================================== */
+
+/* Marcador personalizado */
+.mapcn-marker {
+    position: relative;
+    width: 40px;
+    height: 40px;
+    cursor: pointer;
+}
+
+.mapcn-marker-pin {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #cc0000, #ff0000);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 15px rgba(255, 0, 0, 0.5), 0 0 30px rgba(255, 0, 0, 0.2);
+    position: relative;
+    z-index: 2;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.mapcn-marker:hover .mapcn-marker-pin {
+    transform: scale(1.15);
+    box-shadow: 0 6px 25px rgba(255, 0, 0, 0.6), 0 0 40px rgba(255, 0, 0, 0.3);
+}
+
+/* Animación de pulso del marcador */
+.mapcn-marker-pulse {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: rgba(255, 0, 0, 0.3);
+    z-index: 1;
+    animation: mapcnPulse 2s ease-out infinite;
+}
+
+@keyframes mapcnPulse {
+    0% {
+        width: 40px;
+        height: 40px;
+        opacity: 0.6;
+    }
+    100% {
+        width: 100px;
+        height: 100px;
+        opacity: 0;
+    }
+}
+
+/* Popup personalizado */
+.mapcn-popup .maplibregl-popup-content {
+    background: rgba(15, 15, 15, 0.95) !important;
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 0, 0, 0.3);
+    border-radius: 10px !important;
+    padding: 12px 16px !important;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6), 0 0 20px rgba(255, 0, 0, 0.1);
+    min-width: 180px;
+}
+
+.mapcn-popup .maplibregl-popup-close-button {
+    color: #888 !important;
+    font-size: 18px;
+    right: 6px;
+    top: 6px;
+    transition: color 0.2s ease;
+}
+
+.mapcn-popup .maplibregl-popup-close-button:hover {
+    color: #ff0000 !important;
+    background: transparent !important;
+}
+
+.mapcn-popup .maplibregl-popup-tip {
+    border-top-color: rgba(15, 15, 15, 0.95) !important;
+}
+
+/* Controles de navegación con tema oscuro */
+.maplibregl-ctrl-group {
+    background: rgba(15, 15, 15, 0.85) !important;
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    border-radius: 8px !important;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4) !important;
+    overflow: hidden;
+}
+
+.maplibregl-ctrl-group button {
+    background-color: transparent !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+    transition: background-color 0.2s ease;
+}
+
+.maplibregl-ctrl-group button:hover {
+    background-color: rgba(255, 0, 0, 0.15) !important;
+}
+
+.maplibregl-ctrl-group button:last-child {
+    border-bottom: none !important;
+}
+
+/* Iconos de los controles en blanco */
+.maplibregl-ctrl-group button .maplibregl-ctrl-icon {
+    filter: invert(1) brightness(0.9);
+}
+
+/* Atribución con tema oscuro */
+.maplibregl-ctrl-attrib {
+    background: rgba(0, 0, 0, 0.6) !important;
+    color: #666 !important;
+    font-size: 10px !important;
+    backdrop-filter: blur(4px);
+}
+
+.maplibregl-ctrl-attrib a {
+    color: #888 !important;
+}
+
+.maplibregl-ctrl-attrib a:hover {
+    color: #ff0000 !important;
+}
+
+/* Botón de pantalla completa */
+.maplibregl-ctrl-fullscreen .maplibregl-ctrl-icon {
+    filter: invert(1) brightness(0.9);
+}
+
+/* Canvas del mapa con bordes redondeados */
+#mapcn-container .maplibregl-canvas {
+    border-radius: 1rem;
+}
+
+/* Responsive: ajustar altura del mapa en móvil */
+@media (max-width: 768px) {
+    #mapcn-container {
+        min-height: 250px !important;
+    }
+}
