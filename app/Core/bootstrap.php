@@ -12,6 +12,19 @@ date_default_timezone_set('America/Bogota');
 // Constantes de rutas
 define('BASE_PATH', realpath(dirname(__DIR__, 2))); // c:\xampp\htdocs\computecnicosproject
 
+// Cargar variables de entorno desde .env manualmente
+$envFile = BASE_PATH . '/.env';
+if (file_exists($envFile)) {
+    $lines = file($envFile, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+    foreach ($lines as $line) {
+        if (strpos(trim($line), '#') === 0) continue;
+        if (strpos($line, '=') !== false) {
+            list($name, $value) = explode('=', $line, 2);
+            $_ENV[trim($name)] = trim($value);
+        }
+    }
+}
+
 // Detección sencilla de entorno
 if (!defined('APP_ENV')) {
     $envServer = $_SERVER['APP_ENV'] ?? getenv('APP_ENV') ?: '';
