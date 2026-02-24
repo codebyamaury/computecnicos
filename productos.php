@@ -127,13 +127,18 @@ include __DIR__ . '/includes/header.php';
         <div class="products-layout">
             
             <!-- Sidebar de Filtros -->
-            <aside class="filters-sidebar animate-slide-up delay-200">
+            <aside class="filters-sidebar animate-slide-up delay-200" id="filters-sidebar">
                 <div class="filters-header">
                     <h3>
                         <i data-lucide="sliders-horizontal" class="w-5 h-5"></i>
                         Filtros
                     </h3>
-                    <a href="productos.php" class="clear-filters-btn">Limpiar</a>
+                    <div style="display:flex;align-items:center;gap:0.5rem;">
+                        <a href="productos.php" class="clear-filters-btn">Limpiar</a>
+                        <button type="button" id="mobile-filter-close" class="mobile-filter-close-btn" aria-label="Cerrar filtros">
+                            <i data-lucide="x" class="w-5 h-5"></i>
+                        </button>
+                    </div>
                 </div>
                 
                 <form method="GET" action="productos.php" id="filters-form">
@@ -338,13 +343,10 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
 
-        // Actualizar contador
         if (countNumber) countNumber.textContent = visible;
 
-        // Mostrar/ocultar mensaje "sin resultados"
         if (productsGrid) {
             if (visible === 0 && productCards.length > 0) {
-                // Crear o mostrar aviso inline
                 let noResultsMsg = document.getElementById('realtime-no-results');
                 if (!noResultsMsg) {
                     noResultsMsg = document.createElement('div');
@@ -372,7 +374,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     if (searchInput && productCards.length > 0) {
-        // Aplicar filtro inicial si hay valor en el input (p.ej. viene de URL)
         if (searchInput.value) filterProducts(searchInput.value);
 
         searchInput.addEventListener('input', function() {
@@ -380,11 +381,9 @@ document.addEventListener('DOMContentLoaded', function() {
             debounceTimer = setTimeout(() => filterProducts(this.value), 250);
         });
 
-        // Evitar submit del form al presionar Enter (filtra en tiempo real)
         const searchForm = searchInput.closest('form');
         if (searchForm) {
             searchForm.addEventListener('submit', function(e) {
-                // Solo hace submit si hay filtros de sidebar activos (para combinar con ellos)
                 const hasSidebarFilters = urlParams.has('categoria') || urlParams.has('marca') ||
                                           urlParams.has('precio_min') || urlParams.has('precio_max') ||
                                           urlParams.has('oferta');
@@ -396,24 +395,67 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // ── Toggle filtros en móvil ──────────────────────────────────────────
-    const filterToggle  = document.getElementById('mobile-filter-toggle');
-    const filtersSidebar = document.querySelector('.filters-sidebar');
+    // ── Toggle filtros en móvil (ROBUSTO) ─────────────────────────────────
+    const filterToggle   = document.getElementById('mobile-filter-toggle');
+    const filtersSidebar = document.getElementById('filters-sidebar');
     const filterOverlay  = document.getElementById('mobile-filter-overlay');
+    const filterClose    = document.getElementById('mobile-filter-close');
 
-    if (filterToggle && filtersSidebar) {
-        filterToggle.addEventListener('click', function() {
-            filtersSidebar.classList.toggle('show');
-            filterOverlay.classList.toggle('hidden');
-            document.body.style.overflow = filtersSidebar.classList.contains('show') ? 'hidden' : '';
-        });
+    function openFilters() {
+        if (!filtersSidebar) return;
+        filtersSidebar.classList.add('show');
+        if (filterOverlay) filterOverlay.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+    }
 
-        filterOverlay.addEventListener('click', function() {
-            filtersSidebar.classList.remove('show');
-            filterOverlay.classList.add('hidden');
-            document.body.style.overflow = '';
+    function closeFilters() {
+        if (!filtersSidebar) return;
+        filtersSidebar.classList.remove('show');
+        if (filterOverlay) filterOverlay.classList.add('hidden');
+        document.body.style.overflow = '';
+    }
+
+    // Abrir filtros
+    if (filterToggle) {
+        filterToggle.addEventListener('click', function(e) {
+            e.stopPropagation();
+            openFilters();
         });
     }
+
+    // Cerrar con botón X
+    if (filterClose) {
+        filterClose.addEventListener('click', function(e) {
+            e.stopPropagation();
+            closeFilters();
+        });
+    }
+
+    // Cerrar al hacer click en el overlay
+    if (filterOverlay) {
+        filterOverlay.addEventListener('click', function(e) {
+            e.stopPropagation();
+            closeFilters();
+        });
+    }
+
+    // IMPORTANTE: Evitar que clicks dentro del sidebar se propaguen y lo cierren
+    if (filtersSidebar) {
+        filtersSidebar.addEventListener('click', function(e) {
+            e.stopPropagation();
+        });
+        // También para touch events en móvil
+        filtersSidebar.addEventListener('touchstart', function(e) {
+            e.stopPropagation();
+        });
+    }
+
+    // Cerrar con Escape
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && filtersSidebar && filtersSidebar.classList.contains('show')) {
+            closeFilters();
+        }
+    });
 });
 </script>
 

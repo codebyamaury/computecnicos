@@ -724,6 +724,32 @@
     animation-delay: 0.5s;
 }
 
+/* Botón cerrar filtros (solo mobile) */
+.mobile-filter-close-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    background: rgba(255, 0, 0, 0.1);
+    border: 1px solid rgba(255, 0, 0, 0.3);
+    border-radius: 0.5rem;
+    color: #ff0000;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.mobile-filter-close-btn:hover {
+    background: rgba(255, 0, 0, 0.2);
+    box-shadow: 0 0 10px rgba(255, 0, 0, 0.2);
+}
+
+@media (min-width: 1024px) {
+    .mobile-filter-close-btn {
+        display: none;
+    }
+}
+
 /* Overlay móvil */
 .mobile-filter-overlay {
     position: fixed;
