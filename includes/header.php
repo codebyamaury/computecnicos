@@ -157,26 +157,50 @@ if (isset($_SESSION['usuario']['id']) && isset($pdo)) {
         </div>
     </header>
 
-    <!-- Mobile Menu -->
-    <div id="mobile-menu" class="hidden md:hidden bg-[#1a1a1a] border-b border-[#333] absolute w-full z-40">
-        <nav class="flex flex-col p-4 text-base font-semibold space-y-2">
-            <a href="index.php" class="flex items-center gap-3 p-3 rounded-lg <?php if ($current == 'index.php') echo 'bg-red-600 text-white'; else echo 'text-gray-300 hover:bg-white/5'; ?>">
-                <i data-lucide="house" class="w-5 h-5"></i>
-                Inicio
+    <!-- Mobile Menu (Futuristic Style) -->
+    <div id="mobile-menu" class="hidden md:hidden mobile-menu-panel">
+        <!-- Scan line animation -->
+        <div class="mobile-menu-scanline"></div>
+
+        <!-- Close button -->
+        <div class="mobile-menu-header">
+            <span class="mobile-menu-label">// NAVEGACIÓN</span>
+            <button id="mobile-menu-close" class="mobile-menu-close" aria-label="Cerrar menú">
+                <i data-lucide="x" class="w-6 h-6"></i>
+            </button>
+        </div>
+
+        <nav class="mobile-menu-nav">
+            <a href="index.php" class="mobile-menu-item <?php if ($current == 'index.php') echo 'active'; ?>">
+                <span class="mobile-menu-icon"><i data-lucide="house" class="w-5 h-5"></i></span>
+                <span class="mobile-menu-text">Inicio</span>
+                <span class="mobile-menu-arrow"><i data-lucide="chevron-right" class="w-4 h-4"></i></span>
             </a>
-            <a href="productos.php" class="flex items-center gap-3 p-3 rounded-lg <?php if ($current == 'productos.php') echo 'bg-red-600 text-white'; else echo 'text-gray-300 hover:bg-white/5'; ?>">
-                <i data-lucide="box" class="w-5 h-5"></i>
-                Productos
+            <a href="productos.php" class="mobile-menu-item <?php if ($current == 'productos.php') echo 'active'; ?>">
+                <span class="mobile-menu-icon"><i data-lucide="box" class="w-5 h-5"></i></span>
+                <span class="mobile-menu-text">Productos</span>
+                <span class="mobile-menu-arrow"><i data-lucide="chevron-right" class="w-4 h-4"></i></span>
             </a>
-            <a href="servicios.php" class="flex items-center gap-3 p-3 rounded-lg <?php if ($current == 'servicios.php') echo 'bg-red-600 text-white'; else echo 'text-gray-300 hover:bg-white/5'; ?>">
-                <i data-lucide="wrench" class="w-5 h-5"></i>
-                Servicios
+            <a href="servicios.php" class="mobile-menu-item <?php if ($current == 'servicios.php') echo 'active'; ?>">
+                <span class="mobile-menu-icon"><i data-lucide="wrench" class="w-5 h-5"></i></span>
+                <span class="mobile-menu-text">Servicios</span>
+                <span class="mobile-menu-arrow"><i data-lucide="chevron-right" class="w-4 h-4"></i></span>
             </a>
-            <a href="contacto.php" class="flex items-center gap-3 p-3 rounded-lg <?php if ($current == 'contacto.php') echo 'bg-red-600 text-white'; else echo 'text-gray-300 hover:bg-white/5'; ?>">
-                <i data-lucide="mail" class="w-5 h-5"></i>
-                Contacto
+            <a href="contacto.php" class="mobile-menu-item <?php if ($current == 'contacto.php') echo 'active'; ?>">
+                <span class="mobile-menu-icon"><i data-lucide="mail" class="w-5 h-5"></i></span>
+                <span class="mobile-menu-text">Contacto</span>
+                <span class="mobile-menu-arrow"><i data-lucide="chevron-right" class="w-4 h-4"></i></span>
             </a>
         </nav>
+
+        <!-- Footer del menú -->
+        <div class="mobile-menu-footer">
+            <div class="mobile-menu-divider"></div>
+            <p class="mobile-menu-status">
+                <span class="mobile-menu-dot"></span>
+                SYSTEM STATUS: <span style="color: #ff0000;">ONLINE</span>
+            </p>
+        </div>
     </div>
 
     <script>
@@ -207,10 +231,24 @@ if (isset($_SESSION['usuario']['id']) && isset($pdo)) {
 
         // Mobile menu logic
         const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+        const mobileMenuClose = document.getElementById('mobile-menu-close');
         const mobileMenu = document.getElementById('mobile-menu');
         if (mobileMenuBtn && mobileMenu) {
             mobileMenuBtn.addEventListener('click', function() {
                 mobileMenu.classList.toggle('hidden');
+                if (!mobileMenu.classList.contains('hidden')) {
+                    lucide.createIcons({ nodes: mobileMenu.querySelectorAll('[data-lucide]') });
+                }
+            });
+            if (mobileMenuClose) {
+                mobileMenuClose.addEventListener('click', function() {
+                    mobileMenu.classList.add('hidden');
+                });
+            }
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape' && !mobileMenu.classList.contains('hidden')) {
+                    mobileMenu.classList.add('hidden');
+                }
             });
         }
     </script>
