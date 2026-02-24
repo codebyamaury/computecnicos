@@ -58,7 +58,7 @@ try {
     $stmt = $pdo->prepare('INSERT INTO usuarios (nombre, email, telefono, direccion, password, foto) VALUES (?, ?, ?, ?, ?, ?)');
     $stmt->execute([$nombre, $email, $telefono, $direccion, $hash, $foto_url]);
     // Iniciar sesión automáticamente
-    session_start();
+// Sesión manejada por bootstrap (DB handler)
     $stmt2 = $pdo->prepare('SELECT id, nombre, email, rol, foto FROM usuarios WHERE email = ?');
     $stmt2->execute([$email]);
     $usuario = $stmt2->fetch();

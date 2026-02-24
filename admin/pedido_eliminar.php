@@ -1,5 +1,5 @@
 <?php
-session_start();
+// Sesión manejada por bootstrap (DB handler)
 if (!isset($_SESSION['usuario']) || $_SESSION['usuario']['rol'] !== 'admin') {
     header('Location: ../index.php?login=1');
     exit;

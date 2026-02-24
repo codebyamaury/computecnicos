@@ -1,5 +1,5 @@
 <?php
-session_start();
+// Sesión manejada por bootstrap (DB handler)
 require_once __DIR__ . '/app/Core/bootstrap.php';
 // Obtener productos destacados (con oferta o más recientes)
 $stmt = $pdo->prepare('SELECT p.*, c.nombre AS categoria, m.nombre AS marca FROM productos p LEFT JOIN categorias c ON p.id_categoria = c.id LEFT JOIN marcas m ON p.id_marca = m.id WHERE p.oferta = 1 OR p.fecha_creacion >= DATE_SUB(NOW(), INTERVAL 7 DAY) ORDER BY p.oferta DESC, p.fecha_creacion DESC LIMIT 4');

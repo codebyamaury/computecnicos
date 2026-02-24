@@ -5,9 +5,7 @@ if (!isset($_SESSION['usuario'])) {
     exit;
 }
 require_once __DIR__ . '/app/Core/bootstrap.php';
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
+// Sesión manejada por bootstrap (DB handler)
 
 $id_usuario = $_SESSION['usuario']['id'];
 // Obtener pedidos del usuario

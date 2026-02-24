@@ -1,7 +1,5 @@
 <?php
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
+// Sesión manejada por bootstrap (DB handler)
 // Detectar la página actual
 $current = basename($_SERVER['PHP_SELF']);
 // Sincronizar rol desde la base de datos si existe sesión y conexión

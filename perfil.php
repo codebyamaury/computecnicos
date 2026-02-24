@@ -1,10 +1,10 @@
 <?php
-session_start();
+// Sesión manejada por bootstrap (DB handler)
+require_once __DIR__ . '/app/Core/bootstrap.php';
 if (!isset($_SESSION['usuario'])) {
     header('Location: index.php?login=1');
     exit;
 }
-require_once __DIR__ . '/app/Core/bootstrap.php';
 $usuario_id = $_SESSION['usuario']['id'];
 
 // Obtener datos actuales

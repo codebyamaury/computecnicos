@@ -1,5 +1,5 @@
 <?php
-session_start();
+// Sesión manejada por bootstrap (DB handler)
 header('Content-Type: application/json');
 require_once __DIR__ . '/app/Core/bootstrap.php';
 
@@ -46,8 +46,8 @@ try {
     // Insertar usuario
     // Rol por defecto: 'cliente' (o lo que se use en la DB, asumiré 'cliente' o 'usuario')
     // Foto por defecto: null
-    $stmt = $pdo->prepare('INSERT INTO usuarios (nombre, email, password, direccion, telefono, rol, fecha_creacion) VALUES (?, ?, ?, ?, ?, "cliente", NOW())');
-    $stmt->execute([$nombre, $email, $passwordHash, $direccion, $telefono]);
+    $stmt = $pdo->prepare('INSERT INTO usuarios (nombre, email, password, direccion, telefono, rol, fecha_creacion) VALUES (?, ?, ?, ?, ?, ?, NOW())');
+    $stmt->execute([$nombre, $email, $passwordHash, $direccion, $telefono, 'cliente']);
 
     $idUsuario = $pdo->lastInsertId();
 

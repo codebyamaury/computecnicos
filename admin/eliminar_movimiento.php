@@ -1,5 +1,5 @@
 <?php
-session_start();
+// Sesión manejada por bootstrap (DB handler)
 if (!isset($_SESSION['usuario']) || $_SESSION['usuario']['rol'] !== 'admin') {
     http_response_code(403);
     exit('Acceso denegado');

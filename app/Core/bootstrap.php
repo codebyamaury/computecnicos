@@ -1,10 +1,8 @@
 <?php
 // Bootstrap central del proyecto (no rompe rutas existentes)
 
-// Iniciar sesión si no está iniciada
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
+// NO iniciar sesión aún — se hace después de conectar a la BD
+// para poder usar el handler de sesiones en base de datos.
 
 // Zona horaria por defecto
 date_default_timezone_set('America/Bogota');
@@ -88,6 +86,43 @@ if (APP_ENV === 'dev') {
 // Conexión a base de datos (mantiene el archivo actual para no romper)
 // Archivo de configuración de base de datos movido a config/
 require_once BASE_PATH . '/config/database.php';
+
+// ─── Sesiones persistentes en base de datos ───
+// En Vercel (serverless) el sistema de archivos no persiste entre requests,
+// por lo tanto las sesiones PHP normales se pierden inmediatamente.
+// Solución: guardar las sesiones en MySQL usando un handler personalizado.
+if (session_status() === PHP_SESSION_NONE) {
+    // Crear la tabla de sesiones automáticamente si no existe
+    try {
+        $pdo->exec('CREATE TABLE IF NOT EXISTS sessions (
+            id VARCHAR(128) NOT NULL PRIMARY KEY,
+            data TEXT NOT NULL,
+            expires_at DATETIME NOT NULL,
+            INDEX idx_expires (expires_at)
+        )');
+    } catch (Throwable $e) {
+        // No bloquear si ya existe o hay error menor
+        log_event('Aviso tabla sessions: ' . $e->getMessage());
+    }
+
+    // Registrar el handler de sesiones en base de datos
+    require_once BASE_PATH . '/app/Core/DatabaseSessionHandler.php';
+    $dbSessionHandler = new DatabaseSessionHandler($pdo);
+    session_set_save_handler($dbSessionHandler, true);
+
+    // Configurar cookie de sesión para que funcione correctamente
+    $isSecure = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off');
+    session_set_cookie_params([
+        'lifetime' => 86400, // 24 horas
+        'path'     => '/',
+        'domain'   => '',
+        'secure'   => $isSecure,
+        'httponly'  => true,
+        'samesite'  => 'Lax',
+    ]);
+
+    session_start();
+}
 
 // Ajuste de esquema: asegurar estado 'preparacion' en ENUM de pedidos y pedido_estados
 try {

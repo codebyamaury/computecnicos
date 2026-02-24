@@ -1,5 +1,5 @@
 <?php
-session_start();
+// Sesión manejada por bootstrap (DB handler)
 require_once __DIR__ . '/app/Core/bootstrap.php';
 
 $id = isset($_GET['id']) ? intval($_GET['id']) : 0;
