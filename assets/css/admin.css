@@ -11,6 +11,7 @@
     --adm-red: #e00000;
     --adm-red-dark: #bb0000;
     --adm-sidebar-w: 16rem;
+    --adm-sidebar-collapsed-w: 4.5rem;
     --adm-sidebar-margin: 1rem;
 }
 
@@ -67,8 +68,9 @@ body {
     left: var(--adm-sidebar-margin);
     bottom: var(--adm-sidebar-margin);
     z-index: 50;
-    overflow-y: auto;
-    transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+    overflow: hidden;
+    transition: width 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+        transform 0.35s cubic-bezier(0.4, 0, 0.2, 1),
         box-shadow 0.35s ease;
     box-shadow:
         0 8px 32px rgba(0, 0, 0, 0.4),
@@ -84,14 +86,140 @@ body {
         inset 0 1px 0 rgba(255, 255, 255, 0.05);
 }
 
+/* Sidebar inner scrollable container */
+.sidebar-inner {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow-y: auto;
+    overflow-x: hidden;
+    overscroll-behavior: contain;
+}
+
 /* Scrollbar */
-.admin-sidebar::-webkit-scrollbar {
+.sidebar-inner::-webkit-scrollbar {
     width: 4px;
 }
 
-.admin-sidebar::-webkit-scrollbar-thumb {
+.sidebar-inner::-webkit-scrollbar-thumb {
     background: rgba(255, 255, 255, 0.08);
     border-radius: 4px;
+}
+
+/* ── COLLAPSED STATE (DESKTOP) ────────────────── */
+.admin-sidebar.collapsed {
+    width: var(--adm-sidebar-collapsed-w);
+    padding: 1.5rem 0.5rem;
+}
+
+.admin-sidebar.collapsed .sidebar-inner {
+    align-items: center;
+}
+
+.admin-sidebar.collapsed .admin-logo {
+    justify-content: center;
+    padding: 0.35rem 0;
+    margin-bottom: 1.5rem;
+    gap: 0;
+}
+
+.admin-sidebar.collapsed .admin-logo-text {
+    opacity: 0;
+    width: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    transition: opacity 0.2s ease, width 0.25s ease;
+}
+
+.admin-sidebar.collapsed .admin-nav-label {
+    opacity: 0;
+    height: 0;
+    padding: 0;
+    overflow: hidden;
+    transition: opacity 0.15s ease, height 0.25s ease, padding 0.25s ease;
+}
+
+.admin-sidebar.collapsed .admin-nav ul {
+    align-items: center;
+    gap: 4px;
+}
+
+.admin-sidebar.collapsed .admin-nav-link {
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    border-radius: 0.625rem;
+    gap: 0;
+}
+
+.admin-sidebar.collapsed .admin-nav-link svg,
+.admin-sidebar.collapsed .admin-nav-link i {
+    width: 20px;
+    height: 20px;
+}
+
+.admin-sidebar.collapsed .nav-link-text {
+    display: none;
+}
+
+.admin-sidebar.collapsed .admin-user {
+    opacity: 0;
+    height: 0;
+    padding: 0;
+    margin: 0;
+    border: none;
+    overflow: hidden;
+    transition: opacity 0.15s ease, height 0.25s ease;
+}
+
+/* ── TOGGLE ARROW BUTTON (vertical strip) ────── */
+.sidebar-toggle-arrow {
+    position: fixed;
+    left: calc(var(--adm-sidebar-w) + var(--adm-sidebar-margin));
+    top: calc(var(--adm-sidebar-margin) + 1px);
+    bottom: calc(var(--adm-sidebar-margin) + 1px);
+    width: 18px;
+    background: transparent;
+    border: none;
+    border-radius: 0 8px 8px 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 51;
+    padding: 0;
+    color: rgba(255, 255, 255, 0.4);
+    transition: left 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+        background 0.25s ease, color 0.25s ease;
+}
+
+.sidebar-toggle-arrow:hover {
+    background: radial-gradient(ellipse at center, rgba(255, 255, 255, 0.07) 0%, transparent 70%);
+    color: rgba(255, 255, 255, 0.85);
+}
+
+.sidebar-toggle-arrow svg {
+    width: 16px;
+    height: 16px;
+    transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    flex-shrink: 0;
+}
+
+/* When collapsed, move the arrow to the collapsed sidebar edge */
+.sidebar-toggle-arrow.collapsed {
+    left: calc(var(--adm-sidebar-collapsed-w) + var(--adm-sidebar-margin));
+}
+
+.sidebar-toggle-arrow.collapsed svg {
+    transform: rotate(180deg);
+}
+
+/* Hide toggle on mobile — hamburger handles it */
+@media (max-width: 1023px) {
+    .sidebar-toggle-arrow {
+        display: none;
+    }
 }
 
 /* Logo */
@@ -102,6 +230,7 @@ body {
     padding: 0.35rem 0.5rem;
     margin-bottom: 2rem;
     text-decoration: none;
+    color: #fff;
 }
 
 .admin-logo-icon {
@@ -116,11 +245,19 @@ body {
     font-weight: 800;
     letter-spacing: -0.01em;
     line-height: 1;
+    transition: opacity 0.25s ease, width 0.3s ease;
 }
 
 .admin-logo-text em {
     color: var(--adm-red);
     font-style: normal;
+}
+
+/* Nav link text wrapper for collapse animation */
+.nav-link-text {
+    transition: opacity 0.25s ease, width 0.3s ease;
+    white-space: nowrap;
+    overflow: hidden;
 }
 
 /* Nav */
@@ -183,6 +320,7 @@ body {
     color: rgba(255, 255, 255, 0.2);
     padding: 0.75rem 0.875rem 0.25rem;
     display: block;
+    transition: opacity 0.2s ease, height 0.25s ease, padding 0.25s ease;
 }
 
 /* Sidebar footer (user) */
@@ -224,8 +362,7 @@ body {
 .admin-overlay {
     position: fixed;
     inset: 0;
-    background: rgba(0, 0, 0, 0.6);
-    backdrop-filter: blur(2px);
+    background: rgba(0, 0, 0, 0.5);
     z-index: 40;
     display: none;
     opacity: 0;
@@ -268,14 +405,12 @@ body {
     z-index: 1;
 }
 
-.admin-main.no-sidebar {
-    margin-left: 0;
+.admin-main.sidebar-collapsed {
+    margin-left: calc(var(--adm-sidebar-collapsed-w) + var(--adm-sidebar-margin) * 2);
 }
 
-@media (max-width: 1023px) {
-    .admin-main {
-        margin-left: 0;
-    }
+.admin-main.no-sidebar {
+    margin-left: 0;
 }
 
 /* ── HEADER ──────────────────────────────────── */
@@ -994,35 +1129,194 @@ body {
 }
 
 /* ── RESPONSIVE ──────────────────────────────── */
-@media (max-width: 768px) {
-    .admin-content {
-        padding: 1.25rem 1rem;
+
+/* Tablet and below */
+@media (max-width: 1023px) {
+    .admin-main {
+        margin-left: 0 !important;
+        width: 100%;
     }
 
     .admin-header {
         padding: 0.75rem 1rem;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.5rem;
+    }
+
+    .admin-header-left {
+        display: flex;
+        align-items: center;
+        gap: 0.875rem;
+        width: 100%;
+    }
+
+    .admin-header-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.4rem;
+        width: 100%;
+    }
+
+    .admin-header-actions .adm-btn {
+        font-size: 0.72rem;
+        padding: 0.4rem 0.75rem;
+        flex: 1 1 auto;
+        justify-content: center;
+    }
+
+    .admin-content {
+        padding: 1.5rem 1.25rem;
+    }
+
+    .adm-kpi-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+    }
+
+    .adm-quick-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.75rem;
     }
 
     .adm-chart-grid {
         grid-template-columns: 1fr;
     }
 
+    .adm-table-wrap {
+        margin: 0 -0.5rem;
+    }
+
     .adm-form-row {
         grid-template-columns: 1fr;
+    }
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+    .admin-content {
+        padding: 1.25rem 0.875rem;
+    }
+
+    .admin-header {
+        padding: 0.6rem 0.875rem;
+        gap: 0.5rem;
+    }
+
+    .admin-header-actions .adm-btn {
+        font-size: 0.7rem;
+        padding: 0.38rem 0.65rem;
+    }
+
+    .admin-page-title {
+        font-size: 0.9rem;
     }
 
     .adm-kpi-grid {
         grid-template-columns: repeat(2, 1fr);
+        gap: 0.75rem;
+    }
+
+    .adm-kpi {
+        padding: 1rem;
+    }
+
+    .adm-kpi-value {
+        font-size: 1.5rem;
+    }
+
+    .adm-quick-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.625rem;
+    }
+
+    .adm-quick-card {
+        padding: 1rem;
+    }
+
+    .adm-card {
+        padding: 1.15rem;
+        border-radius: 0.875rem;
+    }
+
+    .adm-card-title {
+        font-size: 0.88rem;
+        gap: 0.5rem;
+    }
+
+    .adm-form {
+        padding: 1.25rem;
     }
 
     .adm-modal-box {
         padding: 1.5rem;
         max-width: 100%;
+        margin: 0 0.75rem;
+    }
+
+    .adm-table {
+        font-size: 0.75rem;
+    }
+
+    .adm-table th,
+    .adm-table td {
+        padding: 0.6rem 0.65rem;
+    }
+
+    .adm-btn {
+        font-size: 0.78rem;
+        padding: 0.5rem 0.9rem;
     }
 }
 
+/* Small phones */
 @media (max-width: 480px) {
+    .admin-content {
+        padding: 1rem 0.625rem;
+    }
+
+    .admin-header {
+        padding: 0.5rem 0.625rem;
+    }
+
+    .admin-header-actions .adm-btn span,
+    .admin-header-actions .adm-btn-primary span {
+        display: none;
+    }
+
+    .admin-page-title {
+        font-size: 0.85rem;
+    }
+
     .adm-kpi-grid {
         grid-template-columns: 1fr;
+        gap: 0.625rem;
+    }
+
+    .adm-quick-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .adm-kpi-value {
+        font-size: 1.35rem;
+    }
+
+    .adm-card {
+        padding: 1rem;
+    }
+
+    .adm-table th,
+    .adm-table td {
+        padding: 0.5rem;
+        font-size: 0.7rem;
+    }
+
+    .adm-form {
+        padding: 1rem;
+    }
+
+    .adm-form-row {
+        grid-template-columns: 1fr;
+        gap: 0.75rem;
     }
 }

@@ -2,7 +2,7 @@
 $host = $_ENV['DB_HOST'] ?? 'localhost';
 $db = $_ENV['DB_NAME'] ?? 'computecnicos';
 $user = $_ENV['DB_USER'] ?? 'root';
-$pass = $_ENV['DB_PASS'] ?? ''; // XAMPP default: no password
+$pass = $_ENV['DB_PASS'] ?? '982/gs2pcbV76093fny34_'; // XAMPP default: no password
 $port = $_ENV['DB_PORT'] ?? '3306';
 $options = [
     PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,

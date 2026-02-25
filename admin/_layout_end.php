@@ -11,38 +11,87 @@
     (function () {
         const sidebar = document.getElementById('admin-sidebar');
         const overlay = document.getElementById('admin-overlay');
-        const btnToggle = document.getElementById('btn-sidebar-toggle');
+        const btnHamburger = document.getElementById('btn-sidebar-toggle');
+        const btnCollapse = document.getElementById('sidebar-collapse-toggle');
         const mainContent = document.getElementById('admin-main-content');
+        const STORAGE_KEY = 'admin-sidebar-collapsed';
 
-        function openSidebar() {
+        /* ── Mobile drawer (hamburger) ── */
+        function openDrawer() {
             sidebar.classList.add('open');
             sidebar.classList.remove('closed');
-            overlay.classList.add('show');
-            if (window.innerWidth >= 1024) mainContent.style.marginLeft = 'calc(var(--adm-sidebar-w) + var(--adm-sidebar-margin) * 2)';
         }
 
-        function closeSidebar() {
+        function closeDrawer() {
             sidebar.classList.remove('open');
             sidebar.classList.add('closed');
-            overlay.classList.remove('show');
-            if (window.innerWidth >= 1024) mainContent.style.marginLeft = '0';
         }
 
-        function toggleSidebar() {
-            sidebar.classList.contains('open') ? closeSidebar() : openSidebar();
+        function toggleDrawer() {
+            sidebar.classList.contains('open') ? closeDrawer() : openDrawer();
         }
 
+        /* ── Desktop collapse (arrow) ── */
+        function collapseSidebar() {
+            sidebar.classList.add('collapsed');
+            mainContent.classList.add('sidebar-collapsed');
+            if (btnCollapse) btnCollapse.classList.add('collapsed');
+            localStorage.setItem(STORAGE_KEY, '1');
+        }
+
+        function expandSidebar() {
+            sidebar.classList.remove('collapsed');
+            mainContent.classList.remove('sidebar-collapsed');
+            if (btnCollapse) btnCollapse.classList.remove('collapsed');
+            localStorage.setItem(STORAGE_KEY, '0');
+        }
+
+        function toggleCollapse() {
+            sidebar.classList.contains('collapsed') ? expandSidebar() : collapseSidebar();
+        }
+
+        /* ── Init ── */
         function initSidebar() {
             if (window.innerWidth >= 1024) {
-                openSidebar();
+                /* Desktop: always visible, restore collapse state */
+                sidebar.classList.remove('closed');
+                sidebar.classList.add('open');
                 overlay.classList.remove('show');
+
+                const saved = localStorage.getItem(STORAGE_KEY);
+                if (saved === '1') {
+                    collapseSidebar();
+                } else {
+                    expandSidebar();
+                }
             } else {
-                closeSidebar();
+                /* Mobile: hidden drawer */
+                sidebar.classList.remove('collapsed');
+                mainContent.classList.remove('sidebar-collapsed');
+                closeDrawer();
             }
         }
 
-        if (btnToggle) btnToggle.addEventListener('click', toggleSidebar);
-        if (overlay) overlay.addEventListener('click', closeSidebar);
+        if (btnHamburger) btnHamburger.addEventListener('click', toggleDrawer);
+        if (btnCollapse) btnCollapse.addEventListener('click', toggleCollapse);
+
+        /* Close drawer on mobile when clicking a nav link */
+        sidebar.querySelectorAll('.admin-nav-link').forEach(function (link) {
+            link.addEventListener('click', function () {
+                if (window.innerWidth < 1024) closeDrawer();
+            });
+        });
+
+        /* Close drawer on mobile when clicking the main content area */
+        if (mainContent) {
+            mainContent.addEventListener('click', function (e) {
+                if (window.innerWidth < 1024 && sidebar.classList.contains('open')) {
+                    /* Don't close if clicking the hamburger button itself */
+                    if (btnHamburger && (btnHamburger === e.target || btnHamburger.contains(e.target))) return;
+                    closeDrawer();
+                }
+            });
+        }
 
         window.addEventListener('resize', initSidebar);
         document.addEventListener('DOMContentLoaded', initSidebar);

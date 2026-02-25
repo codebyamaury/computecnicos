@@ -67,35 +67,44 @@ $nav_items = [
     <div class="admin-layout">
         <!-- ═══ SIDEBAR ═══ -->
         <aside id="admin-sidebar" class="admin-sidebar drawer open">
-            <a href="dashboard.php" class="admin-logo">
-                <i data-lucide="power" class="admin-logo-icon" style="width:28px;height:28px"></i>
-                <span class="admin-logo-text"><em>COMPU</em>TECNICOS</span>
-            </a>
-
-            <nav class="admin-nav">
-                <span class="admin-nav-label">Menú</span>
-                <ul>
-                    <?php foreach ($nav_items as $item): ?>
-                        <li class="admin-nav-item">
-                            <a href="<?= $item['href'] ?>"
-                                class="admin-nav-link <?= $admin_page === $item['key'] ? 'active' : '' ?>">
-                                <i data-lucide="<?= $item['icon'] ?>" style="width:20px;height:20px"></i>
-                                <?= $item['label'] ?>
-                            </a>
-                        </li>
-                    <?php endforeach; ?>
-                </ul>
-            </nav>
-
-            <div class="admin-user">
-                <div class="admin-user-name"><?= htmlspecialchars($usuario['nombre']) ?></div>
-                <div class="admin-user-role"><?= htmlspecialchars($usuario['rol']) ?></div>
-                <a href="../logout.php" class="admin-logout">
-                    <i data-lucide="log-out" style="width:12px;height:12px"></i>
-                    Cerrar sesión
+            <div class="sidebar-inner">
+                <a href="dashboard.php" class="admin-logo">
+                    <i data-lucide="power" class="admin-logo-icon" style="width:28px;height:28px"></i>
+                    <span class="admin-logo-text">COMPU<em>TECNICOS</em></span>
                 </a>
+
+                <nav class="admin-nav">
+                    <span class="admin-nav-label">Menú</span>
+                    <ul>
+                        <?php foreach ($nav_items as $item): ?>
+                            <li class="admin-nav-item">
+                                <a href="<?= $item['href'] ?>"
+                                    class="admin-nav-link <?= $admin_page === $item['key'] ? 'active' : '' ?>">
+                                    <i data-lucide="<?= $item['icon'] ?>" style="width:20px;height:20px"></i>
+                                    <span class="nav-link-text"><?= $item['label'] ?></span>
+                                </a>
+                            </li>
+                        <?php endforeach; ?>
+                    </ul>
+                </nav>
+
+                <div class="admin-user">
+                    <div class="admin-user-name"><?= htmlspecialchars($usuario['nombre']) ?></div>
+                    <div class="admin-user-role"><?= htmlspecialchars($usuario['rol']) ?></div>
+                    <a href="../logout.php" class="admin-logout">
+                        <i data-lucide="log-out" style="width:12px;height:12px"></i>
+                        Cerrar sesión
+                    </a>
+                </div>
             </div>
         </aside>
+
+        <!-- Toggle Arrow (outside sidebar to avoid overflow clipping) -->
+        <button id="sidebar-collapse-toggle" class="sidebar-toggle-arrow" title="Colapsar menú">
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="15 18 9 12 15 6"></polyline>
+            </svg>
+        </button>
 
         <!-- ═══ MAIN ═══ -->
         <div id="admin-main-content" class="admin-main">
