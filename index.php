@@ -176,15 +176,15 @@ include __DIR__ . '/includes/header.php';
         <!-- Carlos -->
         <div class="team-card">
             <div class="team-img-wrapper">
-                <img src="https://ui-avatars.com/api/?name=Carlos+Carmona&background=0a0a0a&color=dc2626&size=200&bold=true" alt="Carlos Alberto Carmona Miranda">
+                <img src="assets/images/Carmona.jpg" alt="Carlos Alberto Carmona Miranda">
             </div>
             <h3 class="team-name">Carlos Alberto<br>Carmona Miranda</h3>
-            <p class="team-role">Desarrollador Frontend</p>
+            <p class="team-role">Desarrollador Frontend<br>& Director</p>
         </div>
         <!-- Jose -->
         <div class="team-card">
             <div class="team-img-wrapper">
-                <img src="https://ui-avatars.com/api/?name=Jose+Olivo&background=0a0a0a&color=dc2626&size=200&bold=true" alt="Jose Miguel Olivo Zabaleta">
+                <img src="assets/images/Jose.jpg" alt="Jose Miguel Olivo Zabaleta">
             </div>
             <h3 class="team-name">Jose Miguel<br>Olivo Zabaleta</h3>
             <p class="team-role">Desarrollador Frontend</p>
@@ -192,7 +192,7 @@ include __DIR__ . '/includes/header.php';
         <!-- Samuel -->
         <div class="team-card">
             <div class="team-img-wrapper">
-                <img src="https://ui-avatars.com/api/?name=Samuel+Ramos&background=0a0a0a&color=dc2626&size=200&bold=true" alt="Samuel David Ramos Teran">
+                <img src="assets/images/Samuel.jpg" alt="Samuel David Ramos Teran">
             </div>
             <h3 class="team-name">Samuel David<br>Ramos Teran</h3>
             <p class="team-role">Frontend &<br>Documentación</p>
@@ -200,9 +200,9 @@ include __DIR__ . '/includes/header.php';
         <!-- Luis -->
         <div class="team-card">
             <div class="team-img-wrapper">
-                <img src="https://ui-avatars.com/api/?name=Luis+Perez&background=0a0a0a&color=dc2626&size=200&bold=true" alt="Luis David Perez Coa">
+                <img src="assets/images/Luis.jpg" alt="Luis Daniel Perez Coa">
             </div>
-            <h3 class="team-name">Luis David<br>Perez Coa</h3>
+            <h3 class="team-name">Luis Daniel<br>Perez Coa</h3>
             <p class="team-role">Tester</p>
         </div>
     </div>
