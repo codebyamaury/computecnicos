@@ -176,7 +176,7 @@ include __DIR__ . '/includes/header.php';
         <!-- Carlos -->
         <div class="team-card scroll-animate delay-200">
             <div class="team-img-wrapper">
-                <img src="assets/images/Carmona.jpeg" onerror="this.onerror=null;this.src='https://ui-avatars.com/api/?name=Carlos+Carmona&background=0a0a0a&color=dc2626&size=200&bold=true';" alt="Carlos Alberto Carmona Miranda">
+                <img src="assets/images/Carmona.jpg" onerror="this.onerror=null;this.src='https://ui-avatars.com/api/?name=Carlos+Carmona&background=0a0a0a&color=dc2626&size=200&bold=true';" alt="Carlos Alberto Carmona Miranda">
             </div>
             <h3 class="team-name">Carlos Alberto<br>Carmona Miranda</h3>
             <p class="team-role">Desarrollador Frontend</p>
