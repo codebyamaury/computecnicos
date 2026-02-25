@@ -1553,11 +1553,12 @@ footer .text-center.text-gray-500 {
    ======================================== */
 .team-grid {
   display: flex;
-  flex-wrap: nowrap;
+  flex-wrap: wrap;
   justify-content: center;
   gap: 1.5rem;
   margin-top: 3rem;
-  overflow-x: auto;
+  overflow: visible;
+  padding-top: 1rem;
   padding-bottom: 1rem;
 }
 
