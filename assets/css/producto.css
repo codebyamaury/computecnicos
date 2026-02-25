@@ -155,32 +155,20 @@
 }
 
 .prod-badge-offer {
-    border: 1px solid #ff0000;
-    color: #ff0000;
-    background: rgba(255, 0, 0, 0.15);
-    box-shadow: 0 0 20px rgba(255, 0, 0, 0.8), inset 0 0 5px rgba(255, 0, 0, 0.3);
-    text-shadow: 0 0 8px rgba(255, 0, 0, 0.8);
-    animation: pulse-offer 2s infinite;
+    border: 1px solid #111;
+    color: #111;
+    background: #fff;
+    box-shadow: none;
+    text-shadow: none;
+    animation: none;
 }
 
 .prod-badge-new {
-    border: 1px solid #10b981;
-    color: #10b981;
-    background: rgba(16, 185, 129, 0.15);
-    box-shadow: 0 0 20px rgba(16, 185, 129, 0.8), inset 0 0 5px rgba(16, 185, 129, 0.3);
-    text-shadow: 0 0 8px rgba(16, 185, 129, 0.8);
-}
-
-@keyframes pulse-offer {
-
-    0%,
-    100% {
-        box-shadow: 0 0 20px rgba(255, 0, 0, 0.8), inset 0 0 5px rgba(255, 0, 0, 0.3);
-    }
-
-    50% {
-        box-shadow: 0 0 35px rgba(255, 0, 0, 1), inset 0 0 15px rgba(255, 0, 0, 0.6);
-    }
+    border: 1px solid #111;
+    color: #fff;
+    background: #111;
+    box-shadow: none;
+    text-shadow: none;
 }
 
 /* Miniaturas */

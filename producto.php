@@ -77,8 +77,8 @@ try {
 ?>
 <?php
 $page_title = htmlspecialchars($producto['nombre']) . ' | Computécnicos';
-$extra_css = '<link rel="stylesheet" href="' . asset('css/index.css') . '?v=' . time() . '_11">' . "\n" .
-    '<link rel="stylesheet" href="' . asset('css/producto.css') . '?v=' . time() . '_4">';
+$extra_css = '<link rel="stylesheet" href="' . asset('css/index.css') . '?v=' . time() . '_13">' . "\n" .
+    '<link rel="stylesheet" href="' . asset('css/producto.css') . '?v=' . time() . '_5">';
 include 'includes/header.php';
 ?>
 

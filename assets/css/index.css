@@ -305,32 +305,20 @@ body {
 }
 
 .tech-badge-new {
-  border: 1px solid #10b981 !important;
-  color: #10b981 !important;
-  background: rgba(16, 185, 129, 0.15) !important;
-  box-shadow: 0 0 20px rgba(16, 185, 129, 0.8), inset 0 0 5px rgba(16, 185, 129, 0.3) !important;
-  text-shadow: 0 0 8px rgba(16, 185, 129, 0.8) !important;
+  border: 1px solid #111 !important;
+  color: #fff !important;
+  background: #111 !important;
+  box-shadow: none !important;
+  text-shadow: none !important;
 }
 
 .tech-badge-offer {
-  border: 1px solid #ff0000 !important;
-  color: #ff0000 !important;
-  background: rgba(255, 0, 0, 0.15) !important;
-  box-shadow: 0 0 20px rgba(255, 0, 0, 0.8), inset 0 0 5px rgba(255, 0, 0, 0.3) !important;
-  text-shadow: 0 0 8px rgba(255, 0, 0, 0.8) !important;
-  animation: pulse-offer 2s infinite;
-}
-
-@keyframes pulse-offer {
-
-  0%,
-  100% {
-    box-shadow: 0 0 20px rgba(255, 0, 0, 0.8), inset 0 0 5px rgba(255, 0, 0, 0.3);
-  }
-
-  50% {
-    box-shadow: 0 0 35px rgba(255, 0, 0, 1), inset 0 0 15px rgba(255, 0, 0, 0.6);
-  }
+  border: 1px solid #111 !important;
+  color: #111 !important;
+  background: #fff !important;
+  box-shadow: none !important;
+  text-shadow: none !important;
+  animation: none !important;
 }
 
 /* Servicios */
