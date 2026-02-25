@@ -1,10 +1,10 @@
 <?php
-// Sesión manejada por bootstrap (DB handler)
+// Bootstrap PRIMERO: inicia sesión desde la BD antes de verificar permisos
+require_once __DIR__ . '/../app/Core/bootstrap.php';
 if (!isset($_SESSION['usuario']) || $_SESSION['usuario']['rol'] !== 'admin') {
     header('Location: ../index.php?login=1');
     exit;
 }
-require_once __DIR__ . '/../app/Core/bootstrap.php';
 
 $productos = $pdo->query('SELECT id, nombre, stock FROM productos ORDER BY nombre')->fetchAll();
 $proveedores = $pdo->query('SELECT id, nombre FROM proveedores ORDER BY nombre')->fetchAll();

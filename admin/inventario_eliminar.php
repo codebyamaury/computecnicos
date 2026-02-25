@@ -1,11 +1,10 @@
 <?php
-// Sesión manejada por bootstrap (DB handler)
+// Bootstrap PRIMERO: inicia sesión desde la BD antes de verificar permisos
+require_once __DIR__ . '/../app/Core/bootstrap.php';
 if (!isset($_SESSION['usuario']) || $_SESSION['usuario']['rol'] !== 'admin') {
     header('Location: ../index.php?login=1');
     exit;
 }
-
-require_once __DIR__ . '/../app/Core/bootstrap.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id_movimiento'])) {
     $id_movimiento = intval($_POST['id_movimiento']);
