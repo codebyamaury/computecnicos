@@ -46,17 +46,16 @@ const particlesMaterial = new THREE.PointsMaterial({
 const particlesMesh = new THREE.Points(particlesGeometry, particlesMaterial);
 scene.add(particlesMesh);
 
-// Esfera Gigante
-// Esfera Gigante
-const geometry = new THREE.IcosahedronGeometry(65, 2);
-const material = new THREE.MeshBasicMaterial({
-    color: 0xff0000,
-    wireframe: true,
-    transparent: true,
-    opacity: 0.15
-});
-const sphere = new THREE.Mesh(geometry, material);
-scene.add(sphere);
+// Esfera Gigante (Cuadrícula removida)
+// const geometry = new THREE.IcosahedronGeometry(65, 2);
+// const material = new THREE.MeshBasicMaterial({
+//     color: 0xff0000,
+//     wireframe: true,
+//     transparent: true,
+//     opacity: 0.15
+// });
+// const sphere = new THREE.Mesh(geometry, material);
+// scene.add(sphere);
 
 const ambientLight = new THREE.AmbientLight(0x404040);
 scene.add(ambientLight);
@@ -102,8 +101,8 @@ function animate() {
     currentRotateX += (targetSphereX - currentRotateX) * 0.05;
 
     // Aplicar rotación suavizada
-    sphere.rotation.y = (elapsedTime * 0.2) + currentRotateY;
-    sphere.rotation.x = (elapsedTime * 0.1) + currentRotateX;
+    // sphere.rotation.y = (elapsedTime * 0.2) + currentRotateY;
+    // sphere.rotation.x = (elapsedTime * 0.1) + currentRotateX;
 
     // También suavizar partículas
     particlesMesh.rotation.y = -currentRotateY * 0.2;
