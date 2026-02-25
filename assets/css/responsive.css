@@ -1120,19 +1120,19 @@ img {
    ════════════════════════════════════════════════ */
 @media (max-width: 768px) {
     .glass-card {
-        width: 95% !important;
-        max-width: 480px !important;
-        padding: 1.25rem !important;
+        width: 94% !important;
+        max-width: 420px !important;
+        padding: 1.15rem !important;
     }
 
     .glass-title {
-        font-size: 1.2rem !important;
+        font-size: 1.15rem !important;
         letter-spacing: 1.5px !important;
     }
 
     .glass-icon {
-        width: 40px !important;
-        height: 40px !important;
+        width: 38px !important;
+        height: 38px !important;
     }
 }
 
