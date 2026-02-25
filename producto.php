@@ -442,10 +442,22 @@ include 'includes/header.php';
 
     // Intercept all add-to-cart forms and use AJAX instead
     document.addEventListener('DOMContentLoaded', function () {
+        const isLoggedIn = <?php echo isset($_SESSION['usuario']) ? 'true' : 'false'; ?>;
+        
         document.querySelectorAll('form[action="agregar_carrito.php"]').forEach(form => {
             form.addEventListener('submit', async function (e) {
                 e.preventDefault();
                 e.stopPropagation();
+                
+                if (!isLoggedIn) {
+                    if (typeof abrirModalLogin === 'function') {
+                        abrirModalLogin();
+                    } else {
+                        window.location.href = 'index.php'; // Fallback
+                    }
+                    return;
+                }
+                
                 const submitBtn = form.querySelector('button[type="submit"]');
                 if (submitBtn) submitBtn.disabled = true;
 
@@ -587,6 +599,15 @@ include 'includes/header.php';
 
         btnCombo.addEventListener('click', async function (e) {
             e.preventDefault();
+            const isLoggedIn = <?php echo isset($_SESSION['usuario']) ? 'true' : 'false'; ?>;
+            if (!isLoggedIn) {
+                if (typeof abrirModalLogin === 'function') {
+                    abrirModalLogin();
+                } else {
+                    window.location.href = 'index.php'; // Fallback
+                }
+                return;
+            }
             if (msgCombo) { msgCombo.textContent = ''; msgCombo.className = 'text-sm'; }
             const compatibleId = parseInt(selCombo.value || '0', 10);
             const currentId = parseInt(btnCombo.dataset.product || '0', 10);
