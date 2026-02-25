@@ -289,19 +289,48 @@ body {
 
 /* Badges Tech */
 .tech-badge {
-  background: rgba(15, 15, 15, 0.95);
-  border: 1px solid var(--neon-red);
-  color: #fff;
-  font-size: 0.7rem;
-  font-weight: 700;
+  font-size: 0.75rem;
+  font-weight: 800;
   padding: 4px 12px;
   text-transform: uppercase;
   letter-spacing: 1px;
   border-radius: 20px;
-  box-shadow: 0 0 15px rgba(255, 0, 0, 0.6);
   backdrop-filter: blur(4px);
   display: inline-block;
   text-align: center;
+  /* backgrounds defaults just in case */
+  background: rgba(15, 15, 15, 0.95);
+  border: 1px solid var(--neon-red);
+  color: #fff;
+}
+
+.tech-badge-new {
+  border: 1px solid #10b981 !important;
+  color: #10b981 !important;
+  background: rgba(16, 185, 129, 0.15) !important;
+  box-shadow: 0 0 20px rgba(16, 185, 129, 0.8), inset 0 0 5px rgba(16, 185, 129, 0.3) !important;
+  text-shadow: 0 0 8px rgba(16, 185, 129, 0.8) !important;
+}
+
+.tech-badge-offer {
+  border: 1px solid #ff0000 !important;
+  color: #ff0000 !important;
+  background: rgba(255, 0, 0, 0.15) !important;
+  box-shadow: 0 0 20px rgba(255, 0, 0, 0.8), inset 0 0 5px rgba(255, 0, 0, 0.3) !important;
+  text-shadow: 0 0 8px rgba(255, 0, 0, 0.8) !important;
+  animation: pulse-offer 2s infinite;
+}
+
+@keyframes pulse-offer {
+
+  0%,
+  100% {
+    box-shadow: 0 0 20px rgba(255, 0, 0, 0.8), inset 0 0 5px rgba(255, 0, 0, 0.3);
+  }
+
+  50% {
+    box-shadow: 0 0 35px rgba(255, 0, 0, 1), inset 0 0 15px rgba(255, 0, 0, 0.6);
+  }
 }
 
 /* Servicios */

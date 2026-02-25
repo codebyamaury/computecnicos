@@ -8,7 +8,7 @@ $productos_destacados = $stmt->fetchAll();
 
 // Título y CSS extra para esta página (Flowbite + index.css)
 $page_title = 'Inicio';
-    $extra_css = '<link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.1/flowbite.min.css" rel="stylesheet" />' . "\n" . '<link rel="stylesheet" href="' . asset('css/index.css') . '?v=' . time() . '_9">';
+    $extra_css = '<link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.1/flowbite.min.css" rel="stylesheet" />' . "\n" . '<link rel="stylesheet" href="' . asset('css/index.css') . '?v=' . time() . '_10">';
 
 // Incluir header común
 include __DIR__ . '/includes/header.php';
@@ -130,10 +130,10 @@ include __DIR__ . '/includes/header.php';
                             alt="<?php echo htmlspecialchars($p['nombre']); ?>" loading="lazy">
                         <div class="absolute top-3 left-3 flex flex-col gap-2 items-start z-10">
                             <?php if ($esNuevo): ?>
-                                <span class="tech-badge" style="border-color: #10b981; box-shadow: 0 0 15px rgba(16, 185, 129, 0.6);">NUEVO</span>
+                                <span class="tech-badge tech-badge-new">NUEVO</span>
                             <?php endif; ?>
                             <?php if (!empty($p['oferta'])): ?>
-                                <span class="tech-badge" style="animation: pulse-offer 2s infinite;">OFERTA</span>
+                                <span class="tech-badge tech-badge-offer">OFERTA</span>
                             <?php endif; ?>
                         </div>
                     </div>
