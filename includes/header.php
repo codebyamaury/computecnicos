@@ -29,7 +29,7 @@ if (isset($_SESSION['usuario']['id']) && isset($pdo)) {
     <link
         href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Orbitron:wght@400;500;700;900&display=swap"
         rel="stylesheet">
-    <link rel="stylesheet" href="<?= asset('css/main.css') ?>">
+    <link rel="stylesheet" href="<?= asset('css/main.css') ?>?v=<?= time() ?>_2">
     <?php if (isset($extra_css))
         echo $extra_css; ?>
     <link rel="stylesheet" href="<?= asset('css/theme.css') ?>?v=<?= time() ?>_1">
