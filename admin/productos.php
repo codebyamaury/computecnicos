@@ -79,7 +79,7 @@ include '_layout.php';
                 <tr>
                     <td>
                         <?php if (count($imagenes) > 0): ?>
-                        <img src="../<?= htmlspecialchars($imagenes[0]) ?>" alt="img" style="width:48px;height:38px;object-fit:cover;border-radius:6px;border:1px solid rgba(255,255,255,0.06)">
+                        <img src="<?= htmlspecialchars(strpos($imagenes[0], 'http') === 0 ? $imagenes[0] : '../' . $imagenes[0]) ?>" alt="img" style="width:48px;height:38px;object-fit:cover;border-radius:6px;border:1px solid rgba(255,255,255,0.06)">
                         <?php else: ?>
                         <div style="width:48px;height:38px;background:rgba(255,255,255,0.04);border-radius:6px;display:flex;align-items:center;justify-content:center">
                             <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width:16px;height:16px;color:#444"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>

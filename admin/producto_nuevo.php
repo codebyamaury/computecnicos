@@ -29,19 +29,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $error_imagen = 'Formato de imagen no permitido: ' . htmlspecialchars($ext);
                     break;
                 }
-                $nombre_img = uniqid('prod_') . '.' . $ext;
-                $ruta = '../uploads/products/' . $nombre_img;
-                if (!is_dir('../uploads/products/')) {
-                    if (!mkdir('../uploads/products/', 0777, true)) {
-                        $error_imagen = 'No se pudo crear la carpeta de imágenes. Verifica permisos.';
-                        break;
-                    }
-                }
-                if (!move_uploaded_file($tmp_name, $ruta)) {
-                    $error_imagen = 'Error al subir la imagen. Verifica permisos de la carpeta uploads/products.';
+                // Subir a Imgur API de forma anónima para evitar fallos de Vercel (Read-Only)
+                $ch = curl_init();
+                curl_setopt($ch, CURLOPT_URL, 'https://api.imgur.com/3/image');
+                curl_setopt($ch, CURLOPT_POST, TRUE);
+                curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+                curl_setopt($ch, CURLOPT_HTTPHEADER, ['Authorization: Client-ID 546c25a59c58ad7']);
+                curl_setopt($ch, CURLOPT_POSTFIELDS, ['image' => base64_encode(file_get_contents($tmp_name))]);
+                $reply = json_decode(curl_exec($ch));
+                curl_close($ch);
+                
+                if (isset($reply->data->link)) {
+                    $imagenes_urls[] = $reply->data->link;
+                } else {
+                    $error_imagen = 'Error al subir la imagen a la nube.';
                     break;
                 }
-                $imagenes_urls[] = 'uploads/products/' . $nombre_img;
             } else if ($_FILES['imagenes']['error'][$idx] !== UPLOAD_ERR_NO_FILE) {
                 $error_imagen = 'Error al subir la imagen: ' . $_FILES['imagenes']['name'][$idx];
                 break;

@@ -40,11 +40,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_FILES['imagenes']) && count($_FILES['imagenes']['name']) > 0) {
         foreach ($_FILES['imagenes']['tmp_name'] as $idx => $tmp_name) {
             if ($_FILES['imagenes']['error'][$idx] === UPLOAD_ERR_OK) {
-                $ext = pathinfo($_FILES['imagenes']['name'][$idx], PATHINFO_EXTENSION);
-                $nombre_img = uniqid('prod_') . '.' . $ext;
-                $ruta = '../uploads/products/' . $nombre_img;
-                if (move_uploaded_file($tmp_name, $ruta)) {
-                    $nuevas_imagenes[] = 'uploads/products/' . $nombre_img;
+                $ch = curl_init();
+                curl_setopt($ch, CURLOPT_URL, 'https://api.imgur.com/3/image');
+                curl_setopt($ch, CURLOPT_POST, TRUE);
+                curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+                curl_setopt($ch, CURLOPT_HTTPHEADER, ['Authorization: Client-ID 546c25a59c58ad7']);
+                curl_setopt($ch, CURLOPT_POSTFIELDS, ['image' => base64_encode(file_get_contents($tmp_name))]);
+                $reply = json_decode(curl_exec($ch));
+                curl_close($ch);
+                if (isset($reply->data->link)) {
+                    $nuevas_imagenes[] = $reply->data->link;
                 }
             }
         }
@@ -66,18 +71,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_FILES['imagen']) && $_FILES['imagen']['error'] === UPLOAD_ERR_OK && !empty($_FILES['imagen']['tmp_name'])) {
         $ext = strtolower(pathinfo($_FILES['imagen']['name'], PATHINFO_EXTENSION));
         if (in_array($ext, ['jpg','jpeg','png','gif','webp'])) {
-            $nombre_img = uniqid('prod_') . '.' . $ext;
-            $ruta_destino = '../uploads/products/' . $nombre_img;
-            if (!is_dir('../uploads/products/')) {
-                @mkdir('../uploads/products/', 0777, true);
-            }
-            if (move_uploaded_file($_FILES['imagen']['tmp_name'], $ruta_destino)) {
-                // Eliminar imagen principal anterior si existía
-                if (!empty($producto['imagen'])) {
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, 'https://api.imgur.com/3/image');
+            curl_setopt($ch, CURLOPT_POST, TRUE);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+            curl_setopt($ch, CURLOPT_HTTPHEADER, ['Authorization: Client-ID 546c25a59c58ad7']);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, ['image' => base64_encode(file_get_contents($_FILES['imagen']['tmp_name']))]);
+            $reply = json_decode(curl_exec($ch));
+            curl_close($ch);
+            
+            if (isset($reply->data->link)) {
+                if (!empty($producto['imagen']) && strpos($producto['imagen'], 'http') !== 0) {
                     $ruta_anterior = '../' . $producto['imagen'];
                     if (is_file($ruta_anterior)) { @unlink($ruta_anterior); }
                 }
-                $producto['imagen'] = 'uploads/products/' . $nombre_img;
+                $producto['imagen'] = $reply->data->link;
             }
         }
     }
@@ -160,7 +168,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
             <div>
                 <label class="block mb-1">Imagen actual</label>
-                <img src="<?php echo htmlspecialchars($producto['imagen'] ?: '../uploads/products/default.png'); ?>" alt="Imagen actual" class="w-32 h-20 rounded object-cover mb-2">
+                <img src="<?php echo htmlspecialchars((strpos($producto['imagen'], 'http') === 0) ? $producto['imagen'] : '../' . ($producto['imagen'] ?: 'uploads/products/default.png')); ?>" alt="Imagen actual" class="w-32 h-20 rounded object-cover mb-2">
                 <input type="file" name="imagen" accept="image/*" class="w-full text-white">
             </div>
             <div class="flex gap-4">
@@ -192,7 +200,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <div class="flex flex-wrap gap-3 mb-2">
                 <?php foreach ($imagenes as $img): ?>
                     <div class="relative inline-block">
-                        <img src="../<?php echo htmlspecialchars($img['url_imagen']); ?>" alt="img" class="w-24 h-16 object-cover rounded border border-[#333]">
+                        <img src="<?php echo htmlspecialchars((strpos($img['url_imagen'], 'http') === 0) ? $img['url_imagen'] : '../' . $img['url_imagen']); ?>" alt="img" class="w-24 h-16 object-cover rounded border border-[#333]">
                         <label class="absolute top-0 right-0 bg-red-600 text-white text-xs rounded-full px-1 cursor-pointer">
                             <input type="checkbox" name="eliminar_imagen[<?php echo $img['id']; ?>]" value="1" class="hidden">
                             ×
