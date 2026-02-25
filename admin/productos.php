@@ -301,7 +301,12 @@ document.getElementById('form-nuevo-producto').addEventListener('submit', async 
     if (text.includes('Producto agregado correctamente')) { window.location.reload(); }
     else {
         const m = document.getElementById('modal-nuevo-producto-msg');
-        m.textContent='Error al registrar. Revisa los datos.'; m.style.display='block';
+        console.error('Server response:', text);
+        // Intentar extraer el mensaje de error del HTML
+        const errorMatch = text.match(/<div[^>]*bg-red-600[^>]*>\s*([\s\S]*?)\s*<\/div>/);
+        const serverError = errorMatch ? errorMatch[1].trim() : 'Error al registrar. Revisa los datos.';
+        m.textContent = serverError; 
+        m.style.display='block';
     }
 });
 // --- Paginación + Búsqueda ---
