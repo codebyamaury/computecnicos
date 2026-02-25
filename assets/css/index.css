@@ -1571,7 +1571,7 @@ footer .text-center.text-gray-500 {
   text-align: center;
   position: relative;
   transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
-  overflow: hidden;
+  overflow: visible;
   display: flex;
   flex-direction: column;
   align-items: center;
