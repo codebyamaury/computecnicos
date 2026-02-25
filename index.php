@@ -176,7 +176,7 @@ include __DIR__ . '/includes/header.php';
         <!-- Carlos -->
         <div class="team-card scroll-animate delay-200">
             <div class="team-img-wrapper">
-                <img src="https://ui-avatars.com/api/?name=Carlos+Carmona&background=0a0a0a&color=dc2626&size=200&bold=true" alt="Carlos Alberto Carmona Miranda">
+                <img src="assets/images/Carmona.jpeg" onerror="this.onerror=null;this.src='https://ui-avatars.com/api/?name=Carlos+Carmona&background=0a0a0a&color=dc2626&size=200&bold=true';" alt="Carlos Alberto Carmona Miranda">
             </div>
             <h3 class="team-name">Carlos Alberto<br>Carmona Miranda</h3>
             <p class="team-role">Desarrollador Frontend</p>
@@ -184,7 +184,7 @@ include __DIR__ . '/includes/header.php';
         <!-- Jose -->
         <div class="team-card scroll-animate delay-300">
             <div class="team-img-wrapper">
-                <img src="https://ui-avatars.com/api/?name=Jose+Olivo&background=0a0a0a&color=dc2626&size=200&bold=true" alt="Jose Miguel Olivo Zabaleta">
+                <img src="assets/images/Jose.jpg" onerror="this.onerror=null;this.src='https://ui-avatars.com/api/?name=Jose+Olivo&background=0a0a0a&color=dc2626&size=200&bold=true';" alt="Jose Miguel Olivo Zabaleta">
             </div>
             <h3 class="team-name">Jose Miguel<br>Olivo Zabaleta</h3>
             <p class="team-role">Desarrollador Frontend</p>
@@ -192,7 +192,7 @@ include __DIR__ . '/includes/header.php';
         <!-- Samuel -->
         <div class="team-card scroll-animate delay-100">
             <div class="team-img-wrapper">
-                <img src="https://ui-avatars.com/api/?name=Samuel+Ramos&background=0a0a0a&color=dc2626&size=200&bold=true" alt="Samuel David Ramos Teran">
+                <img src="assets/images/Samuel.jpg" onerror="this.onerror=null;this.src='https://ui-avatars.com/api/?name=Samuel+Ramos&background=0a0a0a&color=dc2626&size=200&bold=true';" alt="Samuel David Ramos Teran">
             </div>
             <h3 class="team-name">Samuel David<br>Ramos Teran</h3>
             <p class="team-role">Frontend &<br>Documentación</p>
@@ -200,7 +200,7 @@ include __DIR__ . '/includes/header.php';
         <!-- Luis -->
         <div class="team-card scroll-animate delay-200">
             <div class="team-img-wrapper">
-                <img src="https://ui-avatars.com/api/?name=Luis+Perez&background=0a0a0a&color=dc2626&size=200&bold=true" alt="Luis David Perez Coa">
+                <img src="assets/images/Luis.jpg" onerror="this.onerror=null;this.src='https://ui-avatars.com/api/?name=Luis+Perez&background=0a0a0a&color=dc2626&size=200&bold=true';" alt="Luis David Perez Coa">
             </div>
             <h3 class="team-name">Luis David<br>Perez Coa</h3>
             <p class="team-role">Tester</p>
