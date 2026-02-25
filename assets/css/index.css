@@ -50,7 +50,6 @@ body {
   opacity: 0.3;
   animation: gridMove 20s linear infinite;
   pointer-events: none;
-  display: none !important;
 }
 
 @keyframes gridMove {
