@@ -1572,33 +1572,18 @@ footer .text-center.text-gray-500 {
   text-align: center;
   position: relative;
   transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
-  overflow: visible;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
   align-items: center;
   border-radius: 8px;
 }
 
-.team-card::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 2px;
-  background: linear-gradient(90deg, transparent, var(--neon-red), transparent);
-  opacity: 0;
-  transition: opacity 0.4s;
-}
-
 .team-card:hover {
-  transform: translateY(-8px);
-  border-color: var(--neon-red);
-  box-shadow: 0 10px 30px rgba(255, 0, 0, 0.15);
-}
-
-.team-card:hover::before {
-  opacity: 1;
+  border-color: rgba(255, 0, 0, 0.5);
+  box-shadow: 0 0 20px rgba(255, 0, 0, 0.15), inset 0 0 30px rgba(255, 0, 0, 0.05);
+  background: rgba(30, 10, 10, 0.9);
+  transform: scale(1.03);
 }
 
 .team-img-wrapper {
