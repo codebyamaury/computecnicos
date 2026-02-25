@@ -76,10 +76,6 @@
             <input type="tel" id="register-simple-telefono" class="glass-input" placeholder="Teléfono">
           </div>
         </div>
-        <div class="glass-input-group" style="margin-top:0.25rem">
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.586-6.586a2 2 0 10-2.828-2.828z"/></svg>
-          <input type="file" id="register-simple-foto" class="glass-input" placeholder="Foto de perfil (opcional)">
-        </div>
         <button type="submit" class="glass-btn w-full" style="margin-top:0.5rem">Registrarse</button>
       </form>
       <div class="w-full flex items-center my-2">
@@ -215,7 +211,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const inputPass2 = document.getElementById('register-simple-password2');
     const inputDireccion = document.getElementById('register-simple-direccion');
     const inputTelefono = document.getElementById('register-simple-telefono');
-    const inputFoto = document.getElementById('register-simple-foto');
 
     formRegister.addEventListener('submit', async function(e) {
         e.preventDefault();
@@ -249,10 +244,6 @@ document.addEventListener('DOMContentLoaded', function() {
             formData.append('password', inputPass.value);
             formData.append('direccion', inputDireccion.value.trim());
             formData.append('telefono', inputTelefono.value.trim());
-            
-            if (inputFoto.files[0]) {
-                formData.append('foto', inputFoto.files[0]);
-            }
 
             const res = await fetch('registro.php', {
                 method: 'POST',
