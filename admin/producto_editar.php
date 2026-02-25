@@ -45,7 +45,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 curl_setopt($ch, CURLOPT_POST, TRUE);
                 curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
                 curl_setopt($ch, CURLOPT_HTTPHEADER, ['Authorization: Client-ID 546c25a59c58ad7']);
-                curl_setopt($ch, CURLOPT_POSTFIELDS, ['image' => base64_encode(file_get_contents($tmp_name))]);
+                $cfile = new CURLFile($tmp_name);
+                curl_setopt($ch, CURLOPT_POSTFIELDS, ['image' => $cfile]);
                 $reply = json_decode(curl_exec($ch));
                 curl_close($ch);
                 if (isset($reply->data->link)) {
@@ -76,7 +77,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             curl_setopt($ch, CURLOPT_POST, TRUE);
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
             curl_setopt($ch, CURLOPT_HTTPHEADER, ['Authorization: Client-ID 546c25a59c58ad7']);
-            curl_setopt($ch, CURLOPT_POSTFIELDS, ['image' => base64_encode(file_get_contents($_FILES['imagen']['tmp_name']))]);
+            $cfile = new CURLFile($_FILES['imagen']['tmp_name']);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, ['image' => $cfile]);
             $reply = json_decode(curl_exec($ch));
             curl_close($ch);
             
