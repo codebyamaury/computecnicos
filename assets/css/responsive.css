@@ -507,11 +507,22 @@ img {
     .tech-card {
         transform: none !important;
         max-width: 100% !important;
+        transform-style: flat !important;
+        perspective: none !important;
     }
 
-    /* Desactivar 3D en mobile */
+    /* Desactivar 3D en mobile - previene imagenes en blanco */
     .tech-card:hover {
         transform: translateY(-3px) !important;
+    }
+
+    .tech-card .card-image-container,
+    .tech-card .card-info,
+    .tech-card .card-title,
+    .tech-card .card-price,
+    .tech-card .tech-badge {
+        transform: none !important;
+        transform-style: flat !important;
     }
 
     .card-info {
