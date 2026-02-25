@@ -168,7 +168,7 @@ include __DIR__ . '/includes/header.php';
         <!-- Amaury -->
         <div class="team-card scroll-animate delay-100">
             <div class="team-img-wrapper">
-                <img src="assets/img/team/amaury.jpg" onerror="this.onerror=null;this.src='https://ui-avatars.com/api/?name=Amaury+Mendoza&background=0a0a0a&color=dc2626&size=200&bold=true';" alt="Amaury Enrique Mendoza Acosta">
+                <img src="assets/images/amaury.jpg" onerror="this.onerror=null;this.src='https://ui-avatars.com/api/?name=Amaury+Mendoza&background=0a0a0a&color=dc2626&size=200&bold=true';" alt="Amaury Enrique Mendoza Acosta">
             </div>
             <h3 class="team-name">Amaury Enrique<br>Mendoza Acosta</h3>
             <p class="team-role">Desarrollador Full Stack<br>& Director</p>
