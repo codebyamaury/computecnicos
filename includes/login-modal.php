@@ -16,7 +16,7 @@
     flex: 1; height: 4px; border-radius: 2px;
     background: #333; transition: background 0.3s;
   }
-  .reg-progress-dot.reg-dot-done { background: #dc2626; }
+  .reg-progress-dot.reg-dot-done { background: #ff4747; }
   .reg-progress-dot.reg-dot-current { background: #ff4747; box-shadow: 0 0 8px #ff474766; }
   .reg-step-title {
     color: #ccc; font-size: 0.85rem; font-weight: 600;
@@ -29,13 +29,13 @@
   }
   .reg-back-btn:hover { background: #444; }
   .reg-next-btn {
-    background: #dc2626; color: #fff; border: none;
+    background: #ff4747; color: #fff; border: none;
     padding: 10px 0; border-radius: 6px; cursor: pointer;
     font-weight: 700; font-size: 0.95rem; letter-spacing: 0.5px;
     transition: background 0.2s, box-shadow 0.2s;
     text-transform: uppercase;
   }
-  .reg-next-btn:hover { background: #b91c1c; box-shadow: 0 0 12px #dc262688; }
+  .reg-next-btn:hover { background: #d93636; box-shadow: 0 0 12px #ff474755; }
   .reg-next-btn:disabled { background: #555; cursor: not-allowed; box-shadow: none; }
 </style>
 
