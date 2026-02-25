@@ -8,7 +8,7 @@ if (session_status() === PHP_SESSION_NONE) {
 $page_title = 'Productos';
 $extra_css = '<link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.1/flowbite.min.css" rel="stylesheet" />' . "\n" .
              '<link rel="stylesheet" href="' . asset('css/index.css') . '">' . "\n" .
-             '<link rel="stylesheet" href="' . asset('css/productos.css') . '">';
+             '<link rel="stylesheet" href="' . asset('css/productos.css') . '?v=' . time() . '_1">';
 
 // Obtener categorías y marcas para filtros
 $categorias = $pdo->query('SELECT id, nombre FROM categorias ORDER BY nombre ASC')->fetchAll();

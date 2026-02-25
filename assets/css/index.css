@@ -289,14 +289,19 @@ body {
 
 /* Badges Tech */
 .tech-badge {
-  background: transparent;
+  background: rgba(15, 15, 15, 0.95);
   border: 1px solid var(--neon-red);
-  color: var(--neon-red);
+  color: #fff;
   font-size: 0.7rem;
-  padding: 2px 8px;
+  font-weight: 700;
+  padding: 4px 12px;
   text-transform: uppercase;
   letter-spacing: 1px;
-  margin-right: 5px;
+  border-radius: 20px;
+  box-shadow: 0 0 15px rgba(255, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  display: inline-block;
+  text-align: center;
 }
 
 /* Servicios */
