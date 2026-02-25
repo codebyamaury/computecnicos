@@ -1525,3 +1525,95 @@ footer .text-center.text-gray-500 {
   color: #000;
   box-shadow: 0 0 15px var(--neon-red);
 }
+
+/* ========================================
+   SECCIÓN EQUIPO / CREADORES
+   ======================================== */
+.team-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 2rem;
+  margin-top: 3rem;
+}
+
+.team-card {
+  background: rgba(20, 20, 20, 0.8);
+  border: 1px solid #333;
+  padding: 2rem 1.5rem;
+  width: 260px;
+  text-align: center;
+  position: relative;
+  transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.team-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--neon-red), transparent);
+  opacity: 0;
+  transition: opacity 0.4s;
+}
+
+.team-card:hover {
+  transform: translateY(-8px);
+  border-color: var(--neon-red);
+  box-shadow: 0 10px 30px rgba(255, 0, 0, 0.15);
+}
+
+.team-card:hover::before {
+  opacity: 1;
+}
+
+.team-img-wrapper {
+  width: 130px;
+  height: 130px;
+  border-radius: 50%;
+  padding: 4px;
+  background: linear-gradient(45deg, #333, var(--neon-red-dim));
+  margin-bottom: 1.5rem;
+  position: relative;
+  z-index: 2;
+  transition: all 0.4s;
+}
+
+.team-card:hover .team-img-wrapper {
+  background: linear-gradient(45deg, var(--neon-red-dim), var(--neon-red));
+  box-shadow: 0 0 25px rgba(255, 0, 0, 0.4);
+  transform: scale(1.05);
+}
+
+.team-img-wrapper img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+  background: #000;
+  border: 3px solid #0a0a0a;
+}
+
+.team-name {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 0.5rem;
+  line-height: 1.3;
+}
+
+.team-role {
+  font-size: 0.85rem;
+  color: var(--neon-red);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  opacity: 0.9;
+  font-weight: 600;
+}

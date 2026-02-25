@@ -8,7 +8,7 @@ $productos_destacados = $stmt->fetchAll();
 
 // Título y CSS extra para esta página (Flowbite + index.css)
 $page_title = 'Inicio';
-$extra_css = '<link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.1/flowbite.min.css" rel="stylesheet" />' . "\n" . '<link rel="stylesheet" href="' . asset('css/index.css') . '?v=' . time() . '_5">';
+    $extra_css = '<link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.1/flowbite.min.css" rel="stylesheet" />' . "\n" . '<link rel="stylesheet" href="' . asset('css/index.css') . '?v=' . time() . '_7">';
 
 // Incluir header común
 include __DIR__ . '/includes/header.php';
@@ -158,6 +158,53 @@ include __DIR__ . '/includes/header.php';
                 </div>
             <?php endforeach; ?>
         <?php endif; ?>
+    </div>
+</section>
+
+<!-- Creadores -->
+<section class="container mx-auto px-2 sm:px-4 py-8 md:py-16 w-full relative z-10 border-t border-gray-800 mt-12">
+    <h2 class="section-title scroll-animate">Creadores</h2>
+    <div class="team-grid mt-8">
+        <!-- Amaury -->
+        <div class="team-card scroll-animate delay-100">
+            <div class="team-img-wrapper">
+                <img src="https://ui-avatars.com/api/?name=Amaury+Mendoza&background=0a0a0a&color=dc2626&size=200&bold=true" alt="Amaury Enrique Mendoza Acosta">
+            </div>
+            <h3 class="team-name">Amaury Enrique<br>Mendoza Acosta</h3>
+            <p class="team-role">Desarrollador Full Stack<br>& Director</p>
+        </div>
+        <!-- Carlos -->
+        <div class="team-card scroll-animate delay-200">
+            <div class="team-img-wrapper">
+                <img src="https://ui-avatars.com/api/?name=Carlos+Carmona&background=0a0a0a&color=dc2626&size=200&bold=true" alt="Carlos Alberto Carmona Miranda">
+            </div>
+            <h3 class="team-name">Carlos Alberto<br>Carmona Miranda</h3>
+            <p class="team-role">Desarrollador Frontend</p>
+        </div>
+        <!-- Jose -->
+        <div class="team-card scroll-animate delay-300">
+            <div class="team-img-wrapper">
+                <img src="https://ui-avatars.com/api/?name=Jose+Olivo&background=0a0a0a&color=dc2626&size=200&bold=true" alt="Jose Miguel Olivo Zabaleta">
+            </div>
+            <h3 class="team-name">Jose Miguel<br>Olivo Zabaleta</h3>
+            <p class="team-role">Desarrollador Frontend</p>
+        </div>
+        <!-- Samuel -->
+        <div class="team-card scroll-animate delay-100">
+            <div class="team-img-wrapper">
+                <img src="https://ui-avatars.com/api/?name=Samuel+Ramos&background=0a0a0a&color=dc2626&size=200&bold=true" alt="Samuel David Ramos Teran">
+            </div>
+            <h3 class="team-name">Samuel David<br>Ramos Teran</h3>
+            <p class="team-role">Frontend &<br>Documentación</p>
+        </div>
+        <!-- Luis -->
+        <div class="team-card scroll-animate delay-200">
+            <div class="team-img-wrapper">
+                <img src="https://ui-avatars.com/api/?name=Luis+Perez&background=0a0a0a&color=dc2626&size=200&bold=true" alt="Luis David Perez Coa">
+            </div>
+            <h3 class="team-name">Luis David<br>Perez Coa</h3>
+            <p class="team-role">Tester</p>
+        </div>
     </div>
 </section>
 <!-- Flowbite JS -->
