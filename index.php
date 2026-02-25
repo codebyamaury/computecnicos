@@ -163,10 +163,10 @@ include __DIR__ . '/includes/header.php';
 
 <!-- Creadores -->
 <section class="container mx-auto px-2 sm:px-4 py-8 md:py-16 w-full relative z-10 border-t border-gray-800 mt-12">
-    <h2 class="section-title">Creadores</h2>
+    <h2 class="section-title scroll-animate">Creadores</h2>
     <div class="team-grid mt-8">
         <!-- Amaury -->
-        <div class="team-card">
+        <div class="team-card scroll-animate delay-100">
             <div class="team-img-wrapper">
                 <img src="assets/images/amaury.jpg" onerror="this.onerror=null;this.src='https://ui-avatars.com/api/?name=Amaury+Mendoza&background=0a0a0a&color=dc2626&size=200&bold=true';" alt="Amaury Enrique Mendoza Acosta">
             </div>
@@ -174,35 +174,35 @@ include __DIR__ . '/includes/header.php';
             <p class="team-role">Desarrollador Full Stack<br>& Director</p>
         </div>
         <!-- Carlos -->
-        <div class="team-card">
+        <div class="team-card scroll-animate delay-200">
             <div class="team-img-wrapper">
-                <img src="assets/images/Carmona.jpg" onerror="this.onerror=null;this.src='https://ui-avatars.com/api/?name=Carlos+Carmona&background=0a0a0a&color=dc2626&size=200&bold=true';" alt="Carlos Alberto Carmona Miranda">
+                <img src="https://ui-avatars.com/api/?name=Carlos+Carmona&background=0a0a0a&color=dc2626&size=200&bold=true" alt="Carlos Alberto Carmona Miranda">
             </div>
             <h3 class="team-name">Carlos Alberto<br>Carmona Miranda</h3>
-            <p class="team-role">Desarrollador Frontend<br>& Director</p>
+            <p class="team-role">Desarrollador Frontend</p>
         </div>
         <!-- Jose -->
-        <div class="team-card">
+        <div class="team-card scroll-animate delay-300">
             <div class="team-img-wrapper">
-                <img src="assets/images/Jose.jpg" onerror="this.onerror=null;this.src='https://ui-avatars.com/api/?name=Jose+Olivo&background=0a0a0a&color=dc2626&size=200&bold=true';" alt="Jose Miguel Olivo Zabaleta">
+                <img src="https://ui-avatars.com/api/?name=Jose+Olivo&background=0a0a0a&color=dc2626&size=200&bold=true" alt="Jose Miguel Olivo Zabaleta">
             </div>
             <h3 class="team-name">Jose Miguel<br>Olivo Zabaleta</h3>
             <p class="team-role">Desarrollador Frontend</p>
         </div>
         <!-- Samuel -->
-        <div class="team-card">
+        <div class="team-card scroll-animate delay-100">
             <div class="team-img-wrapper">
-                <img src="assets/images/Samuel.jpg" onerror="this.onerror=null;this.src='https://ui-avatars.com/api/?name=Samuel+Ramos&background=0a0a0a&color=dc2626&size=200&bold=true';" alt="Samuel David Ramos Teran">
+                <img src="https://ui-avatars.com/api/?name=Samuel+Ramos&background=0a0a0a&color=dc2626&size=200&bold=true" alt="Samuel David Ramos Teran">
             </div>
             <h3 class="team-name">Samuel David<br>Ramos Teran</h3>
             <p class="team-role">Frontend &<br>Documentación</p>
         </div>
         <!-- Luis -->
-        <div class="team-card">
+        <div class="team-card scroll-animate delay-200">
             <div class="team-img-wrapper">
-                <img src="assets/images/Luis.jpg" onerror="this.onerror=null;this.src='https://ui-avatars.com/api/?name=Luis+Perez&background=0a0a0a&color=dc2626&size=200&bold=true';" alt="Luis Daniel Perez Coa">
+                <img src="https://ui-avatars.com/api/?name=Luis+Perez&background=0a0a0a&color=dc2626&size=200&bold=true" alt="Luis David Perez Coa">
             </div>
-            <h3 class="team-name">Luis Daniel<br>Perez Coa</h3>
+            <h3 class="team-name">Luis David<br>Perez Coa</h3>
             <p class="team-role">Tester</p>
         </div>
     </div>
@@ -248,13 +248,14 @@ include __DIR__ . '/includes/header.php';
 <script>if (typeof lucide !== 'undefined') lucide.createIcons();</script>
 <?php include __DIR__ . '/includes/footer.php'; ?>
 <script>
-    // Animación de aparición al hacer scroll (solo una vez, no desaparece)
+    // Animación de aparición al hacer scroll
     (function () {
         const observer = new window.IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
                     entry.target.classList.add('animate-fadeIn');
-                    observer.unobserve(entry.target);
+                } else {
+                    entry.target.classList.remove('animate-fadeIn');
                 }
             });
         }, { threshold: 0.15 });
