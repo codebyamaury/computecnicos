@@ -7,8 +7,8 @@ if (session_status() === PHP_SESSION_NONE) {
 // Configuración del header
 $page_title = 'Productos';
 $extra_css = '<link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.1/flowbite.min.css" rel="stylesheet" />' . "\n" .
-             '<link rel="stylesheet" href="' . asset('css/index.css') . '">' . "\n" .
-             '<link rel="stylesheet" href="' . asset('css/productos.css') . '?v=' . time() . '_1">';
+             '<link rel="stylesheet" href="' . asset('css/index.css') . '?v=' . time() . '_12">' . "\n" .
+             '<link rel="stylesheet" href="' . asset('css/productos.css') . '?v=' . time() . '_5">';
 
 // Obtener categorías y marcas para filtros
 $categorias = $pdo->query('SELECT id, nombre FROM categorias ORDER BY nombre ASC')->fetchAll();
@@ -264,10 +264,10 @@ include __DIR__ . '/includes/header.php';
                                     
                                     <div class="product-badges">
                                         <?php if ($esNuevo): ?>
-                                            <span class="badge badge-new">Nuevo</span>
+                                            <span class="tech-badge tech-badge-new">NUEVO</span>
                                         <?php endif; ?>
                                         <?php if (!empty($p['oferta'])): ?>
-                                            <span class="badge badge-offer">Oferta</span>
+                                            <span class="tech-badge tech-badge-offer">OFERTA</span>
                                         <?php endif; ?>
                                     </div>
                                     
