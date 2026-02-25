@@ -1121,25 +1121,30 @@ img {
 @media (max-width: 768px) {
     .glass-card {
         width: 95% !important;
-        max-width: 340px !important;
-        padding: 1.5rem !important;
+        max-width: 480px !important;
+        padding: 1.25rem !important;
     }
 
     .glass-title {
-        font-size: 1.3rem !important;
+        font-size: 1.2rem !important;
         letter-spacing: 1.5px !important;
     }
 
     .glass-icon {
-        width: 50px !important;
-        height: 50px !important;
+        width: 40px !important;
+        height: 40px !important;
     }
 }
 
-@media (max-width: 480px) {
+@media (max-width: 540px) {
     .glass-card {
-        max-width: 95% !important;
-        padding: 1.25rem 1rem !important;
+        max-width: 96% !important;
+        padding: 1rem 0.85rem !important;
+    }
+
+    /* Stack register form to 1 column on small phones */
+    #modal-form-register-simple [style*="grid-template-columns"] {
+        grid-template-columns: 1fr !important;
     }
 
     .glass-title {
@@ -1153,7 +1158,7 @@ img {
     }
 
     .glass-subtitle {
-        font-size: 0.8rem !important;
+        font-size: 0.78rem !important;
     }
 }
 

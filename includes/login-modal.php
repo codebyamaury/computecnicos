@@ -48,44 +48,46 @@
       </a>
     </div>
     <div id="modal-glass-register-form" class="hidden flex flex-col items-center justify-center">
-      <form class="space-y-2 w-full max-w-xs" id="modal-form-register-simple" autocomplete="off">
+      <form class="w-full" id="modal-form-register-simple" autocomplete="off">
         <div id="modal-register-error" class="error-msg mb-2"></div>
-        <div class="glass-input-group">
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 12A4 4 0 118 12a4 4 0 018 0z"/></svg>
-          <input type="text" id="register-simple-nombre" class="glass-input" placeholder="Nombre completo">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:0 0.75rem">
+          <div class="glass-input-group">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 12A4 4 0 118 12a4 4 0 018 0z"/></svg>
+            <input type="text" id="register-simple-nombre" class="glass-input" placeholder="Nombre completo">
+          </div>
+          <div class="glass-input-group">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+            <input type="email" id="register-simple-email" class="glass-input" placeholder="Correo electrónico">
+          </div>
+          <div class="glass-input-group">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 11c1.657 0 3-1.343 3-3V7a3 3 0 10-6 0v1c0 1.657 1.343 3 3 3zM5 11h14v10a2 2 0 01-2 2H7a2 2 0 01-2-2V11z"/></svg>
+            <input type="password" id="register-simple-password" class="glass-input" placeholder="Contraseña">
+          </div>
+          <div class="glass-input-group">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 11c1.657 0 3-1.343 3-3V7a3 3 0 10-6 0v1c0 1.657 1.343 3 3 3zM5 11h14v10a2 2 0 01-2 2H7a2 2 0 01-2-2V11z"/></svg>
+            <input type="password" id="register-simple-password2" class="glass-input" placeholder="Repetir contraseña">
+          </div>
+          <div class="glass-input-group">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 12.414a4 4 0 10-5.657 5.657l4.243 4.243a8 8 0 1011.314-11.314l-4.243 4.243z"/></svg>
+            <input type="text" id="register-simple-direccion" class="glass-input" placeholder="Dirección">
+          </div>
+          <div class="glass-input-group">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6.62 10.79a15.053 15.053 0 006.59 6.59l2.2-2.2a1 1 0 011.11-.21c1.21.49 2.53.76 3.88.76a1 1 0 011 1v3.5a1 1 0 01-1 1C10.07 22 2 13.93 2 4.5A1 1 0 013 3.5H6.5a1 1 0 011 1c0 1.35.27 2.67.76 3.88a1 1 0 01-.21 1.11l-2.2 2.2z"/></svg>
+            <input type="tel" id="register-simple-telefono" class="glass-input" placeholder="Teléfono">
+          </div>
         </div>
-        <div class="glass-input-group">
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
-          <input type="email" id="register-simple-email" class="glass-input" placeholder="Correo electrónico">
-        </div>
-        <div class="glass-input-group">
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 11c1.657 0 3-1.343 3-3V7a3 3 0 10-6 0v1c0 1.657 1.343 3 3 3zM5 11h14v10a2 2 0 01-2 2H7a2 2 0 01-2-2V11z"/></svg>
-          <input type="password" id="register-simple-password" class="glass-input" placeholder="Contraseña">
-        </div>
-        <div class="glass-input-group">
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 11c1.657 0 3-1.343 3-3V7a3 3 0 10-6 0v1c0 1.657 1.343 3 3 3zM5 11h14v10a2 2 0 01-2 2H7a2 2 0 01-2-2V11z"/></svg>
-          <input type="password" id="register-simple-password2" class="glass-input" placeholder="Repetir contraseña">
-        </div>
-        <div class="glass-input-group">
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 12.414a4 4 0 10-5.657 5.657l4.243 4.243a8 8 0 1011.314-11.314l-4.243 4.243z"/></svg>
-          <input type="text" id="register-simple-direccion" class="glass-input" placeholder="Dirección">
-        </div>
-        <div class="glass-input-group">
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6.62 10.79a15.053 15.053 0 006.59 6.59l2.2-2.2a1 1 0 011.11-.21c1.21.49 2.53.76 3.88.76a1 1 0 011 1v3.5a1 1 0 01-1 1C10.07 22 2 13.93 2 4.5A1 1 0 013 3.5H6.5a1 1 0 011 1c0 1.35.27 2.67.76 3.88a1 1 0 01-.21 1.11l-2.2 2.2z"/></svg>
-          <input type="tel" id="register-simple-telefono" class="glass-input" placeholder="Número de teléfono">
-        </div>
-        <div class="glass-input-group">
+        <div class="glass-input-group" style="margin-top:0.25rem">
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.586-6.586a2 2 0 10-2.828-2.828z"/></svg>
           <input type="file" id="register-simple-foto" class="glass-input" placeholder="Foto de perfil (opcional)">
         </div>
-        <button type="submit" class="glass-btn w-full">Registrarse</button>
+        <button type="submit" class="glass-btn w-full" style="margin-top:0.5rem">Registrarse</button>
       </form>
       <div class="w-full flex items-center my-2">
         <span class="flex-1 h-px bg-[#333]"></span>
         <span class="mx-3 text-gray-400 font-bold text-base">o</span>
         <span class="flex-1 h-px bg-[#333]"></span>
       </div>
-      <a href="google-login.php" class="google-btn-compact mt-2">
+      <a href="google-login.php" class="google-btn-compact mt-1">
         <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/google/google-original.svg" alt="Google" class="google-icon-compact">
         <span class="google-btn-compact-text">Continuar con Google</span>
       </a>
