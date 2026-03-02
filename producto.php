@@ -229,10 +229,10 @@ include 'includes/header.php';
                             Agregar al Carrito
                         </button>
                     </form>
-                    <form method="POST" action="agregar_carrito.php" class="prod-action-form">
+                    <form method="POST" action="checkout.php" class="prod-action-form">
                         <input type="hidden" name="id_producto" value="<?php echo intval($producto['id']); ?>">
                         <input type="hidden" name="cantidad" id="qty-hidden-buy" value="1">
-                        <input type="hidden" name="redirect" value="checkout.php">
+                        <input type="hidden" name="compra_directa" value="1">
                         <button type="submit" class="prod-buy-btn">
                             <i data-lucide="zap" class="w-5 h-5"></i>
                             Comprar Ahora

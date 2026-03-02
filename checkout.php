@@ -4,10 +4,40 @@ require_once __DIR__ . '/app/Core/bootstrap.php';
 // Configuración de PayPal
 $paypal_config = require __DIR__ . '/config/paypal_config.php';
 
+// ── Compra directa: recibir producto desde "Comprar Ahora" ──
+$es_compra_directa = false;
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST['compra_directa'])) {
+    $cd_id = intval($_POST['id_producto'] ?? 0);
+    $cd_qty = max(1, intval($_POST['cantidad'] ?? 1));
+    if ($cd_id > 0) {
+        // Verificar que el producto existe y tiene stock
+        $stmt = $pdo->prepare('SELECT id, stock FROM productos WHERE id = ?');
+        $stmt->execute([$cd_id]);
+        $cd_prod = $stmt->fetch();
+        if ($cd_prod && (int) $cd_prod['stock'] > 0) {
+            if ($cd_qty > (int) $cd_prod['stock']) {
+                $cd_qty = (int) $cd_prod['stock'];
+            }
+            $_SESSION['compra_directa'] = [
+                ['id_producto' => $cd_id, 'cantidad' => $cd_qty]
+            ];
+        }
+    }
+}
 
+// Determinar si estamos en modo compra directa
+if (isset($_SESSION['compra_directa']) && !empty($_SESSION['compra_directa'])) {
+    $es_compra_directa = true;
+}
 
-// Estado del carrito
-$carrito_vacio = !isset($_SESSION['carrito']) || count($_SESSION['carrito']) === 0;
+// Fuente de items: compra directa o carrito normal
+if ($es_compra_directa) {
+    $items_source = $_SESSION['compra_directa'];
+} else {
+    $items_source = $_SESSION['carrito'] ?? [];
+}
+
+$carrito_vacio = empty($items_source);
 
 $productos = [];
 $total = 0;
@@ -15,8 +45,8 @@ $items_detalle = [];
 $combo_discount = 0;
 
 if (!$carrito_vacio) {
-    // Obtener productos del carrito
-    $ids = array_column($_SESSION['carrito'], 'id_producto');
+    // Obtener productos
+    $ids = array_column($items_source, 'id_producto');
     if ($ids) {
         $in = implode(',', array_fill(0, count($ids), '?'));
         $stmt = $pdo->prepare("SELECT p.*, c.nombre AS categoria, m.nombre AS marca FROM productos p LEFT JOIN categorias c ON p.id_categoria = c.id LEFT JOIN marcas m ON p.id_marca = m.id WHERE p.id IN ($in)");
@@ -25,7 +55,7 @@ if (!$carrito_vacio) {
     }
 
     // Calcular total
-    foreach ($_SESSION['carrito'] as $item) {
+    foreach ($items_source as $item) {
         if (isset($productos[$item['id_producto']])) {
             $p = $productos[$item['id_producto']];
             $total += $p['precio'] * $item['cantidad'];
@@ -37,63 +67,62 @@ if (!$carrito_vacio) {
         }
     }
 
-    // Descuento por combos (10% en pares compatibles)
-    try {
-        $byCat = [];
-        foreach ($_SESSION['carrito'] as $item) {
-            $pid = $item['id_producto'];
-            if (!isset($productos[$pid]))
-                continue;
-            $cat = $productos[$pid]['categoria'];
-            if (!isset($byCat[$cat]))
-                $byCat[$cat] = [];
-            $byCat[$cat][] = [
-                'precio' => (float) $productos[$pid]['precio'],
-                'cantidad' => (int) $item['cantidad']
-            ];
-        }
-        $flatten = function (array $list) {
-            $arr = [];
-            foreach ($list as $it) {
-                for ($i = 0; $i < $it['cantidad']; $i++) {
-                    $arr[] = $it['precio'];
+    // Descuento por combos (solo para carrito normal, no compra directa)
+    if (!$es_compra_directa) {
+        try {
+            $byCat = [];
+            foreach ($items_source as $item) {
+                $pid = $item['id_producto'];
+                if (!isset($productos[$pid]))
+                    continue;
+                $cat = $productos[$pid]['categoria'];
+                if (!isset($byCat[$cat]))
+                    $byCat[$cat] = [];
+                $byCat[$cat][] = [
+                    'precio' => (float) $productos[$pid]['precio'],
+                    'cantidad' => (int) $item['cantidad']
+                ];
+            }
+            $flatten = function (array $list) {
+                $arr = [];
+                foreach ($list as $it) {
+                    for ($i = 0; $i < $it['cantidad']; $i++) {
+                        $arr[] = $it['precio'];
+                    }
                 }
-            }
-            sort($arr);
-            return $arr;
-        };
-        $catCPU = $flatten($byCat['Procesadores'] ?? []);
-        $catRAM = $flatten($byCat['Memorias RAM'] ?? []);
-        $catGPU = $flatten($byCat['Tarjetas Gráficas'] ?? []);
-        $catSTO = $flatten($byCat['Almacenamiento'] ?? []);
-        $catPER = $flatten($byCat['Periféricos'] ?? []);
-        $pairDiscount = function (&$a, &$b) {
-            $d = 0.0;
-            $pairs = min(count($a), count($b));
-            for ($i = 0; $i < $pairs; $i++) {
-                $pa = array_shift($a);
-                $pb = array_shift($b);
-                $d += 0.10 * ($pa + $pb);
-            }
-            return $d;
-        };
-        $combo_discount += $pairDiscount($catCPU, $catRAM);
-        $combo_discount += $pairDiscount($catCPU, $catSTO);
-        $combo_discount += $pairDiscount($catGPU, $catPER);
-        $combo_discount += $pairDiscount($catGPU, $catSTO);
-        $combo_discount += $pairDiscount($catSTO, $catRAM);
-        $combo_discount += $pairDiscount($catSTO, $catPER);
-        $combo_discount = round($combo_discount, 2);
-    } catch (Exception $e) {
-        $combo_discount = 0;
+                sort($arr);
+                return $arr;
+            };
+            $catCPU = $flatten($byCat['Procesadores'] ?? []);
+            $catRAM = $flatten($byCat['Memorias RAM'] ?? []);
+            $catGPU = $flatten($byCat['Tarjetas Gráficas'] ?? []);
+            $catSTO = $flatten($byCat['Almacenamiento'] ?? []);
+            $catPER = $flatten($byCat['Periféricos'] ?? []);
+            $pairDiscount = function (&$a, &$b) {
+                $d = 0.0;
+                $pairs = min(count($a), count($b));
+                for ($i = 0; $i < $pairs; $i++) {
+                    $pa = array_shift($a);
+                    $pb = array_shift($b);
+                    $d += 0.10 * ($pa + $pb);
+                }
+                return $d;
+            };
+            $combo_discount += $pairDiscount($catCPU, $catRAM);
+            $combo_discount += $pairDiscount($catCPU, $catSTO);
+            $combo_discount += $pairDiscount($catGPU, $catPER);
+            $combo_discount += $pairDiscount($catGPU, $catSTO);
+            $combo_discount += $pairDiscount($catSTO, $catRAM);
+            $combo_discount += $pairDiscount($catSTO, $catPER);
+            $combo_discount = round($combo_discount, 2);
+        } catch (Exception $e) {
+            $combo_discount = 0;
+        }
     }
 
     // Aplicar descuento al total
     $total = max(0, $total - $combo_discount);
 }
-
-// Eliminado: validaciones especificas de ePayco
-
 
 // Datos del usuario si está logeado
 $nombre = $email = $telefono = $direccion = '';
@@ -114,7 +143,7 @@ if (isset($_SESSION['usuario'])) {
 
 $mensaje = '';
 $id_pedido = null;
-if (!$carrito_vacio && $_SERVER['REQUEST_METHOD'] === 'POST') {
+if (!$carrito_vacio && $_SERVER['REQUEST_METHOD'] === 'POST' && !isset($_POST['compra_directa'])) {
     $nombre = $_POST['nombre'] ?? '';
     $email = $_POST['email'] ?? '';
     $telefono = $_POST['telefono'] ?? '';
@@ -124,7 +153,7 @@ if (!$carrito_vacio && $_SERVER['REQUEST_METHOD'] === 'POST') {
         try {
             // Validar stock disponible antes de crear el pedido
             $sin_stock = [];
-            foreach ($_SESSION['carrito'] as $item) {
+            foreach ($items_source as $item) {
                 if (isset($productos[$item['id_producto']])) {
                     $p = $productos[$item['id_producto']];
                     if ((int) $p['stock'] < (int) $item['cantidad']) {
@@ -146,19 +175,23 @@ if (!$carrito_vacio && $_SERVER['REQUEST_METHOD'] === 'POST') {
 
             // Insertar detalles
             $stmt = $pdo->prepare('INSERT INTO detalle_pedido (id_pedido, id_producto, cantidad, precio_unitario) VALUES (?, ?, ?, ?)');
-            foreach ($_SESSION['carrito'] as $item) {
+            foreach ($items_source as $item) {
                 if (isset($productos[$item['id_producto']])) {
                     $p = $productos[$item['id_producto']];
                     $stmt->execute([$id_pedido, $item['id_producto'], $item['cantidad'], $p['precio']]);
                 }
             }
 
-            // Pedido creado; se continuará con pago vía PayPal
             // Registrar estado inicial en historial
             $stmt_hist = $pdo->prepare('INSERT INTO pedido_estados (id_pedido, estado, comentario) VALUES (?, ?, ?)');
             $stmt_hist->execute([$id_pedido, 'pendiente', 'Pedido creado desde checkout']);
             $pdo->commit();
             $mensaje = 'Pedido creado. Completa el pago con PayPal para finalizar.';
+
+            // Si era compra directa, limpiar la sesión temporal
+            if ($es_compra_directa) {
+                unset($_SESSION['compra_directa']);
+            }
 
         } catch (Exception $e) {
             $pdo->rollBack();
@@ -469,6 +502,15 @@ $step_confirm = 'pending';
         <?php endif; ?>
     </section>
 </main>
+
+<?php if ($es_compra_directa && !$id_pedido): ?>
+<script>
+// Limpiar compra directa si el usuario sale sin completar
+window.addEventListener('beforeunload', function () {
+    navigator.sendBeacon('limpiar_compra_directa.php');
+});
+</script>
+<?php endif; ?>
 
 <?php include 'includes/footer.php'; ?>
 </body>
