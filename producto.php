@@ -108,9 +108,16 @@ include 'includes/header.php';
                         <span class="prod-badge prod-badge-new">NUEVO</span>
                     <?php endif; ?>
                 </div>
-                <img id="main-img"
-                    src="<?php echo htmlspecialchars($galeria[0] ?? 'https://via.placeholder.com/500x500?text=Sin+Imagen'); ?>"
-                    alt="<?php echo htmlspecialchars($producto['nombre']); ?>">
+                <div class="prod-img-wrapper">
+                    <img id="main-img"
+                        src="<?php echo htmlspecialchars($galeria[0] ?? 'https://via.placeholder.com/500x500?text=Sin+Imagen'); ?>"
+                        alt="<?php echo htmlspecialchars($producto['nombre']); ?>">
+                    <div class="prod-zoom-lens" id="zoom-lens"></div>
+                </div>
+                <div class="prod-zoom-result" id="zoom-result"></div>
+                <button class="prod-zoom-btn" id="open-lightbox" title="Ver imagen completa">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg>
+                </button>
             </div>
         </div>
 
@@ -367,6 +374,25 @@ include 'includes/header.php';
     </section>
 </main>
 
+<!-- Lightbox / Visor de imágenes -->
+<div class="prod-lightbox" id="prod-lightbox">
+    <div class="prod-lightbox-overlay" id="lightbox-overlay"></div>
+    <button class="prod-lightbox-close" id="lightbox-close">
+        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+    <button class="prod-lightbox-nav prod-lightbox-prev" id="lightbox-prev">
+        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+    </button>
+    <div class="prod-lightbox-content">
+        <img id="lightbox-img" src="" alt="Imagen ampliada">
+    </div>
+    <button class="prod-lightbox-nav prod-lightbox-next" id="lightbox-next">
+        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+    </button>
+    <div class="prod-lightbox-counter" id="lightbox-counter"></div>
+    <div class="prod-lightbox-thumbs" id="lightbox-thumbs"></div>
+</div>
+
 <?php include __DIR__ . '/includes/footer.php'; ?>
 
 
@@ -546,17 +572,137 @@ include 'includes/header.php';
             cantidadInput.addEventListener('input', syncQty);
         }
 
-        // Gallery thumbnails
+        // ══════ GALERÍA COMPLETA: thumbnails, zoom, lightbox ══════
         const mainImg = document.getElementById('main-img');
         const thumbs = document.querySelectorAll('.thumb-img');
+        const galeria = <?php echo json_encode($galeria); ?>;
+        let currentIndex = 0;
 
-        thumbs.forEach(thumb => {
+        // Cambiar imagen al clic en miniatura
+        thumbs.forEach((thumb, idx) => {
             thumb.addEventListener('click', function () {
+                currentIndex = idx;
                 const src = this.dataset.src || this.src;
                 if (mainImg) mainImg.src = src;
                 thumbs.forEach(t => t.classList.remove('active'));
                 this.classList.add('active');
             });
+        });
+
+        // ── Hover Zoom (lupa tipo MercadoLibre) ──
+        const imgWrapper = document.querySelector('.prod-img-wrapper');
+        const zoomResult = document.getElementById('zoom-result');
+        const zoomLens = document.getElementById('zoom-lens');
+
+        if (imgWrapper && zoomResult && zoomLens && mainImg) {
+            const ZOOM_FACTOR = 2.5;
+
+            imgWrapper.addEventListener('mouseenter', function () {
+                zoomLens.style.display = 'block';
+                zoomResult.style.display = 'block';
+                zoomResult.style.backgroundImage = `url('${mainImg.src}')`;
+            });
+
+            imgWrapper.addEventListener('mouseleave', function () {
+                zoomLens.style.display = 'none';
+                zoomResult.style.display = 'none';
+            });
+
+            imgWrapper.addEventListener('mousemove', function (e) {
+                const rect = imgWrapper.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+
+                // Posición de la lente
+                const lensW = zoomLens.offsetWidth / 2;
+                const lensH = zoomLens.offsetHeight / 2;
+                let lx = x - lensW;
+                let ly = y - lensH;
+                lx = Math.max(0, Math.min(lx, rect.width - zoomLens.offsetWidth));
+                ly = Math.max(0, Math.min(ly, rect.height - zoomLens.offsetHeight));
+                zoomLens.style.left = lx + 'px';
+                zoomLens.style.top = ly + 'px';
+
+                // Background del resultado de zoom
+                zoomResult.style.backgroundImage = `url('${mainImg.src}')`;
+                zoomResult.style.backgroundSize = `${rect.width * ZOOM_FACTOR}px ${rect.height * ZOOM_FACTOR}px`;
+                const bgX = -(lx * ZOOM_FACTOR);
+                const bgY = -(ly * ZOOM_FACTOR);
+                zoomResult.style.backgroundPosition = `${bgX}px ${bgY}px`;
+            });
+        }
+
+        // ── Lightbox (visor fullscreen) ──
+        const lightbox = document.getElementById('prod-lightbox');
+        const lightboxImg = document.getElementById('lightbox-img');
+        const lightboxCounter = document.getElementById('lightbox-counter');
+        const lightboxThumbs = document.getElementById('lightbox-thumbs');
+        const openBtn = document.getElementById('open-lightbox');
+
+        function openLightbox(index) {
+            if (!lightbox || !galeria.length) return;
+            currentIndex = index;
+            lightboxImg.src = galeria[currentIndex];
+            lightboxCounter.textContent = `${currentIndex + 1} / ${galeria.length}`;
+            document.body.style.overflow = 'hidden';
+            lightbox.classList.add('open');
+            updateLightboxThumbs();
+        }
+
+        function closeLightbox() {
+            if (!lightbox) return;
+            lightbox.classList.remove('open');
+            document.body.style.overflow = '';
+        }
+
+        function navigateLightbox(dir) {
+            currentIndex = (currentIndex + dir + galeria.length) % galeria.length;
+            lightboxImg.src = galeria[currentIndex];
+            lightboxCounter.textContent = `${currentIndex + 1} / ${galeria.length}`;
+            updateLightboxThumbs();
+            // También actualizar miniatura activa en la galería principal
+            if (mainImg) mainImg.src = galeria[currentIndex];
+            thumbs.forEach((t, i) => t.classList.toggle('active', i === currentIndex));
+        }
+
+        function updateLightboxThumbs() {
+            if (!lightboxThumbs) return;
+            lightboxThumbs.innerHTML = '';
+            galeria.forEach((src, i) => {
+                const t = document.createElement('img');
+                t.src = src;
+                t.alt = `Imagen ${i + 1}`;
+                t.className = 'prod-lightbox-thumb' + (i === currentIndex ? ' active' : '');
+                t.addEventListener('click', () => {
+                    currentIndex = i;
+                    lightboxImg.src = galeria[currentIndex];
+                    lightboxCounter.textContent = `${currentIndex + 1} / ${galeria.length}`;
+                    updateLightboxThumbs();
+                    if (mainImg) mainImg.src = galeria[currentIndex];
+                    thumbs.forEach((th, idx) => th.classList.toggle('active', idx === currentIndex));
+                });
+                lightboxThumbs.appendChild(t);
+            });
+        }
+
+        // Abrir lightbox al clic en imagen o botón lupa
+        if (openBtn) openBtn.addEventListener('click', () => openLightbox(currentIndex));
+        if (mainImg) mainImg.addEventListener('click', () => openLightbox(currentIndex));
+
+        // Cerrar lightbox
+        document.getElementById('lightbox-close')?.addEventListener('click', closeLightbox);
+        document.getElementById('lightbox-overlay')?.addEventListener('click', closeLightbox);
+
+        // Navegación lightbox
+        document.getElementById('lightbox-prev')?.addEventListener('click', () => navigateLightbox(-1));
+        document.getElementById('lightbox-next')?.addEventListener('click', () => navigateLightbox(1));
+
+        // Teclado: Esc cerrar, flechas navegar
+        document.addEventListener('keydown', function (e) {
+            if (!lightbox || !lightbox.classList.contains('open')) return;
+            if (e.key === 'Escape') closeLightbox();
+            if (e.key === 'ArrowLeft') navigateLightbox(-1);
+            if (e.key === 'ArrowRight') navigateLightbox(1);
         });
     });
 
