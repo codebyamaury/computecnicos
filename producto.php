@@ -89,6 +89,16 @@ include 'includes/header.php';
 
         <!-- Galería -->
         <div class="prod-gallery">
+            <?php if (count($galeria) > 1): ?>
+                <div class="prod-thumbs">
+                    <?php foreach ($galeria as $idx => $img): ?>
+                        <img src="<?php echo htmlspecialchars($img); ?>" data-src="<?php echo htmlspecialchars($img); ?>"
+                            alt="Miniatura <?php echo $idx + 1; ?>"
+                            class="prod-thumb thumb-img <?php echo $idx === 0 ? 'active' : ''; ?>">
+                    <?php endforeach; ?>
+                </div>
+            <?php endif; ?>
+
             <div class="prod-img-main">
                 <div class="prod-badges">
                     <?php if (!empty($producto['oferta'])): ?>
@@ -102,16 +112,6 @@ include 'includes/header.php';
                     src="<?php echo htmlspecialchars($galeria[0] ?? 'https://via.placeholder.com/500x500?text=Sin+Imagen'); ?>"
                     alt="<?php echo htmlspecialchars($producto['nombre']); ?>">
             </div>
-
-            <?php if (count($galeria) > 1): ?>
-                <div class="prod-thumbs">
-                    <?php foreach ($galeria as $idx => $img): ?>
-                        <img src="<?php echo htmlspecialchars($img); ?>" data-src="<?php echo htmlspecialchars($img); ?>"
-                            alt="Miniatura <?php echo $idx + 1; ?>"
-                            class="prod-thumb thumb-img <?php echo $idx === 0 ? 'active' : ''; ?>">
-                    <?php endforeach; ?>
-                </div>
-            <?php endif; ?>
         </div>
 
         <!-- Info del Producto -->

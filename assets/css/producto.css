@@ -60,12 +60,20 @@
         gap: 2rem;
         padding: 1.5rem 1rem 2rem;
     }
+
+    .prod-gallery {
+        position: static;
+    }
 }
 
 /* ── Galería ───────────────────────────────────────── */
 .prod-gallery {
     position: sticky;
     top: 90px;
+    display: flex;
+    flex-direction: row;
+    gap: 0.75rem;
+    align-items: flex-start;
 }
 
 .prod-img-main {
@@ -75,7 +83,8 @@
     padding: 2rem;
     position: relative;
     overflow: hidden;
-    margin-bottom: 0.75rem;
+    flex: 1;
+    min-width: 0;
 }
 
 .prod-img-main::before {
@@ -171,16 +180,21 @@
     text-shadow: none;
 }
 
-/* Miniaturas */
+/* Miniaturas – columna vertical a la izquierda */
 .prod-thumbs {
     display: flex;
+    flex-direction: column;
     gap: 0.5rem;
-    overflow-x: auto;
-    padding-bottom: 0.25rem;
+    overflow-y: auto;
+    overflow-x: hidden;
+    max-height: 480px;
+    padding-right: 0.25rem;
+    flex-shrink: 0;
+    width: 78px;
 }
 
 .prod-thumbs::-webkit-scrollbar {
-    height: 4px;
+    width: 4px;
 }
 
 .prod-thumbs::-webkit-scrollbar-thumb {
@@ -189,8 +203,8 @@
 }
 
 .prod-thumb {
-    width: 72px;
-    height: 72px;
+    width: 68px;
+    height: 68px;
     object-fit: contain;
     border-radius: 0.6rem;
     border: 2px solid #222;
@@ -1175,6 +1189,27 @@
 
     .prod-gallery {
         position: static;
+        flex-direction: column-reverse;
+    }
+
+    .prod-thumbs {
+        flex-direction: row;
+        overflow-x: auto;
+        overflow-y: hidden;
+        max-height: none;
+        width: 100%;
+        padding-right: 0;
+        padding-bottom: 0.25rem;
+    }
+
+    .prod-thumbs::-webkit-scrollbar {
+        height: 4px;
+        width: auto;
+    }
+
+    .prod-thumb {
+        width: 60px;
+        height: 60px;
     }
 
     .prod-trust-badges {
