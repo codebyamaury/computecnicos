@@ -78,52 +78,12 @@
 
 .prod-img-main {
     background: #ffffff;
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 1rem;
     position: relative;
     overflow: visible;
     flex: 1;
     min-width: 0;
-}
-
-.prod-img-main::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 30px;
-    height: 30px;
-    border-top: 4px solid #ff0000;
-    border-left: 4px solid #ff0000;
-    opacity: 1;
-    transition: all 0.4s ease;
-    box-shadow: -2px -2px 10px rgba(255, 0, 0, 0.4);
-    border-top-left-radius: 1rem;
-    z-index: 2;
-}
-
-.prod-img-main::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    right: 0;
-    width: 30px;
-    height: 30px;
-    border-bottom: 4px solid #ff0000;
-    border-right: 4px solid #ff0000;
-    opacity: 1;
-    transition: all 0.4s ease;
-    box-shadow: 2px 2px 10px rgba(255, 0, 0, 0.4);
-    border-bottom-right-radius: 1rem;
-    z-index: 2;
-}
-
-.prod-img-main:hover::before,
-.prod-img-main:hover::after {
-    width: 100%;
-    height: 100%;
-    opacity: 1;
-    box-shadow: none;
 }
 
 /* Contenedor de imagen con aspect ratio fijo 1:1 */
@@ -152,18 +112,17 @@
     pointer-events: none;
 }
 
-/* ── Zoom Lens (lupa) ──────────────────────────────── */
+/* ── Zoom Lens (lupa sutil) ────────────────────────── */
 .prod-zoom-lens {
     display: none;
     position: absolute;
-    width: 120px;
-    height: 120px;
-    border: 2px solid rgba(255, 0, 0, 0.5);
-    border-radius: 4px;
-    background: rgba(255, 0, 0, 0.08);
+    width: 140px;
+    height: 140px;
+    border: 2px solid rgba(100, 100, 255, 0.4);
+    border-radius: 0;
+    background: rgba(100, 100, 255, 0.06);
     pointer-events: none;
     z-index: 10;
-    backdrop-filter: blur(0.5px);
 }
 
 /* Resultado del zoom (panel ampliado a la derecha) */
@@ -172,13 +131,13 @@
     position: absolute;
     top: 0;
     left: calc(100% + 12px);
-    width: 420px;
-    height: 420px;
+    width: 500px;
+    height: 100%;
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 1rem;
     background-color: #fff;
     background-repeat: no-repeat;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+    box-shadow: 0 8px 40px rgba(0, 0, 0, 0.5);
     z-index: 100;
     pointer-events: none;
 }
