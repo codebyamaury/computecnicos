@@ -117,5 +117,16 @@ if ($stock_limitado) {
     }
 }
 
-header('Location: ' . ($_SERVER['HTTP_REFERER'] ?? 'productos.php'));
+// Determinar URL de redirección
+$redirect_url = $_SERVER['HTTP_REFERER'] ?? 'productos.php';
+// Si se especifica redirect (ej: "Comprar Ahora" envía redirect=checkout.php)
+if (!empty($_POST['redirect'])) {
+    $custom_redirect = $_POST['redirect'];
+    // Solo permitir redirecciones relativas (seguridad: no URLs externas)
+    if (strpos($custom_redirect, '://') === false && strpos($custom_redirect, '//') !== 0) {
+        $redirect_url = $custom_redirect;
+    }
+}
+
+header('Location: ' . $redirect_url);
 exit;
