@@ -96,7 +96,7 @@
     justify-content: center;
     overflow: hidden;
     border-radius: 1rem;
-    cursor: crosshair;
+    cursor: pointer;
     background: #ffffff;
     padding: 1.5rem;
 }
@@ -108,38 +108,6 @@
     height: auto;
     object-fit: contain;
     display: block;
-    transition: none;
-    pointer-events: none;
-}
-
-/* ── Zoom Lens (lupa sutil) ────────────────────────── */
-.prod-zoom-lens {
-    display: none;
-    position: absolute;
-    width: 140px;
-    height: 140px;
-    border: 2px solid rgba(100, 100, 255, 0.4);
-    border-radius: 0;
-    background: rgba(100, 100, 255, 0.06);
-    pointer-events: none;
-    z-index: 10;
-}
-
-/* Resultado del zoom (panel ampliado a la derecha) */
-.prod-zoom-result {
-    display: none;
-    position: absolute;
-    top: 0;
-    left: calc(100% + 12px);
-    width: 500px;
-    height: 100%;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 1rem;
-    background-color: #fff;
-    background-repeat: no-repeat;
-    box-shadow: 0 8px 40px rgba(0, 0, 0, 0.5);
-    z-index: 100;
-    pointer-events: none;
 }
 
 /* Botón de lupa / abrir lightbox */
@@ -1354,19 +1322,6 @@
 
     .prod-trust-badges {
         grid-template-columns: 1fr;
-    }
-
-    /* Ocultar zoom hover en tablet/móvil */
-    .prod-zoom-result {
-        display: none !important;
-    }
-
-    .prod-zoom-lens {
-        display: none !important;
-    }
-
-    .prod-img-wrapper {
-        cursor: pointer;
     }
 }
 

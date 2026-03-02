@@ -112,9 +112,7 @@ include 'includes/header.php';
                     <img id="main-img"
                         src="<?php echo htmlspecialchars($galeria[0] ?? 'https://via.placeholder.com/500x500?text=Sin+Imagen'); ?>"
                         alt="<?php echo htmlspecialchars($producto['nombre']); ?>">
-                    <div class="prod-zoom-lens" id="zoom-lens"></div>
                 </div>
-                <div class="prod-zoom-result" id="zoom-result"></div>
                 <button class="prod-zoom-btn" id="open-lightbox" title="Ver imagen completa">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg>
                 </button>
@@ -588,49 +586,6 @@ include 'includes/header.php';
                 this.classList.add('active');
             });
         });
-
-        // ── Hover Zoom (lupa tipo MercadoLibre) ──
-        const imgWrapper = document.querySelector('.prod-img-wrapper');
-        const zoomResult = document.getElementById('zoom-result');
-        const zoomLens = document.getElementById('zoom-lens');
-
-        if (imgWrapper && zoomResult && zoomLens && mainImg) {
-            const ZOOM_FACTOR = 2.5;
-
-            imgWrapper.addEventListener('mouseenter', function () {
-                zoomLens.style.display = 'block';
-                zoomResult.style.display = 'block';
-                zoomResult.style.backgroundImage = `url('${mainImg.src}')`;
-            });
-
-            imgWrapper.addEventListener('mouseleave', function () {
-                zoomLens.style.display = 'none';
-                zoomResult.style.display = 'none';
-            });
-
-            imgWrapper.addEventListener('mousemove', function (e) {
-                const rect = imgWrapper.getBoundingClientRect();
-                const x = e.clientX - rect.left;
-                const y = e.clientY - rect.top;
-
-                // Posición de la lente
-                const lensW = zoomLens.offsetWidth / 2;
-                const lensH = zoomLens.offsetHeight / 2;
-                let lx = x - lensW;
-                let ly = y - lensH;
-                lx = Math.max(0, Math.min(lx, rect.width - zoomLens.offsetWidth));
-                ly = Math.max(0, Math.min(ly, rect.height - zoomLens.offsetHeight));
-                zoomLens.style.left = lx + 'px';
-                zoomLens.style.top = ly + 'px';
-
-                // Background del resultado de zoom
-                zoomResult.style.backgroundImage = `url('${mainImg.src}')`;
-                zoomResult.style.backgroundSize = `${rect.width * ZOOM_FACTOR}px ${rect.height * ZOOM_FACTOR}px`;
-                const bgX = -(lx * ZOOM_FACTOR);
-                const bgY = -(ly * ZOOM_FACTOR);
-                zoomResult.style.backgroundPosition = `${bgX}px ${bgY}px`;
-            });
-        }
 
         // ── Lightbox (visor fullscreen) ──
         const lightbox = document.getElementById('prod-lightbox');
