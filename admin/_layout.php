@@ -33,6 +33,7 @@ $nav_items = [
     ['href' => 'marcas.php', 'label' => 'Marcas', 'key' => 'marcas', 'icon' => 'badge-check'],
     ['href' => 'usuarios.php', 'label' => 'Usuarios', 'key' => 'usuarios', 'icon' => 'users'],
     ['href' => 'pedidos.php', 'label' => 'Pedidos', 'key' => 'pedidos', 'icon' => 'clipboard-list'],
+    ['href' => 'resenas.php', 'label' => 'Reseñas', 'key' => 'resenas', 'icon' => 'star'],
     ['href' => 'proveedores.php', 'label' => 'Proveedores', 'key' => 'proveedores', 'icon' => 'building-2'],
     ['href' => 'inventario.php', 'label' => 'Inventario', 'key' => 'inventario', 'icon' => 'warehouse'],
     ['href' => 'reporte_contable.php', 'label' => 'Reportes', 'key' => 'reportes', 'icon' => 'bar-chart-3'],
