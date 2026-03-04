@@ -74,8 +74,9 @@ $expira = date('Y-m-d H:i:s', strtotime('+1 hour'));
 $stmtIns = $pdo->prepare("INSERT INTO password_resets (email, token, expira) VALUES (?, ?, ?)");
 $stmtIns->execute([$email, $token, $expira]);
 
-// Construir URL de recuperación
-$resetUrl = rtrim(base_url(), '/') . '/reset_password.php?token=' . $token;
+// Construir URL de recuperación (siempre apuntar a producción)
+$appUrl = $_ENV['APP_URL'] ?? 'https://computecnicos-kappa.vercel.app';
+$resetUrl = rtrim($appUrl, '/') . '/reset_password.php?token=' . $token;
 
 // Enviar email
 $nombreUsuario = $usuario['nombre'];
