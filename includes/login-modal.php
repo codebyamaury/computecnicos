@@ -469,8 +469,7 @@ document.addEventListener('DOMContentLoaded', function() {
     try {
       var fd = new FormData();
       fd.append('email', email);
-      var apiUrl = window.location.origin + '/api/forgot_password.php';
-      var res = await fetch(apiUrl, { method: 'POST', body: fd });
+      var res = await fetch('api/forgot_password.php', { method: 'POST', body: fd });
       var data = await res.json();
       
       fm.style.display = 'block';
