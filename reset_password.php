@@ -34,7 +34,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt = $pdo->prepare("
             SELECT pr.*, u.id AS user_id 
             FROM password_resets pr 
-            INNER JOIN usuarios u ON u.email = pr.email
+            INNER JOIN usuarios u ON u.email COLLATE utf8mb4_unicode_ci = pr.email
             WHERE pr.token = ? AND pr.usado = 0 AND pr.expira > UTC_TIMESTAMP()
             LIMIT 1
         ");

@@ -28,7 +28,7 @@ try {
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
         INDEX idx_token (token),
         INDEX idx_email (email)
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci");
 } catch (Throwable $e) {}
 
 $email = trim($_POST['email'] ?? '');
