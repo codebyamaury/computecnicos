@@ -2,49 +2,50 @@
 /**
  * Email Helper — Computécnicos
  * 
- * Envía emails usando Resend API (gratis: 100 emails/día)
- * o fallback a mail() si no hay API key configurada.
+ * Envía emails usando Brevo API (gratis: 300 emails/día, sin verificar dominio)
  * 
  * Configuración en .env:
- *   RESEND_API_KEY=re_xxxxxxxxxxxx
- *   MAIL_FROM=noreply@tudominio.com
+ *   BREVO_API_KEY=xkeysib-xxxxxxxxxxxx
+ *   MAIL_FROM=tu@email.com
+ *   MAIL_FROM_NAME=Computécnicos
  */
 
 function enviar_email($to, $subject, $htmlBody, $fromName = 'Computécnicos') {
-    $apiKey = $_ENV['RESEND_API_KEY'] ?? '';
+    $apiKey = $_ENV['BREVO_API_KEY'] ?? '';
     $fromEmail = $_ENV['MAIL_FROM'] ?? 'noreply@computecnicos.com';
+    $fromName = $_ENV['MAIL_FROM_NAME'] ?? $fromName;
     
-    // Si hay API key de Resend, usar su API
     if (!empty($apiKey)) {
-        return enviar_con_resend($apiKey, $fromEmail, $fromName, $to, $subject, $htmlBody);
+        return enviar_con_brevo($apiKey, $fromEmail, $fromName, $to, $subject, $htmlBody);
     }
     
-    // Fallback: mail() nativo (funciona en hosting tradicional, NO en Vercel)
+    // Fallback: mail() nativo
     return enviar_con_mail($fromEmail, $fromName, $to, $subject, $htmlBody);
 }
 
 /**
- * Enviar email via Resend API (HTTP POST)
- * https://resend.com/docs/api-reference/emails/send-email
+ * Enviar email via Brevo (Sendinblue) API
+ * https://developers.brevo.com/reference/sendtransacemail
  */
-function enviar_con_resend($apiKey, $fromEmail, $fromName, $to, $subject, $htmlBody) {
+function enviar_con_brevo($apiKey, $fromEmail, $fromName, $to, $subject, $htmlBody) {
     $data = json_encode([
-        'from' => "$fromName <$fromEmail>",
-        'to' => [$to],
+        'sender' => ['name' => $fromName, 'email' => $fromEmail],
+        'to' => [['email' => $to]],
         'subject' => $subject,
-        'html' => $htmlBody
+        'htmlContent' => $htmlBody
     ]);
 
-    $ch = curl_init('https://api.resend.com/emails');
+    $ch = curl_init('https://api.brevo.com/v3/smtp/email');
     curl_setopt_array($ch, [
         CURLOPT_POST => true,
         CURLOPT_POSTFIELDS => $data,
         CURLOPT_HTTPHEADER => [
-            'Authorization: Bearer ' . $apiKey,
-            'Content-Type: application/json'
+            'api-key: ' . $apiKey,
+            'Content-Type: application/json',
+            'Accept: application/json'
         ],
         CURLOPT_RETURNTRANSFER => true,
-        CURLOPT_TIMEOUT => 10,
+        CURLOPT_TIMEOUT => 15,
         CURLOPT_SSL_VERIFYPEER => true
     ]);
 
@@ -54,16 +55,16 @@ function enviar_con_resend($apiKey, $fromEmail, $fromName, $to, $subject, $htmlB
     curl_close($ch);
 
     if ($error) {
-        log_event("Resend curl error: $error");
+        if (function_exists('log_event')) log_event("Brevo curl error: $error");
         return false;
     }
 
     if ($httpCode >= 200 && $httpCode < 300) {
-        log_event("Email enviado via Resend a: $to");
+        if (function_exists('log_event')) log_event("Email enviado via Brevo a: $to");
         return true;
     }
 
-    log_event("Resend error ($httpCode): $response");
+    if (function_exists('log_event')) log_event("Brevo error ($httpCode): $response");
     return false;
 }
 
@@ -80,12 +81,8 @@ function enviar_con_mail($fromEmail, $fromName, $to, $subject, $htmlBody) {
     ]);
 
     $result = @mail($to, $subject, $htmlBody, $headers);
-    
-    if ($result) {
-        log_event("Email enviado via mail() a: $to");
-    } else {
-        log_event("Error enviando email via mail() a: $to");
+    if (function_exists('log_event')) {
+        log_event($result ? "Email enviado via mail() a: $to" : "Error mail() a: $to");
     }
-    
     return $result;
 }
