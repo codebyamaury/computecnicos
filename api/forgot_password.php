@@ -56,7 +56,7 @@ if (!$usuario) {
 // Limitar intentos: no más de 3 solicitudes en 15 minutos
 $stmtLimit = $pdo->prepare("
     SELECT COUNT(*) as cnt FROM password_resets 
-    WHERE email = ? AND created_at > DATE_SUB(NOW(), INTERVAL 15 MINUTE)
+    WHERE email = ? AND created_at > DATE_SUB(UTC_TIMESTAMP(), INTERVAL 15 MINUTE)
 ");
 $stmtLimit->execute([$email]);
 if ($stmtLimit->fetch()['cnt'] >= 3) {
@@ -69,10 +69,10 @@ $pdo->prepare("UPDATE password_resets SET usado = 1 WHERE email = ? AND usado = 
 
 // Generar token seguro
 $token = bin2hex(random_bytes(32));
-$expira = date('Y-m-d H:i:s', strtotime('+1 hour'));
 
-$stmtIns = $pdo->prepare("INSERT INTO password_resets (email, token, expira) VALUES (?, ?, ?)");
-$stmtIns->execute([$email, $token, $expira]);
+// Usar UTC_TIMESTAMP de MySQL para evitar desfase de zona horaria entre PHP y MySQL
+$stmtIns = $pdo->prepare("INSERT INTO password_resets (email, token, expira) VALUES (?, ?, DATE_ADD(UTC_TIMESTAMP(), INTERVAL 1 HOUR))");
+$stmtIns->execute([$email, $token]);
 
 // Construir URL de recuperación (siempre apuntar a producción)
 $appUrl = $_ENV['APP_URL'] ?? 'https://computecnicos-kappa.vercel.app';

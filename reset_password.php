@@ -35,7 +35,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             SELECT pr.*, u.id AS user_id 
             FROM password_resets pr 
             INNER JOIN usuarios u ON u.email = pr.email
-            WHERE pr.token = ? AND pr.usado = 0 AND pr.expira > NOW()
+            WHERE pr.token = ? AND pr.usado = 0 AND pr.expira > UTC_TIMESTAMP()
             LIMIT 1
         ");
         $stmt->execute([$token]);
@@ -70,7 +70,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } else {
         $stmt = $pdo->prepare("
             SELECT * FROM password_resets 
-            WHERE token = ? AND usado = 0 AND expira > NOW()
+            WHERE token = ? AND usado = 0 AND expira > UTC_TIMESTAMP()
             LIMIT 1
         ");
         $stmt->execute([$token]);
