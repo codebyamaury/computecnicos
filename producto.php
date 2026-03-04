@@ -355,12 +355,6 @@ include 'includes/header.php';
                         <input type="hidden" name="calificacion" id="calificacion-input" value="0">
                     </div>
 
-                    <!-- Título -->
-                    <div class="review-field">
-                        <label for="review-titulo">Título (opcional)</label>
-                        <input type="text" id="review-titulo" name="titulo" placeholder="Resumen corto de tu opinión" maxlength="150">
-                        <span class="char-count"><span id="titulo-count">0</span>/150</span>
-                    </div>
 
                     <!-- Comentario -->
                     <div class="review-field">
@@ -405,13 +399,8 @@ include 'includes/header.php';
             </div>
         </div>
 
-        <!-- Mensaje si no compró -->
-        <div id="review-not-buyer" style="display:none;">
-            <div class="review-not-buyer-card">
-                <i data-lucide="lock" class="w-5 h-5" style="color:#888"></i>
-                <span>Solo los compradores verificados pueden dejar reseñas.</span>
-            </div>
-        </div>
+        <!-- Placeholder para no compradores (sin mensaje visible) -->
+        <div id="review-not-buyer" style="display:none;"></div>
 
         <!-- Lista de reseñas -->
         <div class="prod-reviews-grid" id="reviews-list">
