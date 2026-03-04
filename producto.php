@@ -323,52 +323,107 @@ include 'includes/header.php';
         </section>
     <?php endif; ?>
 
-    <!-- Reseñas -->
-    <section class="prod-reviews-section">
+    <!-- Reseñas — Sistema Robusto -->
+    <section class="prod-reviews-section" id="reviews-section">
         <div class="prod-reviews-header">
             <h2><i data-lucide="message-square" class="w-6 h-6"></i> Reseñas</h2>
-            <?php if ($avgRating !== null): ?>
-                <div class="prod-reviews-avg">
-                    <span class="star">★</span>
-                    <span class="score"><?php echo number_format($avgRating, 1); ?></span>
-                    <span class="count">(<?php echo count($resenas); ?>)</span>
-                </div>
-            <?php endif; ?>
         </div>
 
-        <?php if (!empty($resenas)): ?>
-            <div class="prod-reviews-grid">
-                <?php foreach ($resenas as $r): ?>
-                    <div class="prod-review-card">
-                        <div class="prod-review-top">
-                            <div class="prod-review-user">
-                                <div class="prod-review-avatar">
-                                    <?php echo strtoupper(substr($r['usuario'] ?: 'U', 0, 1)); ?>
-                                </div>
-                                <div>
-                                    <div class="prod-review-name"><?php echo htmlspecialchars($r['usuario'] ?: 'Usuario'); ?>
-                                    </div>
-                                    <div class="prod-review-date"><?php echo date('d M Y', strtotime($r['fecha'])); ?></div>
-                                </div>
-                            </div>
-                            <div class="prod-review-stars">
-                                <?php for ($i = 1; $i <= 5; $i++): ?>
-                                    <span class="<?php echo $i <= intval($r['calificacion']) ? 'filled' : 'empty'; ?>">★</span>
-                                <?php endfor; ?>
-                            </div>
+        <!-- Stats Panel -->
+        <div class="reviews-stats-panel" id="reviews-stats">
+            <!-- Se carga dinámicamente via JS -->
+        </div>
+
+        <!-- Formulario de Reseña (solo si puede reseñar) -->
+        <div id="review-form-container" style="display:none;">
+            <div class="review-form-card">
+                <h3><i data-lucide="edit-3" class="w-5 h-5"></i> Escribe tu reseña</h3>
+                <p class="review-form-subtitle">Comparte tu experiencia con este producto</p>
+                
+                <form id="review-form" enctype="multipart/form-data">
+                    <input type="hidden" name="id_producto" value="<?php echo intval($producto['id']); ?>">
+                    
+                    <!-- Estrellas -->
+                    <div class="review-stars-selector">
+                        <label>Tu calificación</label>
+                        <div class="stars-input" id="stars-input">
+                            <?php for ($i = 1; $i <= 5; $i++): ?>
+                                <span class="star-select" data-value="<?php echo $i; ?>">★</span>
+                            <?php endfor; ?>
                         </div>
-                        <p class="prod-review-text"><?php echo nl2br(htmlspecialchars($r['comentario'])); ?></p>
+                        <span class="stars-label" id="stars-label">Selecciona una calificación</span>
+                        <input type="hidden" name="calificacion" id="calificacion-input" value="0">
                     </div>
-                <?php endforeach; ?>
+
+                    <!-- Título -->
+                    <div class="review-field">
+                        <label for="review-titulo">Título (opcional)</label>
+                        <input type="text" id="review-titulo" name="titulo" placeholder="Resumen corto de tu opinión" maxlength="150">
+                        <span class="char-count"><span id="titulo-count">0</span>/150</span>
+                    </div>
+
+                    <!-- Comentario -->
+                    <div class="review-field">
+                        <label for="review-comentario">Tu opinión *</label>
+                        <textarea id="review-comentario" name="comentario" rows="4" 
+                                  placeholder="¿Qué te pareció el producto? ¿Cumplió tus expectativas? Cuéntanos tu experiencia..."
+                                  minlength="10" maxlength="2000" required></textarea>
+                        <span class="char-count"><span id="comentario-count">0</span>/2000</span>
+                    </div>
+
+                    <!-- Upload de imágenes -->
+                    <div class="review-field">
+                        <label>Imágenes (opcional, máx. 3)</label>
+                        <div class="review-upload-area" id="upload-area">
+                            <input type="file" name="imagenes[]" id="review-images" 
+                                   accept="image/jpeg,image/png,image/webp" multiple 
+                                   style="display:none" max="3">
+                            <div class="upload-placeholder" id="upload-placeholder">
+                                <i data-lucide="camera" class="w-8 h-8"></i>
+                                <span>Haz clic o arrastra imágenes aquí</span>
+                                <small>JPG, PNG o WebP — Máximo 5MB cada una</small>
+                            </div>
+                            <div class="upload-previews" id="upload-previews"></div>
+                        </div>
+                    </div>
+
+                    <!-- Botón enviar -->
+                    <button type="submit" class="review-submit-btn" id="review-submit-btn">
+                        <i data-lucide="send" class="w-5 h-5"></i>
+                        Publicar Reseña
+                    </button>
+                    <div id="review-form-msg" style="margin-top:0.75rem;text-align:center;font-size:0.85rem"></div>
+                </form>
             </div>
+        </div>
+
+        <!-- Mensaje si ya reseñó -->
+        <div id="review-already" style="display:none;">
+            <div class="review-already-card">
+                <i data-lucide="check-circle" class="w-6 h-6" style="color:#4ade80"></i>
+                <span>Ya dejaste tu reseña para este producto. ¡Gracias!</span>
             </div>
-        <?php else: ?>
-            <div class="prod-no-reviews">
-                <div class="icon"><i data-lucide="message-circle" class="w-12 h-12" style="color:#333"></i></div>
-                <h3>Sin reseñas aún</h3>
-                <p>Sé el primero en opinar sobre este producto.</p>
+        </div>
+
+        <!-- Mensaje si no compró -->
+        <div id="review-not-buyer" style="display:none;">
+            <div class="review-not-buyer-card">
+                <i data-lucide="lock" class="w-5 h-5" style="color:#888"></i>
+                <span>Solo los compradores verificados pueden dejar reseñas.</span>
             </div>
-        <?php endif; ?>
+        </div>
+
+        <!-- Lista de reseñas -->
+        <div class="prod-reviews-grid" id="reviews-list">
+            <!-- Se carga dinámicamente via JS -->
+        </div>
+
+        <!-- Sin reseñas -->
+        <div class="prod-no-reviews" id="no-reviews" style="display:none">
+            <div class="icon"><i data-lucide="message-circle" class="w-12 h-12" style="color:#333"></i></div>
+            <h3>Sin reseñas aún</h3>
+            <p>Sé el primero en opinar sobre este producto.</p>
+        </div>
     </section>
 </main>
 
@@ -747,6 +802,371 @@ include 'includes/header.php';
             }
         });
     });
+</script>
+<script>
+// ══════════════════════════════════════════════════
+// SISTEMA DE RESEÑAS — COMPUTÉCNICOS
+// ══════════════════════════════════════════════════
+document.addEventListener('DOMContentLoaded', function() {
+    const PRODUCT_ID = <?php echo intval($producto['id']); ?>;
+    const IS_LOGGED_IN = <?php echo isset($_SESSION['usuario']) ? 'true' : 'false'; ?>;
+    const BASE = '<?php echo rtrim(base_url(), '/'); ?>';
+    
+    // ── Cargar reseñas ──
+    async function loadReviews() {
+        try {
+            const res = await fetch(`${BASE}/api/resenas.php?id_producto=${PRODUCT_ID}`);
+            const data = await res.json();
+            if (!data.ok) return;
+            
+            renderStats(data.stats);
+            renderReviews(data.resenas);
+            handleFormVisibility(data);
+            
+            // Actualizar rating en la sección de info del producto
+            updateProductRating(data.stats);
+        } catch(e) {
+            console.error('Error cargando reseñas:', e);
+        }
+    }
+    
+    // ── Render Stats ──
+    function renderStats(stats) {
+        const el = document.getElementById('reviews-stats');
+        if (!el || stats.total === 0) {
+            if (el) el.style.display = 'none';
+            return;
+        }
+        el.style.display = '';
+        
+        const labels = ['Excelente', 'Muy bueno', 'Bueno', 'Regular', 'Malo'];
+        let barsHtml = '';
+        for (let i = 5; i >= 1; i--) {
+            const count = stats.distribucion[i] || 0;
+            const pct = stats.total > 0 ? Math.round((count / stats.total) * 100) : 0;
+            barsHtml += `
+                <div class="rating-bar-row">
+                    <span class="rating-bar-label">${i} ★</span>
+                    <div class="rating-bar-track">
+                        <div class="rating-bar-fill" style="width:${pct}%"></div>
+                    </div>
+                    <span class="rating-bar-count">${count}</span>
+                </div>`;
+        }
+        
+        let starsHtml = '';
+        for (let i = 1; i <= 5; i++) {
+            starsHtml += `<span class="${i <= Math.round(stats.promedio) ? 'filled' : 'empty'}">★</span>`;
+        }
+        
+        el.innerHTML = `
+            <div class="reviews-stats-left">
+                <div class="reviews-big-score">${stats.promedio.toFixed(1)}</div>
+                <div class="reviews-big-stars">${starsHtml}</div>
+                <div class="reviews-total-count">${stats.total} reseña${stats.total !== 1 ? 's' : ''}</div>
+            </div>
+            <div class="reviews-stats-right">
+                ${barsHtml}
+            </div>`;
+    }
+    
+    // ── Render Reviews ──
+    function renderReviews(resenas) {
+        const listEl = document.getElementById('reviews-list');
+        const noReviews = document.getElementById('no-reviews');
+        
+        if (!resenas || resenas.length === 0) {
+            listEl.innerHTML = '';
+            noReviews.style.display = '';
+            return;
+        }
+        noReviews.style.display = 'none';
+        
+        let html = '';
+        resenas.forEach(r => {
+            const initial = (r.usuario || 'U').charAt(0).toUpperCase();
+            const stars = Array.from({length: 5}, (_, i) => 
+                `<span class="${i < r.calificacion ? 'filled' : 'empty'}">★</span>`
+            ).join('');
+            
+            const fecha = new Date(r.fecha).toLocaleDateString('es-CO', { 
+                day: 'numeric', month: 'short', year: 'numeric' 
+            });
+            
+            let imgsHtml = '';
+            if (r.imagenes && r.imagenes.length > 0) {
+                imgsHtml = '<div class="review-images-grid">';
+                r.imagenes.forEach(img => {
+                    imgsHtml += `<img src="${BASE}/${img.url_imagen}" alt="Imagen de reseña" class="review-img-thumb" onclick="openReviewImage(this.src)">`;
+                });
+                imgsHtml += '</div>';
+            }
+            
+            const tituloHtml = r.titulo ? `<div class="prod-review-title">${escapeHtml(r.titulo)}</div>` : '';
+            const verificadoHtml = r.verificado ? `<span class="review-verified-badge"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg> Compra verificada</span>` : '';
+            
+            html += `
+                <div class="prod-review-card">
+                    <div class="prod-review-top">
+                        <div class="prod-review-user">
+                            <div class="prod-review-avatar">${initial}</div>
+                            <div>
+                                <div class="prod-review-name">${escapeHtml(r.usuario || 'Usuario')}</div>
+                                <div class="prod-review-date">${fecha}</div>
+                            </div>
+                        </div>
+                        <div class="prod-review-top-right">
+                            <div class="prod-review-stars">${stars}</div>
+                            ${verificadoHtml}
+                        </div>
+                    </div>
+                    ${tituloHtml}
+                    <p class="prod-review-text">${escapeHtml(r.comentario || '').replace(/\n/g, '<br>')}</p>
+                    ${imgsHtml}
+                </div>`;
+        });
+        
+        listEl.innerHTML = html;
+    }
+    
+    // ── Form Visibility ──
+    function handleFormVisibility(data) {
+        const formContainer = document.getElementById('review-form-container');
+        const alreadyEl = document.getElementById('review-already');
+        const notBuyerEl = document.getElementById('review-not-buyer');
+        
+        if (!IS_LOGGED_IN) {
+            notBuyerEl.style.display = '';
+            return;
+        }
+        
+        if (data.ya_reseno) {
+            alreadyEl.style.display = '';
+        } else if (data.puede_resenar) {
+            formContainer.style.display = '';
+        } else {
+            notBuyerEl.style.display = '';
+        }
+    }
+    
+    // ── Update product rating display ──
+    function updateProductRating(stats) {
+        if (stats.total === 0) return;
+        const ratingEl = document.querySelector('.prod-rating');
+        if (ratingEl) {
+            let starsHtml = '';
+            for (let i = 1; i <= 5; i++) {
+                starsHtml += `<span class="prod-star ${i <= Math.round(stats.promedio) ? 'filled' : 'empty'}">★</span>`;
+            }
+            ratingEl.innerHTML = `
+                <div class="prod-stars">${starsHtml}</div>
+                <span class="prod-rating-text">${stats.promedio.toFixed(1)} (${stats.total} reseña${stats.total !== 1 ? 's' : ''})</span>`;
+        }
+    }
+    
+    // ── Star Selector ──
+    const starsInput = document.getElementById('stars-input');
+    const calInput = document.getElementById('calificacion-input');
+    const starsLabel = document.getElementById('stars-label');
+    const starLabels = ['', 'Malo', 'Regular', 'Bueno', 'Muy bueno', 'Excelente'];
+    
+    if (starsInput) {
+        const starEls = starsInput.querySelectorAll('.star-select');
+        
+        starEls.forEach(star => {
+            star.addEventListener('mouseenter', function() {
+                const val = parseInt(this.dataset.value);
+                starEls.forEach((s, i) => {
+                    s.classList.toggle('hover', i < val);
+                });
+            });
+            
+            star.addEventListener('click', function() {
+                const val = parseInt(this.dataset.value);
+                calInput.value = val;
+                starEls.forEach((s, i) => {
+                    s.classList.toggle('selected', i < val);
+                });
+                starsLabel.textContent = starLabels[val];
+                starsLabel.style.color = val >= 4 ? '#4ade80' : val >= 3 ? '#facc15' : '#f87171';
+            });
+        });
+        
+        starsInput.addEventListener('mouseleave', function() {
+            const current = parseInt(calInput.value) || 0;
+            starEls.forEach((s, i) => {
+                s.classList.remove('hover');
+                s.classList.toggle('selected', i < current);
+            });
+        });
+    }
+    
+    // ── Character Counters ──
+    const tituloInput = document.getElementById('review-titulo');
+    const comentarioInput = document.getElementById('review-comentario');
+    
+    if (tituloInput) {
+        tituloInput.addEventListener('input', () => {
+            document.getElementById('titulo-count').textContent = tituloInput.value.length;
+        });
+    }
+    if (comentarioInput) {
+        comentarioInput.addEventListener('input', () => {
+            document.getElementById('comentario-count').textContent = comentarioInput.value.length;
+        });
+    }
+    
+    // ── Image Upload with Drag & Drop ──
+    const uploadArea = document.getElementById('upload-area');
+    const fileInput = document.getElementById('review-images');
+    const previewsEl = document.getElementById('upload-previews');
+    const placeholder = document.getElementById('upload-placeholder');
+    let selectedFiles = [];
+    
+    if (uploadArea && fileInput) {
+        uploadArea.addEventListener('click', (e) => {
+            if (e.target.closest('.upload-remove-btn')) return;
+            fileInput.click();
+        });
+        
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('drag-over');
+        });
+        
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('drag-over');
+        });
+        
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('drag-over');
+            handleFiles(e.dataTransfer.files);
+        });
+        
+        fileInput.addEventListener('change', () => {
+            handleFiles(fileInput.files);
+        });
+    }
+    
+    function handleFiles(fileList) {
+        const newFiles = Array.from(fileList).filter(f => f.type.startsWith('image/'));
+        selectedFiles = [...selectedFiles, ...newFiles].slice(0, 3);
+        renderPreviews();
+    }
+    
+    function renderPreviews() {
+        if (!previewsEl || !placeholder) return;
+        previewsEl.innerHTML = '';
+        
+        if (selectedFiles.length === 0) {
+            placeholder.style.display = '';
+            return;
+        }
+        placeholder.style.display = 'none';
+        
+        selectedFiles.forEach((file, idx) => {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const div = document.createElement('div');
+                div.className = 'upload-preview-item';
+                div.innerHTML = `
+                    <img src="${e.target.result}" alt="Preview">
+                    <button type="button" class="upload-remove-btn" data-idx="${idx}">×</button>`;
+                div.querySelector('.upload-remove-btn').addEventListener('click', (ev) => {
+                    ev.stopPropagation();
+                    selectedFiles.splice(idx, 1);
+                    renderPreviews();
+                    updateFileInput();
+                });
+                previewsEl.appendChild(div);
+            };
+            reader.readAsDataURL(file);
+        });
+    }
+    
+    function updateFileInput() {
+        const dt = new DataTransfer();
+        selectedFiles.forEach(f => dt.items.add(f));
+        if (fileInput) fileInput.files = dt.files;
+    }
+    
+    // ── Form Submit ──
+    const reviewForm = document.getElementById('review-form');
+    if (reviewForm) {
+        reviewForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const msgEl = document.getElementById('review-form-msg');
+            const submitBtn = document.getElementById('review-submit-btn');
+            
+            // Validar calificación
+            if (parseInt(calInput.value) < 1) {
+                msgEl.textContent = 'Por favor selecciona una calificación (1-5 estrellas)';
+                msgEl.style.color = '#f87171';
+                return;
+            }
+            
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<div class="spinner" style="width:18px;height:18px;border:2px solid transparent;border-top-color:currentColor;border-radius:50%;animation:spin 0.8s linear infinite"></div> Enviando...';
+            msgEl.textContent = '';
+            
+            const fd = new FormData(reviewForm);
+            // Agregar archivos manualmente (por si se usó drag & drop)
+            fd.delete('imagenes[]');
+            selectedFiles.forEach(f => fd.append('imagenes[]', f));
+            
+            try {
+                const res = await fetch(`${BASE}/api/resenas.php`, {
+                    method: 'POST',
+                    headers: { 'X-Requested-With': 'XMLHttpRequest' },
+                    body: fd
+                });
+                const data = await res.json();
+                
+                if (data.ok) {
+                    msgEl.textContent = data.msg || '¡Reseña publicada!';
+                    msgEl.style.color = '#4ade80';
+                    // Recargar reseñas
+                    setTimeout(() => {
+                        document.getElementById('review-form-container').style.display = 'none';
+                        document.getElementById('review-already').style.display = '';
+                        loadReviews();
+                    }, 1000);
+                } else {
+                    msgEl.textContent = data.msg || 'Error al publicar la reseña.';
+                    msgEl.style.color = '#f87171';
+                }
+            } catch(err) {
+                msgEl.textContent = 'Error de conexión. Intenta de nuevo.';
+                msgEl.style.color = '#f87171';
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg> Publicar Reseña';
+            }
+        });
+    }
+    
+    // ── Helpers ──
+    function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text || '';
+        return div.innerHTML;
+    }
+    
+    // Cargar reseñas al inicio
+    loadReviews();
+});
+
+// ── Lightbox para imágenes de reseñas ──
+function openReviewImage(src) {
+    const overlay = document.createElement('div');
+    overlay.style.cssText = 'position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,0.92);display:flex;align-items:center;justify-content:center;cursor:pointer;backdrop-filter:blur(8px)';
+    overlay.innerHTML = `<img src="${src}" style="max-width:90vw;max-height:85vh;object-fit:contain;border-radius:0.5rem;box-shadow:0 0 40px rgba(0,0,0,0.5)">
+        <button style="position:absolute;top:20px;right:20px;width:48px;height:48px;border-radius:50%;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:#fff;font-size:1.5rem;cursor:pointer;display:flex;align-items:center;justify-content:center">×</button>`;
+    overlay.addEventListener('click', () => overlay.remove());
+    document.body.appendChild(overlay);
+}
 </script>
 <script>if (typeof lucide !== 'undefined') lucide.createIcons();</script>
 </body>
