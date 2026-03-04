@@ -118,16 +118,9 @@ $htmlBody = '
 </body>
 </html>';
 
-// Headers del email
-$headers = [
-    'MIME-Version: 1.0',
-    'Content-Type: text/html; charset=UTF-8',
-    'From: Computécnicos <noreply@computecnicos.com>',
-    'Reply-To: noreply@computecnicos.com',
-    'X-Mailer: PHP/' . phpversion()
-];
-
-$enviado = @mail($email, $asunto, $htmlBody, implode("\r\n", $headers));
+// Enviar con el helper (Resend API o mail() fallback)
+require_once __DIR__ . '/../app/Core/email_helper.php';
+$enviado = enviar_email($email, $asunto, $htmlBody);
 
 if ($enviado) {
     log_event("Password reset solicitado para: $email");
