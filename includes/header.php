@@ -155,6 +155,167 @@ if (isset($_SESSION['usuario']['id']) && isset($pdo)) {
         </div>
     </header>
 
+    <?php if (isset($_SESSION['usuario'])): ?>
+    <!-- Notificación de productos pendientes de reseña -->
+    <div id="review-notification-banner" style="display:none">
+        <div class="review-notif-inner">
+            <div class="review-notif-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            </div>
+            <div class="review-notif-content">
+                <span class="review-notif-text" id="review-notif-text"></span>
+                <a href="#" id="review-notif-link" class="review-notif-btn">Calificar</a>
+            </div>
+            <button class="review-notif-close" id="review-notif-close" aria-label="Cerrar">×</button>
+        </div>
+    </div>
+    <style>
+        #review-notification-banner {
+            position: fixed;
+            bottom: 1.5rem;
+            right: 1.5rem;
+            z-index: 9998;
+            max-width: 400px;
+            width: calc(100% - 2rem);
+            animation: reviewNotifIn 0.4s cubic-bezier(0.21, 1.02, 0.73, 1) forwards;
+        }
+        @keyframes reviewNotifIn {
+            from { opacity: 0; transform: translateY(20px) scale(0.96); }
+            to { opacity: 1; transform: none; }
+        }
+        #review-notification-banner.hiding {
+            animation: reviewNotifOut 0.3s ease forwards;
+        }
+        @keyframes reviewNotifOut {
+            to { opacity: 0; transform: translateY(16px) scale(0.96); }
+        }
+        .review-notif-inner {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: #1a1a1a;
+            border: 1px solid rgba(250, 204, 21, 0.25);
+            border-left: 4px solid #facc15;
+            border-radius: 12px;
+            padding: 0.9rem 1rem;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.55);
+        }
+        .review-notif-icon {
+            flex-shrink: 0;
+            width: 40px;
+            height: 40px;
+            background: rgba(250, 204, 21, 0.1);
+            border: 1px solid rgba(250, 204, 21, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #facc15;
+        }
+        .review-notif-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        .review-notif-text {
+            font-size: 0.82rem;
+            color: #ccc;
+            line-height: 1.4;
+        }
+        .review-notif-text strong {
+            color: #fff;
+            font-weight: 700;
+        }
+        .review-notif-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            background: linear-gradient(135deg, #cc0000, #ff0000);
+            color: #fff;
+            font-weight: 700;
+            font-size: 0.75rem;
+            padding: 0.35rem 0.9rem;
+            border-radius: 6px;
+            text-decoration: none;
+            width: fit-content;
+            transition: all 0.2s;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .review-notif-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(255,0,0,0.35);
+        }
+        .review-notif-close {
+            flex-shrink: 0;
+            background: none;
+            border: none;
+            color: #555;
+            font-size: 1.3rem;
+            cursor: pointer;
+            padding: 4px;
+            line-height: 1;
+            transition: color 0.15s;
+        }
+        .review-notif-close:hover {
+            color: #ff4444;
+        }
+        @media (max-width: 480px) {
+            #review-notification-banner {
+                bottom: 1rem;
+                right: 0.5rem;
+                width: calc(100% - 1rem);
+            }
+        }
+    </style>
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // No mostrar si ya se cerró en esta sesión
+        const dismissed = sessionStorage.getItem('review_notif_dismissed');
+        if (dismissed) return;
+
+        const BASE = '<?php echo rtrim(base_url(), '/'); ?>';
+        
+        fetch(`${BASE}/api/pendientes_resena.php`)
+            .then(r => r.json())
+            .then(data => {
+                if (!data.ok || !data.pendientes || data.pendientes.length === 0) return;
+                
+                const producto = data.pendientes[0]; // Mostrar el primero
+                const banner = document.getElementById('review-notification-banner');
+                const text = document.getElementById('review-notif-text');
+                const link = document.getElementById('review-notif-link');
+                
+                text.innerHTML = `¡Tu pedido de <strong>${producto.nombre}</strong> fue entregado! ¿Cómo te pareció?`;
+                link.href = `${BASE}/producto.php?id=${producto.id}#reviews-section`;
+                
+                // Mostrar después de 2 segundos
+                setTimeout(() => {
+                    banner.style.display = '';
+                    if (typeof lucide !== 'undefined') lucide.createIcons();
+                }, 2000);
+                
+                // Auto-cerrar después de 15 segundos
+                setTimeout(() => {
+                    closeBanner();
+                }, 17000);
+            })
+            .catch(() => {});
+
+        function closeBanner() {
+            const banner = document.getElementById('review-notification-banner');
+            if (!banner || banner.style.display === 'none') return;
+            banner.classList.add('hiding');
+            setTimeout(() => { banner.style.display = 'none'; }, 350);
+            sessionStorage.setItem('review_notif_dismissed', '1');
+        }
+
+        document.getElementById('review-notif-close').addEventListener('click', closeBanner);
+    });
+    </script>
+    <?php endif; ?>
+
     <!-- Mobile Menu (Futuristic Style) -->
     <div id="mobile-menu" class="hidden md:hidden mobile-menu-panel">
         <!-- Scan line animation -->
