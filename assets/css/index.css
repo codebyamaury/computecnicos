@@ -407,29 +407,7 @@ footer::before {
   }
 }
 
-.glass-card::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 30px;
-  height: 30px;
-  border-top: 3px solid var(--neon-red);
-  border-left: 3px solid var(--neon-red);
-  pointer-events: none;
-}
-
-.glass-card::after {
-  content: '';
-  position: absolute;
-  bottom: 20px;
-  right: 20px;
-  width: 30px;
-  height: 30px;
-  border-bottom: 3px solid var(--neon-red);
-  border-right: 3px solid var(--neon-red);
-  pointer-events: none;
-}
+/* Corner decorations removed — full border is enough */
 
 .glass-icon {
   width: 44px;
