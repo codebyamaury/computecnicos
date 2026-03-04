@@ -8,7 +8,7 @@ $productos_destacados = $stmt->fetchAll();
 
 // Título y CSS extra para esta página (Flowbite + index.css)
 $page_title = 'Inicio';
-    $extra_css = '<link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.1/flowbite.min.css" rel="stylesheet" />' . "\n" . '<link rel="stylesheet" href="' . asset('css/index.css') . '?v=' . time() . '_14">';
+    $extra_css = '<link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.1/flowbite.min.css" rel="stylesheet" />' . "\n" . '<link rel="stylesheet" href="' . asset('css/index.css') . '?v=' . time() . '_14">' . "\n" . '<link rel="stylesheet" href="' . asset('css/productos.css') . '?v=' . time() . '_7">';
 
 // Incluir header común
 include __DIR__ . '/includes/header.php';
@@ -116,19 +116,19 @@ include __DIR__ . '/includes/header.php';
 <section class="container mx-auto px-2 sm:px-4 py-8 md:py-12 w-full">
     <h2 class="section-title">Productos Destacados</h2>
 
-    <div class="featured-grid">
+    <div class="products-grid" style="margin-top: 3rem;">
         <?php if (empty($productos_destacados)): ?>
             <div class="col-span-full text-center text-gray-400">No hay productos destacados disponibles.</div>
         <?php else: ?>
             <?php foreach ($productos_destacados as $p):
                 $esNuevo = (strtotime($p['fecha_creacion']) > strtotime('-15 days'));
                 ?>
-                <div class="tech-card flex flex-col w-full max-w-xs mx-auto cursor-pointer"
-                    onclick="window.location.href='producto.php?id=<?php echo intval($p['id']); ?>'">
-                    <div class="card-image-container">
+                <article class="product-card" onclick="window.location.href='producto.php?id=<?php echo intval($p['id']); ?>'">
+                    <div class="product-image-container">
                         <img src="<?php echo htmlspecialchars($p['imagen'] ?: 'https://via.placeholder.com/600x450?text=Sin+Imagen'); ?>"
                             alt="<?php echo htmlspecialchars($p['nombre']); ?>" loading="lazy">
-                        <div class="absolute top-3 left-3 flex flex-col gap-2 items-start z-10">
+                        
+                        <div class="product-badges">
                             <?php if ($esNuevo): ?>
                                 <span class="tech-badge tech-badge-new">NUEVO</span>
                             <?php endif; ?>
@@ -136,26 +136,30 @@ include __DIR__ . '/includes/header.php';
                                 <span class="tech-badge tech-badge-offer">OFERTA</span>
                             <?php endif; ?>
                         </div>
-                    </div>
-                    <div class="card-info flex flex-col flex-1">
-                        <h3 class="card-title">
-                            <?php echo htmlspecialchars($p['nombre']); ?>
-                        </h3>
-                        <div class="flex flex-wrap gap-2 mb-3">
-                            <span
-                                class="text-xs text-gray-500 border border-gray-700 px-2 py-1"><?php echo htmlspecialchars($p['marca']); ?></span>
-                            <span
-                                class="text-xs text-gray-500 border border-gray-700 px-2 py-1"><?php echo htmlspecialchars($p['categoria']); ?></span>
+                        
+                        <div class="product-overlay">
+                            <span class="view-product-btn">Ver detalles</span>
                         </div>
-                        <div class="card-price mt-auto">
-                            $<?php echo number_format($p['precio'], 0, ',', '.'); ?>
-                        </div>
-                        <?php if ((int) $p['stock'] <= 0): ?>
-                            <button disabled onclick="event.stopPropagation();"
-                                class="mt-2 w-full bg-gray-800 text-gray-500 font-bold py-2 px-4 cursor-not-allowed border border-gray-700">AGOTADO</button>
-                        <?php endif; ?>
                     </div>
-                </div>
+                    
+                    <div class="product-info">
+                        <div class="product-category"><?php echo htmlspecialchars($p['categoria']); ?></div>
+                        <h3 class="product-name"><?php echo htmlspecialchars($p['nombre']); ?></h3>
+                        
+                        <div class="product-meta">
+                            <span class="product-brand"><?php echo htmlspecialchars($p['marca']); ?></span>
+                            <?php if ((int)$p['stock'] > 0): ?>
+                                <span class="product-stock in-stock">En stock</span>
+                            <?php else: ?>
+                                <span class="product-stock out-stock">Agotado</span>
+                            <?php endif; ?>
+                        </div>
+                        
+                        <div class="product-footer">
+                            <div class="product-price">$<?php echo number_format($p['precio'], 0, ',', '.'); ?></div>
+                        </div>
+                    </div>
+                </article>
             <?php endforeach; ?>
         <?php endif; ?>
     </div>
