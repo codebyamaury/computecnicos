@@ -118,7 +118,7 @@ $htmlBody = '
 </body>
 </html>';
 
-// Enviar con el helper (Resend API o mail() fallback)
+// Enviar con el helper (Brevo API o mail() fallback)
 require_once __DIR__ . '/../app/Core/email_helper.php';
 $enviado = enviar_email($email, $asunto, $htmlBody);
 
