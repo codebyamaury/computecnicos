@@ -44,13 +44,13 @@ if (isset($_POST['cambiar_estado'], $_POST['id_pedido'], $_POST['nuevo_estado'])
         $id_usuario   = $_SESSION['usuario']['id'];
         if (in_array($nuevo_estado, ['entregado','pagado']) && !in_array($anterior, ['entregado','pagado'])) {
             foreach ($detalles_upd as $d) {
-                $pdo->prepare('INSERT INTO movimientos_inventario (id_producto, tipo, cantidad, motivo, id_usuario) VALUES (?, "salida", ?, ?, ?)')->execute([$d['id_producto'], $d['cantidad'], 'Venta/Pedido #'.$id_pedido, $id_usuario]);
+                $pdo->prepare("INSERT INTO movimientos_inventario (id_producto, tipo, cantidad, motivo, id_usuario) VALUES (?, 'salida', ?, ?, ?)")->execute([$d['id_producto'], $d['cantidad'], 'Venta/Pedido #'.$id_pedido, $id_usuario]);
                 $pdo->prepare('UPDATE productos SET stock = stock - ? WHERE id = ?')->execute([$d['cantidad'], $d['id_producto']]);
             }
         }
         if ($nuevo_estado === 'cancelado' && in_array($anterior, ['entregado','pagado'])) {
             foreach ($detalles_upd as $d) {
-                $pdo->prepare('INSERT INTO movimientos_inventario (id_producto, tipo, cantidad, motivo, id_usuario) VALUES (?, "entrada", ?, ?, ?)')->execute([$d['id_producto'], $d['cantidad'], 'Cancelación Pedido #'.$id_pedido, $id_usuario]);
+                $pdo->prepare("INSERT INTO movimientos_inventario (id_producto, tipo, cantidad, motivo, id_usuario) VALUES (?, 'entrada', ?, ?, ?)")->execute([$d['id_producto'], $d['cantidad'], 'Cancelación Pedido #'.$id_pedido, $id_usuario]);
                 $pdo->prepare('UPDATE productos SET stock = stock + ? WHERE id = ?')->execute([$d['cantidad'], $d['id_producto']]);
             }
         }
