@@ -71,7 +71,7 @@
           <input type="password" id="modal-login-password" class="glass-input" placeholder="Contraseña" required>
         </div>
         <div class="flex justify-between items-center mb-2">
-          <a href="#" class="text-sm text-red-500 hover:underline">¿Olvidaste tu contraseña?</a>
+          <a href="#" class="text-sm text-red-500 hover:underline" onclick="mostrarForgotPassword(); return false;">¿Olvidaste tu contraseña?</a>
         </div>
         <button type="submit" class="glass-btn" id="modal-btn-login">
           Iniciar sesión
@@ -87,6 +87,27 @@
         <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/google/google-original.svg" alt="Google" class="w-5 h-5">
         Iniciar sesión con Google
       </a>
+    </div>
+
+    <!-- ========== FORMULARIO OLVIDAR CONTRASEÑA ========== -->
+    <div id="modal-glass-forgot-form" style="display:none;">
+      <div id="forgot-msg" style="display:none;border-radius:6px;padding:10px 14px;margin-bottom:14px;font-size:0.85rem;font-weight:600;text-align:center;"></div>
+      <p style="color:#888;font-size:0.85rem;margin-bottom:16px;text-align:center;line-height:1.5">
+        Ingresa tu correo electrónico y te enviaremos un enlace para restablecer tu contraseña.
+      </p>
+      <form id="modal-form-forgot">
+        <div class="glass-input-group">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+          <input type="email" id="forgot-email" class="glass-input" placeholder="tu@correo.com" required>
+        </div>
+        <button type="submit" class="glass-btn" id="forgot-btn" style="margin-top:12px">
+          Enviar enlace de recuperación
+          <span class="spinner hidden" id="forgot-spinner"></span>
+        </button>
+      </form>
+      <div style="text-align:center;margin-top:14px">
+        <a href="#" onclick="volverALogin(); return false;" style="color:#ff4444;font-size:0.82rem;text-decoration:none;font-weight:600">← Volver a iniciar sesión</a>
+      </div>
     </div>
 
     <!-- ========== FORMULARIO REGISTRO MULTI-PASO ========== -->
@@ -399,6 +420,79 @@ document.addEventListener('DOMContentLoaded', function() {
       errorBox.textContent = 'Error de conexión. Intenta de nuevo.';
     } finally {
       btn.removeAttribute('disabled');
+      if (spinner) spinner.classList.add('hidden');
+    }
+  });
+});
+
+// ========== FORGOT PASSWORD ==========
+function mostrarForgotPassword() {
+  document.getElementById('modal-glass-login-form').style.display = 'none';
+  document.getElementById('modal-glass-register-form').style.display = 'none';
+  document.getElementById('modal-glass-forgot-form').style.display = '';
+  document.getElementById('modal-login-title').textContent = 'Recuperar Contraseña';
+  document.getElementById('modal-login-subtitle').textContent = 'Te ayudamos a recuperar el acceso a tu cuenta.';
+  document.querySelector('.glass-tabs').style.display = 'none';
+  var fm = document.getElementById('forgot-msg');
+  fm.style.display = 'none';
+  document.getElementById('forgot-email').value = '';
+  document.getElementById('forgot-email').focus();
+}
+
+function volverALogin() {
+  document.getElementById('modal-glass-forgot-form').style.display = 'none';
+  document.getElementById('modal-glass-login-form').style.display = '';
+  document.querySelector('.glass-tabs').style.display = '';
+  document.getElementById('modal-login-title').textContent = 'Iniciar Sesión';
+  document.getElementById('modal-login-subtitle').textContent = 'Accede a tu cuenta para continuar.';
+  document.getElementById('modal-tab-login').classList.add('active');
+  document.getElementById('modal-tab-register').classList.remove('active');
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  var formForgot = document.getElementById('modal-form-forgot');
+  if (!formForgot) return;
+  
+  formForgot.addEventListener('submit', async function(e) {
+    e.preventDefault();
+    var email = document.getElementById('forgot-email').value.trim();
+    var btn = document.getElementById('forgot-btn');
+    var spinner = document.getElementById('forgot-spinner');
+    var fm = document.getElementById('forgot-msg');
+    
+    if (!email) return;
+    
+    btn.disabled = true;
+    if (spinner) spinner.classList.remove('hidden');
+    fm.style.display = 'none';
+    
+    try {
+      var fd = new FormData();
+      fd.append('email', email);
+      var res = await fetch('api/forgot_password.php', { method: 'POST', body: fd });
+      var data = await res.json();
+      
+      fm.style.display = 'block';
+      if (data.ok) {
+        fm.style.background = 'rgba(74,222,128,0.1)';
+        fm.style.border = '1px solid rgba(74,222,128,0.25)';
+        fm.style.color = '#4ade80';
+        fm.textContent = data.msg;
+        document.getElementById('modal-form-forgot').style.display = 'none';
+      } else {
+        fm.style.background = '#ff474722';
+        fm.style.border = '1px solid rgba(255,71,71,0.25)';
+        fm.style.color = '#ff4747';
+        fm.textContent = data.msg;
+      }
+    } catch(err) {
+      fm.style.display = 'block';
+      fm.style.background = '#ff474722';
+      fm.style.border = '1px solid rgba(255,71,71,0.25)';
+      fm.style.color = '#ff4747';
+      fm.textContent = 'Error de conexión. Intenta de nuevo.';
+    } finally {
+      btn.disabled = false;
       if (spinner) spinner.classList.add('hidden');
     }
   });
