@@ -43,7 +43,7 @@ if (isset($_SESSION['usuario']['id']) && isset($pdo)) {
     <header class="py-4 px-4 flex justify-between items-center relative z-50">
         <!-- Logo y Menú Hamburger a la izquierda -->
         <div class="flex items-center gap-2">
-            <button id="mobile-menu-btn" class="md:hidden p-2 text-white hover:text-red-500 transition-colors" aria-label="Abrir menú">
+            <button id="mobile-menu-btn" class="lg:hidden p-2 text-white hover:text-red-500 transition-colors" aria-label="Abrir menú">
                 <i data-lucide="menu" class="w-7 h-7"></i>
             </button>
             <a href="index.php"
@@ -56,7 +56,7 @@ if (isset($_SESSION['usuario']['id']) && isset($pdo)) {
         </div>
 
         <!-- Menú centrado (Desktop) -->
-        <nav class="hidden md:flex justify-center absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
+        <nav class="hidden lg:flex justify-center absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
             <ul class="flex gap-4 lg:gap-6 text-base lg:text-lg font-semibold">
                 <li>
                     <a href="index.php"
@@ -318,7 +318,7 @@ if (isset($_SESSION['usuario']['id']) && isset($pdo)) {
     <?php endif; ?>
 
     <!-- Mobile Menu (Futuristic Style) -->
-    <div id="mobile-menu" class="hidden md:hidden mobile-menu-panel">
+    <div id="mobile-menu" class="hidden lg:hidden mobile-menu-panel">
         <!-- Scan line animation -->
         <div class="mobile-menu-scanline"></div>
 
