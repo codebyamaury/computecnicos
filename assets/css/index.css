@@ -69,7 +69,6 @@ body {
 }
 
 /* Título con efecto Glitch/Neon */
-/* COMPU (Blanco) con Brillo Rojo */
 .hero-title {
   font-size: 4rem;
   font-weight: 900;
@@ -79,33 +78,30 @@ body {
   margin-bottom: 1.5rem;
   position: relative;
   display: inline-block;
-  /* El contorno iluminado (resplandor) que envuelve toda la palabra y parpadea */
-  animation: resplandor-parpadeante 2s infinite alternate;
+  
+  /* Contorno rojo verdadero sobre las letras que parpadea */
+  -webkit-text-stroke: 2px transparent;
+  animation: stroke-neon-parpadeante 3s infinite alternate;
 }
 
-/* COMPU es blanco nativo, TECNICOS es rojo nativo */
+/* Letras de TECNICOS en rojo interno */
 .hero-title span {
   color: #ff1a1a;
 }
 
-/* Animación del contorno brillante exterior */
-@keyframes resplandor-parpadeante {
-  0% {
-    text-shadow:
-      0 0 5px rgba(255, 0, 0, 0.4),
-      0 0 10px rgba(255, 0, 0, 0.4);
-  }
-  50% {
-    text-shadow:
-      0 0 2px rgba(255, 0, 0, 0.1);
-  }
-  100% {
+/* Animación del contorno de las letras (stroke y shadow) */
+@keyframes stroke-neon-parpadeante {
+  0%, 18%, 22%, 25%, 53%, 57%, 100% {
+    -webkit-text-stroke: 2px #ff0000;
     text-shadow:
       0 0 10px #ff0000,
       0 0 20px #ff0000,
-      0 0 30px #ff0000,
       0 0 40px #ff0000,
-      0 0 60px #ff0000;
+      0 0 80px #ff0000;
+  }
+  20%, 24%, 55% {
+    -webkit-text-stroke: 2px #330000;
+    text-shadow: 0 0 2px rgba(255, 0, 0, 0.3);
   }
 }
 
