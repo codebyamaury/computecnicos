@@ -20,9 +20,11 @@ include __DIR__ . '/includes/header.php';
     <div id="hero-canvas-container" class="absolute inset-0 z-0 pointer-events-none"></div>
 
     <div class="hero-content relative z-10">
-        <h1 class="hero-title animate-slide-up">
-            COMPU<span>TECNICOS</span>
-        </h1>
+        <div class="animate-slide-up">
+            <h1 class="hero-title">
+                COMPU<span>TECNICOS</span>
+            </h1>
+        </div>
         <br>
 
 
