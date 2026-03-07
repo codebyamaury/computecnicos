@@ -100,8 +100,12 @@ body {
   margin-bottom: 2.5rem;
   border-left: 3px solid var(--neon-red);
   padding-left: 1rem;
-  display: inline-block;
   background: rgba(0, 0, 0, 0.5);
+  
+  /* Mantener altura para evitar saltos de línea molestos */
+  display: inline-block;
+  min-height: 3em;
+  line-height: 1.5em;
 }
 
 /* Botones Tech */
