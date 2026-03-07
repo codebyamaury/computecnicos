@@ -120,15 +120,6 @@ include __DIR__ . '/includes/header.php';
         <div class="text-center text-gray-400" style="margin-top:3rem">No hay productos destacados disponibles.</div>
     <?php else: ?>
     <div class="carousel-destacados-wrap" style="position:relative;margin-top:3rem">
-        <!-- Flecha izquierda -->
-        <button class="carousel-dest-arrow carousel-dest-prev" id="dest-prev" aria-label="Anterior">
-            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width:22px;height:22px"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
-        </button>
-        <!-- Flecha derecha -->
-        <button class="carousel-dest-arrow carousel-dest-next" id="dest-next" aria-label="Siguiente">
-            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width:22px;height:22px"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
-        </button>
-
         <div class="carousel-destacados" id="carousel-destacados">
             <?php foreach ($productos_destacados as $p):
                 $esNuevo = !empty($p['nuevo_hasta']) && strtotime($p['nuevo_hasta']) >= strtotime('today');
@@ -191,30 +182,7 @@ include __DIR__ . '/includes/header.php';
     flex: 0 0 calc(25% - 0.94rem);
     min-width: 260px;
 }
-/* Flechas */
-.carousel-dest-arrow {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    z-index: 20;
-    width: 42px; height: 42px;
-    border-radius: 50%;
-    background: rgba(20,20,20,0.85);
-    border: 1px solid rgba(255,255,255,0.1);
-    color: #ccc;
-    display: flex; align-items: center; justify-content: center;
-    cursor: pointer;
-    transition: all 0.25s;
-    backdrop-filter: blur(8px);
-}
-.carousel-dest-arrow:hover {
-    background: rgba(220,38,38,0.8);
-    color: #fff;
-    border-color: rgba(220,38,38,0.5);
-    box-shadow: 0 0 18px rgba(220,38,38,0.35);
-}
-.carousel-dest-prev { left: -18px; }
-.carousel-dest-next { right: -18px; }
+
 /* Responsive */
 @media (max-width: 1200px) {
     .carousel-dest-card { flex: 0 0 calc(33.333% - 0.84rem); }
@@ -233,11 +201,8 @@ include __DIR__ . '/includes/header.php';
 (function(){
     var track = document.getElementById('carousel-destacados');
     if (!track) return;
-    var btnPrev = document.getElementById('dest-prev');
-    var btnNext = document.getElementById('dest-next');
     var paused = false;
-    var speed = 0.8; // pixeles por frame (~48px/seg a 60fps)
-    var rafId = null;
+    var speed = 0.8;
 
     // Duplicar las tarjetas para loop infinito
     var cards = track.innerHTML;
@@ -248,37 +213,13 @@ include __DIR__ . '/includes/header.php';
     function animate() {
         if (!paused) {
             track.scrollLeft += speed;
-            // Cuando llegamos a la mitad (el duplicado), volvemos al inicio sin que se note
             if (track.scrollLeft >= halfWidth) {
                 track.scrollLeft -= halfWidth;
             }
         }
-        rafId = requestAnimationFrame(animate);
+        requestAnimationFrame(animate);
     }
 
-    // Flechas: salto manual suave
-    function jumpBy(px) {
-        var target = track.scrollLeft + px;
-        var start = track.scrollLeft;
-        var duration = 400;
-        var startTime = null;
-        function step(ts) {
-            if (!startTime) startTime = ts;
-            var progress = Math.min((ts - startTime) / duration, 1);
-            var ease = progress < 0.5 ? 2*progress*progress : 1-Math.pow(-2*progress+2,2)/2;
-            track.scrollLeft = start + (target - start) * ease;
-            if (progress < 1) requestAnimationFrame(step);
-        }
-        requestAnimationFrame(step);
-    }
-
-    function getCardWidth() {
-        var card = track.querySelector('.carousel-dest-card');
-        return card ? card.offsetWidth + 20 : 300;
-    }
-
-    if (btnPrev) btnPrev.addEventListener('click', function(e){ e.stopPropagation(); jumpBy(-getCardWidth()); });
-    if (btnNext) btnNext.addEventListener('click', function(e){ e.stopPropagation(); jumpBy(getCardWidth()); });
 
     // Mouse encima = pausa, mouse fuera = reanuda
     track.addEventListener('mouseenter', function(){ paused = true; });
