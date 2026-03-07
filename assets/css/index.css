@@ -84,12 +84,27 @@ body {
   display: inline-block;
 }
 
-/* TECNICOS (Rojo) con Brillo Rojo también */
+@keyframes neon-blink {
+  0%, 18%, 22%, 25%, 53%, 57%, 100% {
+    text-shadow:
+      0 0 8px var(--neon-red),
+      0 0 20px var(--neon-red),
+      0 0 40px var(--neon-red);
+    color: #ff3b3b;
+  }
+  20%, 24%, 55% {
+    text-shadow: none;
+    color: #4a0000;
+  }
+}
+
+/* TECNICOS (Rojo) con Brillo Rojo también y animación de parpadeo */
 .hero-title span {
   color: #dc2626;
   text-shadow:
     0 0 5px var(--neon-red),
     0 0 15px var(--neon-red);
+  animation: neon-blink 4s infinite alternate;
 }
 
 .hero-subtitle {
