@@ -68,7 +68,7 @@ body {
   text-align: center;
 }
 
-/* Título con efecto Glitch/Neon */
+/* Título principal */
 .hero-title {
   font-size: 4rem;
   font-weight: 900;
@@ -78,31 +78,11 @@ body {
   margin-bottom: 1.5rem;
   position: relative;
   display: inline-block;
-  
-  /* Contorno rojo verdadero sobre las letras que parpadea */
-  -webkit-text-stroke: 2px transparent;
-  animation: stroke-neon-parpadeante 3s infinite alternate;
 }
 
-/* Letras de TECNICOS en rojo interno */
+/* Letras de TECNICOS en rojo */
 .hero-title span {
   color: #ff1a1a;
-}
-
-/* Animación del contorno de las letras (stroke y shadow) */
-@keyframes stroke-neon-parpadeante {
-  0%, 18%, 22%, 25%, 53%, 57%, 100% {
-    -webkit-text-stroke: 2px #ff0000;
-    text-shadow:
-      0 0 10px #ff0000,
-      0 0 20px #ff0000,
-      0 0 40px #ff0000,
-      0 0 80px #ff0000;
-  }
-  20%, 24%, 55% {
-    -webkit-text-stroke: 2px #330000;
-    text-shadow: 0 0 2px rgba(255, 0, 0, 0.3);
-  }
 }
 
 .hero-subtitle {
@@ -730,9 +710,8 @@ footer::before {
 }
 
 .hero-title {
-  transform-style: preserve-3d;
-  /* Animación desactivada, fijo en posición máxima */
-  transform: translateZ(50px) rotateX(5deg);
+  transform-style: flat;
+  transform: none;
 }
 
 @keyframes float3D {
