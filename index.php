@@ -2,7 +2,7 @@
 // Sesión manejada por bootstrap (DB handler)
 require_once __DIR__ . '/app/Core/bootstrap.php';
 // Obtener productos destacados: primero los marcados como destacado, luego los que tienen oferta activa
-$stmt = $pdo->prepare('SELECT p.*, c.nombre AS categoria, m.nombre AS marca FROM productos p LEFT JOIN categorias c ON p.id_categoria = c.id LEFT JOIN marcas m ON p.id_marca = m.id WHERE p.destacado = 1 OR (p.oferta = 1 AND (p.oferta_hasta IS NULL OR p.oferta_hasta >= CURDATE())) ORDER BY p.destacado DESC, p.fecha_creacion DESC LIMIT 4');
+$stmt = $pdo->prepare('SELECT p.*, c.nombre AS categoria, m.nombre AS marca FROM productos p LEFT JOIN categorias c ON p.id_categoria = c.id LEFT JOIN marcas m ON p.id_marca = m.id WHERE p.destacado = 1 OR (p.oferta = 1 AND (p.oferta_hasta IS NULL OR p.oferta_hasta >= CURDATE())) ORDER BY p.destacado DESC, p.fecha_creacion DESC LIMIT 20');
 $stmt->execute();
 $productos_destacados = $stmt->fetchAll();
 
@@ -112,23 +112,32 @@ include __DIR__ . '/includes/header.php';
         </div>
     </div>
 </section>
-<!-- Productos Destacados -->
+<!-- Productos Destacados - Carrusel -->
 <section class="container mx-auto px-2 sm:px-4 py-8 md:py-12 w-full">
     <h2 class="section-title">Productos Destacados</h2>
 
-    <div class="products-grid" style="margin-top: 3rem;">
-        <?php if (empty($productos_destacados)): ?>
-            <div class="col-span-full text-center text-gray-400">No hay productos destacados disponibles.</div>
-        <?php else: ?>
+    <?php if (empty($productos_destacados)): ?>
+        <div class="text-center text-gray-400" style="margin-top:3rem">No hay productos destacados disponibles.</div>
+    <?php else: ?>
+    <div class="carousel-destacados-wrap" style="position:relative;margin-top:3rem">
+        <!-- Flecha izquierda -->
+        <button class="carousel-dest-arrow carousel-dest-prev" id="dest-prev" aria-label="Anterior">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width:22px;height:22px"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+        </button>
+        <!-- Flecha derecha -->
+        <button class="carousel-dest-arrow carousel-dest-next" id="dest-next" aria-label="Siguiente">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width:22px;height:22px"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+        </button>
+
+        <div class="carousel-destacados" id="carousel-destacados">
             <?php foreach ($productos_destacados as $p):
                 $esNuevo = !empty($p['nuevo_hasta']) && strtotime($p['nuevo_hasta']) >= strtotime('today');
                 $enOferta = !empty($p['oferta']) && (empty($p['oferta_hasta']) || strtotime($p['oferta_hasta']) >= strtotime('today'));
-                ?>
-                <article class="product-card" onclick="window.location.href='producto.php?id=<?php echo intval($p['id']); ?>'">
+            ?>
+                <article class="product-card carousel-dest-card" onclick="window.location.href='producto.php?id=<?php echo intval($p['id']); ?>'">
                     <div class="product-image-container">
                         <img src="<?php echo htmlspecialchars($p['imagen'] ?: 'https://via.placeholder.com/600x450?text=Sin+Imagen'); ?>"
                             alt="<?php echo htmlspecialchars($p['nombre']); ?>" loading="lazy">
-                        
                         <div class="product-badges">
                             <?php if ($esNuevo): ?>
                                 <span class="tech-badge tech-badge-new">NUEVO</span>
@@ -137,16 +146,13 @@ include __DIR__ . '/includes/header.php';
                                 <span class="tech-badge tech-badge-offer">OFERTA</span>
                             <?php endif; ?>
                         </div>
-                        
                         <div class="product-overlay">
                             <span class="view-product-btn">Ver detalles</span>
                         </div>
                     </div>
-                    
                     <div class="product-info">
                         <div class="product-category"><?php echo htmlspecialchars($p['categoria']); ?></div>
                         <h3 class="product-name"><?php echo htmlspecialchars($p['nombre']); ?></h3>
-                        
                         <div class="product-meta">
                             <span class="product-brand"><?php echo htmlspecialchars($p['marca']); ?></span>
                             <?php if ((int)$p['stock'] > 0): ?>
@@ -155,16 +161,163 @@ include __DIR__ . '/includes/header.php';
                                 <span class="product-stock out-stock">Agotado</span>
                             <?php endif; ?>
                         </div>
-                        
                         <div class="product-footer">
                             <div class="product-price">$<?php echo number_format($p['precio'], 0, ',', '.'); ?></div>
                         </div>
                     </div>
                 </article>
             <?php endforeach; ?>
-        <?php endif; ?>
+        </div>
     </div>
+    <?php endif; ?>
 </section>
+
+<style>
+/* Carrusel Productos Destacados */
+.carousel-destacados-wrap {
+    position: relative;
+    overflow: visible;
+}
+.carousel-destacados {
+    display: flex;
+    gap: 1.25rem;
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    padding: 0.5rem 0 1.5rem;
+    scrollbar-width: none;
+}
+.carousel-destacados::-webkit-scrollbar { display: none; }
+.carousel-dest-card {
+    flex: 0 0 calc(25% - 0.94rem);
+    min-width: 260px;
+    scroll-snap-align: start;
+}
+/* Flechas */
+.carousel-dest-arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 20;
+    width: 42px; height: 42px;
+    border-radius: 50%;
+    background: rgba(20,20,20,0.85);
+    border: 1px solid rgba(255,255,255,0.1);
+    color: #ccc;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    transition: all 0.25s;
+    backdrop-filter: blur(8px);
+}
+.carousel-dest-arrow:hover {
+    background: rgba(220,38,38,0.8);
+    color: #fff;
+    border-color: rgba(220,38,38,0.5);
+    box-shadow: 0 0 18px rgba(220,38,38,0.35);
+}
+.carousel-dest-prev { left: -18px; }
+.carousel-dest-next { right: -18px; }
+/* Indicador de pausa */
+.carousel-destacados-wrap.paused .carousel-dest-arrow::after {
+    content: '';
+    position: absolute;
+    bottom: -6px;
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: #ef4444;
+}
+/* Responsive */
+@media (max-width: 1200px) {
+    .carousel-dest-card { flex: 0 0 calc(33.333% - 0.84rem); }
+}
+@media (max-width: 900px) {
+    .carousel-dest-card { flex: 0 0 calc(50% - 0.625rem); }
+    .carousel-dest-prev { left: 6px; }
+    .carousel-dest-next { right: 6px; }
+}
+@media (max-width: 600px) {
+    .carousel-dest-card { flex: 0 0 85%; min-width: 240px; }
+}
+</style>
+
+<script>
+(function(){
+    var track = document.getElementById('carousel-destacados');
+    var wrap = track ? track.closest('.carousel-destacados-wrap') : null;
+    if (!track || !wrap) return;
+    var btnPrev = document.getElementById('dest-prev');
+    var btnNext = document.getElementById('dest-next');
+    var autoInterval = null;
+    var paused = false;
+    var SPEED = 3500; // ms entre scroll
+
+    function getCardWidth() {
+        var card = track.querySelector('.carousel-dest-card');
+        if (!card) return 300;
+        return card.offsetWidth + 20; // card width + gap
+    }
+
+    function scrollNext() {
+        var cw = getCardWidth();
+        // Si llegamos al final, volver al inicio
+        if (track.scrollLeft + track.offsetWidth >= track.scrollWidth - 10) {
+            track.scrollTo({ left: 0, behavior: 'smooth' });
+        } else {
+            track.scrollBy({ left: cw, behavior: 'smooth' });
+        }
+    }
+
+    function scrollPrev() {
+        var cw = getCardWidth();
+        if (track.scrollLeft <= 10) {
+            track.scrollTo({ left: track.scrollWidth, behavior: 'smooth' });
+        } else {
+            track.scrollBy({ left: -cw, behavior: 'smooth' });
+        }
+    }
+
+    function startAuto() {
+        stopAuto();
+        if (!paused) {
+            autoInterval = setInterval(scrollNext, SPEED);
+        }
+    }
+
+    function stopAuto() {
+        if (autoInterval) { clearInterval(autoInterval); autoInterval = null; }
+    }
+
+    function togglePause() {
+        paused = !paused;
+        if (paused) {
+            stopAuto();
+            wrap.classList.add('paused');
+        } else {
+            wrap.classList.remove('paused');
+            startAuto();
+        }
+    }
+
+    // Flechas
+    if (btnPrev) btnPrev.addEventListener('click', function(e){ e.stopPropagation(); scrollPrev(); });
+    if (btnNext) btnNext.addEventListener('click', function(e){ e.stopPropagation(); scrollNext(); });
+
+    // Click en el carrusel pausa/reanuda
+    track.addEventListener('click', function(e){
+        // Si el click fue en una tarjeta, la navegacion la maneja el onclick del card
+        // Solo toggleamos pausa
+        togglePause();
+    });
+
+    // Pausa al hover, reanuda al salir (si no esta pausado por click)
+    track.addEventListener('mouseenter', function(){ stopAuto(); });
+    track.addEventListener('mouseleave', function(){ if (!paused) startAuto(); });
+
+    // Iniciar auto-scroll
+    startAuto();
+})();
+</script>
 
 <!-- Creadores -->
 <section class="container mx-auto px-2 sm:px-4 py-8 md:py-16 w-full relative z-10 border-t border-gray-800 mt-12">
