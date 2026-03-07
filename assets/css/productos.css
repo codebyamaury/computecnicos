@@ -398,6 +398,8 @@
     position: relative;
     display: flex;
     flex-direction: column;
+    height: 100%;
+    min-height: 440px;
 }
 
 .product-card::before {

@@ -1554,6 +1554,7 @@ footer .text-center.text-gray-500 {
   flex-direction: column;
   align-items: center;
   border-radius: 8px;
+  height: 350px;
 }
 
 .team-card:hover {
@@ -1610,4 +1611,5 @@ footer .text-center.text-gray-500 {
   letter-spacing: 0.5px;
   opacity: 0.9;
   font-weight: 500;
+  margin-top: auto;
 }
