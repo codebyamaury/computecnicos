@@ -37,6 +37,10 @@ if (isset($_SESSION['usuario']['id']) && isset($pdo)) {
     <link rel="stylesheet" href="<?= asset('css/large-screens.css') ?>?v=<?= time() ?>_1">
     <script src="<?= asset('js/cart.js') ?>"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- AOS (Animate On Scroll) -->
+    <link rel="stylesheet" href="https://unpkg.com/aos@2.3.1/dist/aos.css" />
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>document.addEventListener('DOMContentLoaded', function(){ AOS.init({ duration: 800, once: true }); });</script>
 </head>
 
 <body class="min-h-screen flex flex-col">

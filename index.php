@@ -246,7 +246,7 @@ include __DIR__ . '/includes/header.php';
     <h2 class="section-title">Creadores</h2>
     <div class="team-grid mt-8">
         <!-- Amaury -->
-        <div class="team-card">
+        <div class="team-card" data-aos="flip-right" data-aos-delay="0">
             <div class="team-img-wrapper">
                 <img src="assets/images/amaury.jpg" onerror="this.onerror=null;this.src='https://ui-avatars.com/api/?name=Amaury+Mendoza&background=0a0a0a&color=dc2626&size=200&bold=true';" alt="Amaury Enrique Mendoza Acosta">
             </div>
@@ -254,7 +254,7 @@ include __DIR__ . '/includes/header.php';
             <p class="team-role">Desarrollador Full Stack<br>& Director</p>
         </div>
         <!-- Carlos -->
-        <div class="team-card">
+        <div class="team-card" data-aos="flip-right" data-aos-delay="100">
             <div class="team-img-wrapper">
                 <img src="assets/images/Carmona.jpg" onerror="this.onerror=null;this.src='https://ui-avatars.com/api/?name=Carlos+Carmona&background=0a0a0a&color=dc2626&size=200&bold=true';" alt="Carlos Alberto Carmona Miranda">
             </div>
@@ -262,7 +262,7 @@ include __DIR__ . '/includes/header.php';
             <p class="team-role">Desarrollador Frontend</p>
         </div>
         <!-- Jose -->
-        <div class="team-card">
+        <div class="team-card" data-aos="flip-right" data-aos-delay="200">
             <div class="team-img-wrapper">
                 <img src="assets/images/Jose.jpg" onerror="this.onerror=null;this.src='https://ui-avatars.com/api/?name=Jose+Olivo&background=0a0a0a&color=dc2626&size=200&bold=true';" alt="Jose Miguel Olivo Zabaleta">
             </div>
@@ -270,7 +270,7 @@ include __DIR__ . '/includes/header.php';
             <p class="team-role">Desarrollador Frontend</p>
         </div>
         <!-- Samuel -->
-        <div class="team-card">
+        <div class="team-card" data-aos="flip-right" data-aos-delay="300">
             <div class="team-img-wrapper">
                 <img src="assets/images/Samuel.jpg" onerror="this.onerror=null;this.src='https://ui-avatars.com/api/?name=Samuel+Ramos&background=0a0a0a&color=dc2626&size=200&bold=true';" alt="Samuel David Ramos Teran">
             </div>
@@ -278,7 +278,7 @@ include __DIR__ . '/includes/header.php';
             <p class="team-role">Frontend &<br>Documentación</p>
         </div>
         <!-- Luis -->
-        <div class="team-card">
+        <div class="team-card" data-aos="flip-right" data-aos-delay="400">
             <div class="team-img-wrapper">
                 <img src="assets/images/Luis.jpg" onerror="this.onerror=null;this.src='https://ui-avatars.com/api/?name=Luis+Perez&background=0a0a0a&color=dc2626&size=200&bold=true';" alt="Luis David Perez Coa">
             </div>
