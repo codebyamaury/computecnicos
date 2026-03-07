@@ -80,144 +80,157 @@ body {
   display: inline-block;
 }
 
-/* Letras de TECNICOS — efecto glitch cyberpunk + neon */
+/* ===========================================
+   TECNICOS — Neon Breathing + Glitch + Shimmer
+   =========================================== */
+
 .hero-title span {
   color: #ff1a1a;
   position: relative;
   display: inline-block;
-  animation: glitch-skew 4s infinite linear alternate-reverse;
-  text-shadow:
-    0 0 7px #ff0000,
-    0 0 15px #ff0000,
-    0 0 30px #ff0000,
-    0 0 60px #cc0000;
+  animation: neon-breathe 2.5s ease-in-out infinite alternate,
+             glitch-shake 3s infinite linear;
 }
 
-/* Canal Cyan (::before) */
+/* Neón que respira — glow pulsante dramático */
+@keyframes neon-breathe {
+  0% {
+    text-shadow:
+      0 0 4px #ff0000,
+      0 0 11px #ff0000,
+      0 0 19px #ff0000,
+      0 0 40px #cc0000;
+  }
+  100% {
+    text-shadow:
+      0 0 8px #ff2222,
+      0 0 20px #ff0000,
+      0 0 45px #ff0000,
+      0 0 80px #cc0000,
+      0 0 120px rgba(255, 0, 0, 0.3);
+  }
+}
+
+/* Shake del glitch — más agresivo */
+@keyframes glitch-shake {
+  0%, 78% { transform: none; }
+  79% { transform: translateX(3px) skewX(-2deg); }
+  79.5% { transform: translateX(-4px) skewX(3deg); }
+  80% { transform: translateX(2px) skewY(1deg); }
+  80.5% { transform: translateX(-1px) skewX(-1deg); }
+  81% { transform: none; }
+  93% { transform: none; }
+  93.5% { transform: translateX(-3px) skewX(2deg); }
+  94% { transform: translateX(5px) skewX(-3deg); }
+  94.5% { transform: translateX(-2px); }
+  95% { transform: none; }
+  100% { transform: none; }
+}
+
+/* Shimmer de luz que barre las letras */
 .hero-title span::before {
   content: attr(data-text);
   position: absolute;
   top: 0;
-  left: 2px;
+  left: 0;
   width: 100%;
   height: 100%;
-  color: #00ffff;
-  mix-blend-mode: screen;
-  clip-path: inset(0 0 0 0);
-  animation: glitch-before 4s infinite linear alternate-reverse;
-  opacity: 0;
+  background: linear-gradient(
+    120deg,
+    transparent 0%,
+    transparent 35%,
+    rgba(255, 255, 255, 0.35) 48%,
+    rgba(255, 255, 255, 0.6) 50%,
+    rgba(255, 255, 255, 0.35) 52%,
+    transparent 65%,
+    transparent 100%
+  );
+  background-size: 250% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: light-sweep 4s ease-in-out infinite;
+  pointer-events: none;
 }
 
-/* Canal Magenta (::after) */
+@keyframes light-sweep {
+  0%, 15% { background-position: 150% 0; }
+  40%, 100% { background-position: -50% 0; }
+}
+
+/* Canal RGB Glitch */
 .hero-title span::after {
   content: attr(data-text);
   position: absolute;
   top: 0;
-  left: -2px;
+  left: 0;
   width: 100%;
   height: 100%;
-  color: #ff00ff;
+  color: #00ffff;
   mix-blend-mode: screen;
-  clip-path: inset(0 0 0 0);
-  animation: glitch-after 4s infinite linear alternate-reverse;
   opacity: 0;
+  animation: rgb-glitch 3s infinite linear;
+  pointer-events: none;
 }
 
-/* Shake sutil del texto principal */
-@keyframes glitch-skew {
-  0%, 84% { transform: none; }
-  85% { transform: skewX(-1deg) translateX(2px); }
-  86% { transform: skewX(2deg) translateX(-1px); }
-  87% { transform: skewX(-0.5deg); }
-  88% { transform: none; }
-  93% { transform: none; }
-  94% { transform: skewX(1deg) translateX(-2px); }
-  95% { transform: skewX(-2deg) translateX(1px); }
-  96% { transform: none; }
-  100% { transform: none; }
-}
-
-/* Glitch del canal cyan */
-@keyframes glitch-before {
-  0%, 84% { opacity: 0; }
-  85% {
-    opacity: 0.8;
-    left: 3px;
-    clip-path: inset(10% 0 60% 0);
+@keyframes rgb-glitch {
+  0%, 78% { opacity: 0; clip-path: inset(0 0 0 0); }
+  79% {
+    opacity: 0.9;
+    left: 5px;
+    clip-path: inset(8% 0 75% 0);
+    text-shadow: -3px 0 #ff00ff;
   }
-  85.5% {
-    opacity: 0.8;
-    left: -2px;
-    clip-path: inset(50% 0 20% 0);
-  }
-  86% {
-    opacity: 0.8;
-    left: 4px;
-    clip-path: inset(30% 0 35% 0);
-  }
-  87% {
-    opacity: 0;
-    left: 2px;
-  }
-  93% { opacity: 0; }
-  94% {
-    opacity: 0.7;
-    left: -3px;
-    clip-path: inset(15% 0 50% 0);
-  }
-  94.5% {
-    opacity: 0.7;
-    left: 2px;
-    clip-path: inset(65% 0 10% 0);
-  }
-  95% {
-    opacity: 0.7;
-    left: -1px;
-    clip-path: inset(40% 0 25% 0);
-  }
-  96% { opacity: 0; }
-  100% { opacity: 0; }
-}
-
-/* Glitch del canal magenta */
-@keyframes glitch-after {
-  0%, 84% { opacity: 0; }
-  85% {
-    opacity: 0.8;
-    left: -3px;
-    clip-path: inset(55% 0 15% 0);
-  }
-  85.5% {
-    opacity: 0.8;
-    left: 2px;
-    clip-path: inset(20% 0 45% 0);
-  }
-  86% {
-    opacity: 0.8;
+  79.3% {
+    opacity: 0.9;
     left: -4px;
-    clip-path: inset(70% 0 5% 0);
+    clip-path: inset(42% 0 30% 0);
+    text-shadow: 3px 0 #ff00ff;
   }
-  87% {
+  79.6% {
+    opacity: 0.9;
+    left: 6px;
+    clip-path: inset(68% 0 8% 0);
+    text-shadow: -2px 0 #ff00ff;
+  }
+  80% {
+    opacity: 0.8;
+    left: -3px;
+    clip-path: inset(15% 0 55% 0);
+    text-shadow: 4px 0 #ff00ff;
+  }
+  80.5% {
     opacity: 0;
-    left: -2px;
+    left: 0;
   }
   93% { opacity: 0; }
-  94% {
-    opacity: 0.7;
-    left: 3px;
-    clip-path: inset(45% 0 30% 0);
+  93.5% {
+    opacity: 0.9;
+    left: -6px;
+    clip-path: inset(5% 0 60% 0);
+    text-shadow: 4px 0 #ff00ff;
+  }
+  93.8% {
+    opacity: 0.9;
+    left: 4px;
+    clip-path: inset(50% 0 20% 0);
+    text-shadow: -3px 0 #ff00ff;
+  }
+  94.1% {
+    opacity: 0.9;
+    left: -5px;
+    clip-path: inset(25% 0 40% 0);
+    text-shadow: 5px 0 #ff00ff;
   }
   94.5% {
-    opacity: 0.7;
-    left: -2px;
-    clip-path: inset(5% 0 70% 0);
+    opacity: 0.8;
+    left: 3px;
+    clip-path: inset(72% 0 5% 0);
   }
   95% {
-    opacity: 0.7;
-    left: 1px;
-    clip-path: inset(60% 0 15% 0);
+    opacity: 0;
+    left: 0;
   }
-  96% { opacity: 0; }
   100% { opacity: 0; }
 }
 
