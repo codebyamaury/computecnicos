@@ -22,7 +22,7 @@ include __DIR__ . '/includes/header.php';
     <div class="hero-content relative z-10">
         <div class="animate-slide-up">
             <h1 class="hero-title">
-                COMPU<span>TECNICOS</span>
+                COMPU<span data-text="TECNICOS">TECNICOS</span>
             </h1>
         </div>
         <br>
