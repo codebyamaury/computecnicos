@@ -244,23 +244,20 @@ include __DIR__ . '/includes/header.php';
 <script>
 (function(){
     var track = document.getElementById('carousel-destacados');
-    var wrap = track ? track.closest('.carousel-destacados-wrap') : null;
-    if (!track || !wrap) return;
+    if (!track) return;
     var btnPrev = document.getElementById('dest-prev');
     var btnNext = document.getElementById('dest-next');
     var autoInterval = null;
-    var paused = false;
-    var SPEED = 3500; // ms entre scroll
+    var SPEED = 3500;
 
     function getCardWidth() {
         var card = track.querySelector('.carousel-dest-card');
         if (!card) return 300;
-        return card.offsetWidth + 20; // card width + gap
+        return card.offsetWidth + 20;
     }
 
     function scrollNext() {
         var cw = getCardWidth();
-        // Si llegamos al final, volver al inicio
         if (track.scrollLeft + track.offsetWidth >= track.scrollWidth - 10) {
             track.scrollTo({ left: 0, behavior: 'smooth' });
         } else {
@@ -279,40 +276,20 @@ include __DIR__ . '/includes/header.php';
 
     function startAuto() {
         stopAuto();
-        if (!paused) {
-            autoInterval = setInterval(scrollNext, SPEED);
-        }
+        autoInterval = setInterval(scrollNext, SPEED);
     }
 
     function stopAuto() {
         if (autoInterval) { clearInterval(autoInterval); autoInterval = null; }
     }
 
-    function togglePause() {
-        paused = !paused;
-        if (paused) {
-            stopAuto();
-            wrap.classList.add('paused');
-        } else {
-            wrap.classList.remove('paused');
-            startAuto();
-        }
-    }
-
     // Flechas
     if (btnPrev) btnPrev.addEventListener('click', function(e){ e.stopPropagation(); scrollPrev(); });
     if (btnNext) btnNext.addEventListener('click', function(e){ e.stopPropagation(); scrollNext(); });
 
-    // Click en el carrusel pausa/reanuda
-    track.addEventListener('click', function(e){
-        // Si el click fue en una tarjeta, la navegacion la maneja el onclick del card
-        // Solo toggleamos pausa
-        togglePause();
-    });
-
-    // Pausa al hover, reanuda al salir (si no esta pausado por click)
-    track.addEventListener('mouseenter', function(){ stopAuto(); });
-    track.addEventListener('mouseleave', function(){ if (!paused) startAuto(); });
+    // Mouse encima = pausa, mouse fuera = reanuda
+    track.addEventListener('mouseenter', stopAuto);
+    track.addEventListener('mouseleave', startAuto);
 
     // Iniciar auto-scroll
     startAuto();
