@@ -154,9 +154,7 @@ include '_layout.php';
 <main class="admin-content">
     <div class="admin-content-inner">
         <?php if ($mensaje): ?>
-            <div class="adm-alert <?= strpos($mensaje, 'correctamente') !== false ? 'adm-alert-success' : 'adm-alert-error' ?>">
-                <?= $mensaje ?>
-            </div>
+            <script>document.addEventListener('DOMContentLoaded', function(){ admToast('<?= addslashes($mensaje) ?>', '<?= strpos($mensaje, "correctamente") !== false ? "success" : "error" ?>'); });</script>
         <?php endif; ?>
 
         <div class="adm-form">

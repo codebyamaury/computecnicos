@@ -339,6 +339,112 @@
 
 <script>if (typeof lucide !== 'undefined') lucide.createIcons();</script>
 
+<!-- Sistema de Toast Admin (reutilizable) -->
+<style>
+    .adm-toast {
+        position: fixed;
+        bottom: 1.5rem;
+        right: 1.5rem;
+        z-index: 9999;
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        background: #1e1e1e;
+        border-radius: 12px;
+        padding: 1rem 1.1rem 1rem 1rem;
+        min-width: 300px;
+        max-width: 400px;
+        box-shadow: 0 8px 32px rgba(0,0,0,.55);
+        animation: admToastIn .35s cubic-bezier(.21,1.02,.73,1) forwards;
+        overflow: hidden;
+    }
+    .adm-toast.adm-toast-success {
+        border: 1px solid rgba(74,222,128,.35);
+        border-left: 4px solid #4ade80;
+    }
+    .adm-toast.adm-toast-error {
+        border: 1px solid rgba(239,68,68,.35);
+        border-left: 4px solid #ef4444;
+    }
+    .adm-toast.adm-toast-hide {
+        animation: admToastOut .3s ease forwards;
+    }
+    @keyframes admToastIn {
+        from { opacity:0; transform:translateY(20px) scale(.96); }
+        to   { opacity:1; transform:none; }
+    }
+    @keyframes admToastOut {
+        to { opacity:0; transform:translateY(16px) scale(.96); }
+    }
+    .adm-toast .at-icon {
+        flex-shrink: 0;
+        width: 36px; height: 36px;
+        border-radius: 50%;
+        display: flex; align-items: center; justify-content: center;
+    }
+    .adm-toast-success .at-icon { background: rgba(74,222,128,.12); }
+    .adm-toast-error   .at-icon { background: rgba(239,68,68,.12); }
+    .adm-toast .at-icon svg { width:18px; height:18px; }
+    .adm-toast-success .at-icon svg { stroke:#4ade80; }
+    .adm-toast-error   .at-icon svg { stroke:#ef4444; }
+    .adm-toast .at-body { flex:1; }
+    .adm-toast .at-title { font-weight:700; font-size:.85rem; color:#fff; margin-bottom:.2rem; }
+    .adm-toast .at-msg   { font-size:.78rem; color:#999; line-height:1.45; }
+    .adm-toast .at-close {
+        flex-shrink:0; background:none; border:none;
+        cursor:pointer; color:#555; font-size:1.1rem;
+        line-height:1; padding:0; margin-top:1px; transition:color .15s;
+    }
+    .adm-toast .at-close:hover { color:#ef4444; }
+    .adm-toast .at-bar {
+        position:absolute; bottom:0; left:0; height:3px;
+        border-radius:0 0 0 12px;
+    }
+    .adm-toast-success .at-bar { background:#4ade80; }
+    .adm-toast-error   .at-bar { background:#ef4444; }
+</style>
+<script>
+function admToast(message, type, duration) {
+    type = type || 'success';
+    duration = duration || 4500;
+    // Eliminar toasts anteriores
+    document.querySelectorAll('.adm-toast').forEach(function(t){ t.remove(); });
+
+    var iconSvg = type === 'success'
+        ? '<svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>'
+        : '<svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg>';
+    var title = type === 'success' ? 'Acción completada' : 'Ocurrió un error';
+
+    var toast = document.createElement('div');
+    toast.className = 'adm-toast adm-toast-' + type;
+    toast.innerHTML =
+        '<div class="at-icon">' + iconSvg + '</div>' +
+        '<div class="at-body">' +
+            '<div class="at-title">' + title + '</div>' +
+            '<div class="at-msg">' + message + '</div>' +
+        '</div>' +
+        '<button class="at-close" onclick="this.parentElement.classList.add(\'adm-toast-hide\');setTimeout(function(){document.querySelectorAll(\'.adm-toast\').forEach(function(t){t.remove()})},320)">&#x2715;</button>' +
+        '<div class="at-bar" style="animation:barShrink ' + duration + 'ms linear forwards"></div>';
+    document.body.appendChild(toast);
+    setTimeout(function(){
+        toast.classList.add('adm-toast-hide');
+        setTimeout(function(){ if(toast.parentNode) toast.remove(); }, 320);
+    }, duration);
+}
+</script>
+
+<?php if (!empty($_SESSION['admin_toast'])): ?>
+<script>
+document.addEventListener('DOMContentLoaded', function(){
+    admToast(
+        '<?= addslashes($_SESSION['admin_toast']['msg']) ?>',
+        '<?= $_SESSION['admin_toast']['type'] ?? 'success' ?>',
+        <?= intval($_SESSION['admin_toast']['duration'] ?? 4500) ?>
+    );
+});
+</script>
+<?php unset($_SESSION['admin_toast']); endif; ?>
+
 <!-- Admin Particle Background -->
 <script>
     (function () {
