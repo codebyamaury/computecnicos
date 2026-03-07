@@ -172,7 +172,7 @@ include __DIR__ . '/includes/header.php';
 .carousel-destacados {
     display: flex;
     gap: 1.25rem;
-    overflow-x: hidden;
+    overflow-x: auto;
     -webkit-overflow-scrolling: touch;
     padding: 0.5rem 0 1.5rem;
     scrollbar-width: none;
@@ -208,11 +208,10 @@ include __DIR__ . '/includes/header.php';
     var cards = track.innerHTML;
     track.innerHTML = cards + cards;
 
-    var halfWidth = track.scrollWidth / 2;
-
     function animate() {
         if (!paused) {
             track.scrollLeft += speed;
+            var halfWidth = track.scrollWidth / 2;
             if (track.scrollLeft >= halfWidth) {
                 track.scrollLeft -= halfWidth;
             }
