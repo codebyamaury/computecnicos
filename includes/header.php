@@ -34,6 +34,7 @@ if (isset($_SESSION['usuario']['id']) && isset($pdo)) {
         echo $extra_css; ?>
     <link rel="stylesheet" href="<?= asset('css/theme.css') ?>?v=<?= time() ?>_1">
     <link rel="stylesheet" href="<?= asset('css/responsive.css') ?>?v=<?= time() ?>_1">
+    <link rel="stylesheet" href="<?= asset('css/large-screens.css') ?>?v=<?= time() ?>_1">
     <script src="<?= asset('js/cart.js') ?>"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
 </head>

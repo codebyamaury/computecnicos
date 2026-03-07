@@ -52,6 +52,7 @@ $nav_items = [
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="<?= asset('css/admin.css') ?>">
     <link rel="stylesheet" href="<?= asset('css/responsive.css') ?>">
+    <link rel="stylesheet" href="<?= asset('css/large-screens.css') ?>">
     <script src="https://unpkg.com/lucide@latest"></script>
     <?= $admin_extra_css ?>
     <?= $admin_head_scripts ?>
