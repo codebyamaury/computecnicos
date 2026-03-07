@@ -1,8 +1,8 @@
 <?php
 // Sesión manejada por bootstrap (DB handler)
 require_once __DIR__ . '/app/Core/bootstrap.php';
-// Obtener productos destacados (con oferta o más recientes)
-$stmt = $pdo->prepare('SELECT p.*, c.nombre AS categoria, m.nombre AS marca FROM productos p LEFT JOIN categorias c ON p.id_categoria = c.id LEFT JOIN marcas m ON p.id_marca = m.id WHERE p.oferta = 1 OR p.fecha_creacion >= DATE_SUB(NOW(), INTERVAL 7 DAY) ORDER BY p.oferta DESC, p.fecha_creacion DESC LIMIT 4');
+// Obtener productos destacados: primero los marcados como destacado, luego los que tienen oferta activa
+$stmt = $pdo->prepare('SELECT p.*, c.nombre AS categoria, m.nombre AS marca FROM productos p LEFT JOIN categorias c ON p.id_categoria = c.id LEFT JOIN marcas m ON p.id_marca = m.id WHERE p.destacado = 1 OR (p.oferta = 1 AND (p.oferta_hasta IS NULL OR p.oferta_hasta >= CURDATE())) ORDER BY p.destacado DESC, p.fecha_creacion DESC LIMIT 4');
 $stmt->execute();
 $productos_destacados = $stmt->fetchAll();
 
@@ -121,7 +121,8 @@ include __DIR__ . '/includes/header.php';
             <div class="col-span-full text-center text-gray-400">No hay productos destacados disponibles.</div>
         <?php else: ?>
             <?php foreach ($productos_destacados as $p):
-                $esNuevo = (strtotime($p['fecha_creacion']) > strtotime('-15 days'));
+                $esNuevo = !empty($p['nuevo_hasta']) && strtotime($p['nuevo_hasta']) >= strtotime('today');
+                $enOferta = !empty($p['oferta']) && (empty($p['oferta_hasta']) || strtotime($p['oferta_hasta']) >= strtotime('today'));
                 ?>
                 <article class="product-card" onclick="window.location.href='producto.php?id=<?php echo intval($p['id']); ?>'">
                     <div class="product-image-container">
@@ -132,7 +133,7 @@ include __DIR__ . '/includes/header.php';
                             <?php if ($esNuevo): ?>
                                 <span class="tech-badge tech-badge-new">NUEVO</span>
                             <?php endif; ?>
-                            <?php if (!empty($p['oferta'])): ?>
+                            <?php if ($enOferta): ?>
                                 <span class="tech-badge tech-badge-offer">OFERTA</span>
                             <?php endif; ?>
                         </div>

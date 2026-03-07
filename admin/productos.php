@@ -42,7 +42,7 @@ $page_title       = 'Productos | Computécnicos';
 $admin_page       = 'productos';
 $admin_title      = 'Productos';
 $admin_breadcrumb = [['label' => 'Productos']];
-$admin_header_extra = '<button id="btn-abrir-nuevo-producto" class="adm-btn adm-btn-success"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width:14px;height:14px"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg> Nuevo producto</button>';
+$admin_header_extra = '<a href="producto_nuevo.php" class="adm-btn adm-btn-success"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width:14px;height:14px"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg> Nuevo producto</a>';
 
 include '_layout.php';
 ?>
@@ -63,7 +63,7 @@ include '_layout.php';
             <table class="adm-table" id="tabla-productos">
                 <thead>
                     <tr>
-                        <th>Imagen</th><th>Nombre</th><th>Categoría</th><th>Marca</th><th>Precio</th><th>Stock</th><th>Oferta</th><th>Acciones</th>
+                        <th>Imagen</th><th>Nombre</th><th>Categoría</th><th>Marca</th><th>Precio</th><th>Stock</th><th>Estado</th><th>Acciones</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -96,18 +96,32 @@ include '_layout.php';
                         </span>
                     </td>
                     <td>
-                        <?php if ($p['oferta']): ?>
-                        <span class="adm-badge adm-badge-red">Oferta</span>
-                        <?php else: ?>
-                        <span style="color:#444;font-size:0.72rem">—</span>
-                        <?php endif; ?>
+                        <div style="display:flex;flex-wrap:wrap;gap:3px">
+                            <?php if (!empty($p['destacado'])): ?>
+                                <span class="adm-badge adm-badge-purple" style="font-size:0.62rem">⭐ Destacado</span>
+                            <?php endif; ?>
+                            <?php
+                                $nuevo_activo = !empty($p['nuevo_hasta']) && strtotime($p['nuevo_hasta']) >= strtotime('today');
+                                $oferta_activa = !empty($p['oferta']) && (empty($p['oferta_hasta']) || strtotime($p['oferta_hasta']) >= strtotime('today'));
+                            ?>
+                            <?php if ($nuevo_activo): ?>
+                                <span class="adm-badge adm-badge-blue" style="font-size:0.62rem">NUEVO</span>
+                            <?php endif; ?>
+                            <?php if ($oferta_activa): ?>
+                                <span class="adm-badge adm-badge-red" style="font-size:0.62rem">OFERTA</span>
+                            <?php elseif (!empty($p['oferta_hasta']) && strtotime($p['oferta_hasta']) < strtotime('today')): ?>
+                                <span class="adm-badge adm-badge-gray" style="font-size:0.62rem">Oferta vencida</span>
+                            <?php endif; ?>
+                            <?php if (empty($p['destacado']) && !$nuevo_activo && !$oferta_activa): ?>
+                                <span style="color:#444;font-size:0.72rem">—</span>
+                            <?php endif; ?>
+                        </div>
                     </td>
                     <td>
                         <div style="display:flex;gap:6px;flex-wrap:wrap">
-                            <button class="adm-btn adm-btn-warning btn-editar-producto" style="font-size:0.72rem;padding:0.3rem 0.7rem"
-                                data-producto='<?= json_encode(["id"=>$p["id"],"nombre"=>$p["nombre"],"categoria"=>$p["id_categoria"],"marca"=>$p["id_marca"],"precio"=>$p["precio"],"stock"=>$p["stock"],"oferta"=>$p["oferta"],"descripcion"=>$p["descripcion"],"imagen"=>$p["imagen"]??null]) ?>'>
+                            <a href="producto_editar.php?id=<?= $p['id'] ?>" class="adm-btn adm-btn-warning" style="font-size:0.72rem;padding:0.3rem 0.7rem;text-decoration:none">
                                 Editar
-                            </button>
+                            </a>
                             <button type="button" class="adm-btn adm-btn-danger" style="font-size:0.72rem;padding:0.3rem 0.7rem"
                                onclick="confirmarEliminar('?eliminar=<?= $p['id'] ?>', '<?= htmlspecialchars($p['nombre'], ENT_QUOTES) ?>', 'producto')">
                                 Eliminar

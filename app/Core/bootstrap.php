@@ -151,6 +151,25 @@ try {
     log_event('Error ajustando esquema ENUM estados: ' . $e->getMessage());
 }
 
+// Migración: columnas destacado, nuevo_hasta, oferta_hasta en productos
+try {
+    $cols = $pdo->query("SHOW COLUMNS FROM productos")->fetchAll(PDO::FETCH_COLUMN, 0);
+    if (!in_array('destacado', $cols)) {
+        $pdo->exec("ALTER TABLE productos ADD COLUMN destacado TINYINT(1) NOT NULL DEFAULT 0");
+        log_event('Esquema actualizado: agregada columna destacado a productos');
+    }
+    if (!in_array('nuevo_hasta', $cols)) {
+        $pdo->exec("ALTER TABLE productos ADD COLUMN nuevo_hasta DATE NULL DEFAULT NULL");
+        log_event('Esquema actualizado: agregada columna nuevo_hasta a productos');
+    }
+    if (!in_array('oferta_hasta', $cols)) {
+        $pdo->exec("ALTER TABLE productos ADD COLUMN oferta_hasta DATE NULL DEFAULT NULL");
+        log_event('Esquema actualizado: agregada columna oferta_hasta a productos');
+    }
+} catch (Throwable $e) {
+    log_event('Error migrando columnas productos: ' . $e->getMessage());
+}
+
 // Logging sencillo a archivo local (opcional)
 function log_event(string $message): void {
     $logDir = BASE_PATH . '/logs';

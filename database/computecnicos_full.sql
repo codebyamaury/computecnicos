@@ -46,6 +46,9 @@ CREATE TABLE IF NOT EXISTS productos (
     id_categoria INT,
     id_marca INT,
     oferta BOOLEAN DEFAULT 0,
+    destacado TINYINT(1) NOT NULL DEFAULT 0,
+    nuevo_hasta DATE DEFAULT NULL,
+    oferta_hasta DATE DEFAULT NULL,
     fecha_creacion DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (id_categoria) REFERENCES categorias (id) ON DELETE SET NULL,
     FOREIGN KEY (id_marca) REFERENCES marcas (id) ON DELETE SET NULL

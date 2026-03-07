@@ -59,7 +59,7 @@ if ($filtro_precio_max > 0) {
 }
 
 if ($filtro_oferta) {
-    $sql .= ' AND p.oferta = 1';
+    $sql .= ' AND p.oferta = 1 AND (p.oferta_hasta IS NULL OR p.oferta_hasta >= CURDATE())';
 }
 
 // Ordenar
@@ -87,7 +87,7 @@ $stmt->execute($params);
 $productos = $stmt->fetchAll();
 
 // Contar productos con oferta
-$stmt_ofertas = $pdo->query('SELECT COUNT(*) FROM productos WHERE oferta = 1');
+$stmt_ofertas = $pdo->query('SELECT COUNT(*) FROM productos WHERE oferta = 1 AND (oferta_hasta IS NULL OR oferta_hasta >= CURDATE())');
 $total_ofertas = $stmt_ofertas->fetchColumn();
 
 include __DIR__ . '/includes/header.php';
@@ -252,7 +252,8 @@ include __DIR__ . '/includes/header.php';
                         <?php 
                         $delay = 0;
                         foreach ($productos as $p): 
-                            $esNuevo = (strtotime($p['fecha_creacion']) > strtotime('-15 days'));
+                            $esNuevo = !empty($p['nuevo_hasta']) && strtotime($p['nuevo_hasta']) >= strtotime('today');
+                            $enOferta = !empty($p['oferta']) && (empty($p['oferta_hasta']) || strtotime($p['oferta_hasta']) >= strtotime('today'));
                             $delay_class = 'delay-' . min($delay * 100, 500);
                         ?>
                             <article class="product-card animate-slide-up <?php echo $delay_class; ?>" 
@@ -266,7 +267,7 @@ include __DIR__ . '/includes/header.php';
                                         <?php if ($esNuevo): ?>
                                             <span class="tech-badge tech-badge-new">NUEVO</span>
                                         <?php endif; ?>
-                                        <?php if (!empty($p['oferta'])): ?>
+                                        <?php if ($enOferta): ?>
                                             <span class="tech-badge tech-badge-offer">OFERTA</span>
                                         <?php endif; ?>
                                     </div>

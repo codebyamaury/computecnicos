@@ -29,7 +29,8 @@ if (!empty($imagenes)) {
 }
 // Evitar duplicados y reindexar
 $galeria = array_values(array_unique($galeria));
-$esNuevo = (strtotime($producto['fecha_creacion']) > strtotime('-15 days'));
+$esNuevo = !empty($producto['nuevo_hasta']) && strtotime($producto['nuevo_hasta']) >= strtotime('today');
+$enOferta = !empty($producto['oferta']) && (empty($producto['oferta_hasta']) || strtotime($producto['oferta_hasta']) >= strtotime('today'));
 // Stock real de la BD — solo se reduce al completar una compra, no al agregar al carrito
 $stockEfectivo = intval($producto['stock']);
 // Reseñas/comentarios
@@ -101,7 +102,7 @@ include 'includes/header.php';
 
             <div class="prod-img-main">
                 <div class="prod-badges">
-                    <?php if (!empty($producto['oferta'])): ?>
+                    <?php if ($enOferta): ?>
                         <span class="prod-badge prod-badge-offer">OFERTA</span>
                     <?php endif; ?>
                     <?php if ($esNuevo): ?>
