@@ -196,7 +196,7 @@ include __DIR__ . '/includes/header.php';
         <!-- Samuel -->
         <div class="team-card">
             <div class="team-img-wrapper">
-                <img src="assets/images/Samuel.jpg" onerror="this.onerror=null;this.src='https://ui-avatars.com/api/?name=Samuel+Ramos&background=0a0a0a&color=dc2626&size=200&bold=true';" alt="Samuel David Ramos Teran">
+                <img src="assets/images/Samuel.jpg" onerror="this.onerror=null;this.src='https://ui-avatars.com/api/?name=Samuel+Ramos&background=0a0a0a&color=dc2626&size=200&bold=true';" alt="Samuel David Ramos Teran" style="transform: scale(1.4) translateY(8%); clip-path: circle(50%);">
             </div>
             <h3 class="team-name">Samuel David<br>Ramos Teran</h3>
             <p class="team-role">Frontend &<br>Documentación</p>
