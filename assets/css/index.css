@@ -1136,9 +1136,21 @@ footer .text-center.text-gray-500 {
 
 .categories-pro-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  grid-template-columns: repeat(4, 1fr);
   gap: 2rem;
   margin-top: 2rem;
+}
+
+@media (max-width: 1024px) {
+  .categories-pro-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  .categories-pro-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 .category-card-pro {
@@ -1529,23 +1541,20 @@ footer .text-center.text-gray-500 {
    SECCIÓN EQUIPO / CREADORES
    ======================================== */
 .team-grid {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 1.5rem;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 2rem;
   margin-top: 3rem;
   overflow: visible;
   padding-top: 1rem;
   padding-bottom: 1rem;
 }
 
+
 .team-card {
-  flex: 1;
-  min-width: 180px;
-  max-width: 250px;
   background: rgba(20, 20, 20, 0.8);
   border: 1px solid #333;
-  padding: 1.5rem 1rem;
+  padding: 2rem 1.5rem;
   text-align: center;
   position: relative;
   transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
@@ -1564,8 +1573,8 @@ footer .text-center.text-gray-500 {
 }
 
 .team-img-wrapper {
-  width: 140px;
-  height: 140px;
+  width: 110px;
+  height: 110px;
   border-radius: 50%;
   padding: 3px;
   background: linear-gradient(45deg, #333, var(--neon-red-dim));
@@ -1573,6 +1582,7 @@ footer .text-center.text-gray-500 {
   position: relative;
   z-index: 2;
   transition: all 0.4s;
+  flex-shrink: 0;
 }
 
 .team-card:hover .team-img-wrapper {
@@ -1594,20 +1604,112 @@ footer .text-center.text-gray-500 {
 
 .team-name {
   font-family: system-ui, -apple-system, sans-serif;
-  font-size: 1.05rem;
+  font-size: 0.9rem;
   font-weight: 600;
   color: #fff;
   margin-bottom: 0.5rem;
   line-height: 1.4;
   letter-spacing: normal;
+  min-height: 3.8em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .team-role {
   font-family: system-ui, -apple-system, sans-serif;
-  font-size: 0.8rem;
+  font-size: 0.7rem;
   color: #bfbfbf;
   text-transform: uppercase;
   letter-spacing: 0.5px;
   opacity: 0.9;
   font-weight: 500;
+  min-height: 3.6em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: auto;
 }
+
+/* Responsive: pantallas grandes - aprovechar mejor el espacio */
+@media (min-width: 1440px) {
+  .team-grid {
+    gap: 2.5rem;
+  }
+
+  .team-card {
+    padding: 2.5rem 1.5rem;
+  }
+
+  .team-img-wrapper {
+    width: 130px;
+    height: 130px;
+  }
+
+  .team-name {
+    font-size: 1rem;
+  }
+
+  .team-role {
+    font-size: 0.8rem;
+  }
+}
+
+/* Responsive: tablet - 3 tarjetas por fila */
+@media (max-width: 900px) {
+  .team-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* Responsive: movil - 2 tarjetas por fila */
+@media (max-width: 600px) {
+  .team-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+  }
+}
+
+/* Responsive: movil pequeno */
+@media (max-width: 380px) {
+  .team-grid {
+    gap: 0.75rem;
+  }
+  .team-img-wrapper {
+    width: 80px;
+    height: 80px;
+  }
+}
+
+/* ========================================
+   AJUSTES PARA PANTALLAS GRANDES (1920x1080+)
+   ======================================== */
+
+/* Ampliar el container para monitores grandes */
+@media (min-width: 1440px) {
+  .container {
+    max-width: 1600px !important;
+  }
+}
+
+@media (min-width: 1920px) {
+  .container {
+    max-width: 1800px !important;
+  }
+}
+
+/* Categorías en pantallas grandes */
+@media (min-width: 1440px) {
+  .categories-pro-grid {
+    gap: 2.5rem;
+  }
+
+  .category-card-pro {
+    height: 280px;
+  }
+
+  .cat-pro-info h3 {
+    font-size: 1.6rem;
+  }
+}
+

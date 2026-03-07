@@ -384,6 +384,33 @@
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
     gap: 1.5rem;
+    align-items: stretch;
+}
+
+/* Forzar 4 columnas exactas en pantallas grandes */
+@media (min-width: 1200px) {
+    .products-grid {
+        grid-template-columns: repeat(4, 1fr);
+        gap: 2rem;
+    }
+}
+
+@media (min-width: 1440px) {
+    .products-grid {
+        gap: 2.5rem;
+    }
+
+    .product-image-container {
+        height: 240px;
+    }
+
+    .product-name {
+        font-size: 1.1rem;
+    }
+
+    .product-price {
+        font-size: 1.6rem;
+    }
 }
 
 /* Cards de Producto */
@@ -557,6 +584,7 @@
     -webkit-box-orient: vertical;
     overflow: hidden;
     transition: color 0.3s ease;
+    min-height: 2.8em; /* 2 lines * 1.4 line-height = 2.8em — fuerza altura uniforme */
 }
 
 .product-card:hover .product-name {
