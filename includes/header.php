@@ -29,12 +29,12 @@ if (isset($_SESSION['usuario']['id']) && isset($pdo)) {
     <link
         href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Orbitron:wght@400;500;700;900&display=swap"
         rel="stylesheet">
-    <link rel="stylesheet" href="<?= asset('css/main.css') ?>?v=<?= time() ?>_2">
+    <link rel="stylesheet" href="<?= base_url() ?>/assets/css/main.css?v=<?= time() ?>_2">
     <?php if (isset($extra_css))
         echo $extra_css; ?>
-    <link rel="stylesheet" href="<?= asset('css/theme.css') ?>?v=<?= time() ?>_1">
-    <link rel="stylesheet" href="<?= asset('css/responsive.css') ?>?v=<?= time() ?>_1">
-    <link rel="stylesheet" href="<?= asset('css/large-screens.css') ?>?v=<?= time() ?>_1">
+    <link rel="stylesheet" href="<?= base_url() ?>/assets/css/theme.css?v=<?= time() ?>_1">
+    <link rel="stylesheet" href="<?= base_url() ?>/assets/css/responsive.css?v=<?= time() ?>_3">
+    <link rel="stylesheet" href="<?= base_url() ?>/assets/css/large-screens.css?v=<?= time() ?>_1">
     <script src="<?= asset('js/cart.js') ?>"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
 </head>
