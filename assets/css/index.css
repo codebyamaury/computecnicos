@@ -80,12 +80,17 @@ body {
   display: inline-block;
 }
 
-/* Letras de TECNICOS — efecto glitch cyberpunk */
+/* Letras de TECNICOS — efecto glitch cyberpunk + neon */
 .hero-title span {
   color: #ff1a1a;
   position: relative;
   display: inline-block;
   animation: glitch-skew 4s infinite linear alternate-reverse;
+  text-shadow:
+    0 0 7px #ff0000,
+    0 0 15px #ff0000,
+    0 0 30px #ff0000,
+    0 0 60px #cc0000;
 }
 
 /* Canal Cyan (::before) */
