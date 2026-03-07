@@ -80,62 +80,140 @@ body {
   display: inline-block;
 }
 
-/* Letras de TECNICOS — efecto shimmer metálico + glow */
+/* Letras de TECNICOS — efecto glitch cyberpunk */
 .hero-title span {
-  background: linear-gradient(
-    90deg,
-    #ff1a1a 0%,
-    #ff1a1a 40%,
-    #ff6666 48%,
-    #ffffff 50%,
-    #ff6666 52%,
-    #ff1a1a 60%,
-    #ff1a1a 100%
-  );
-  background-size: 300% 100%;
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  animation: shimmer-sweep 3s ease-in-out infinite;
-  filter: drop-shadow(0 0 8px rgba(255, 0, 0, 0.4));
+  color: #ff1a1a;
   position: relative;
+  display: inline-block;
+  animation: glitch-skew 4s infinite linear alternate-reverse;
 }
 
-/* Animación de barrido de brillo */
-@keyframes shimmer-sweep {
-  0% {
-    background-position: 100% 50%;
-  }
-  100% {
-    background-position: -100% 50%;
-  }
+/* Canal Cyan (::before) */
+.hero-title span::before {
+  content: attr(data-text);
+  position: absolute;
+  top: 0;
+  left: 2px;
+  width: 100%;
+  height: 100%;
+  color: #00ffff;
+  mix-blend-mode: screen;
+  clip-path: inset(0 0 0 0);
+  animation: glitch-before 4s infinite linear alternate-reverse;
+  opacity: 0;
 }
 
-/* Glow pulsante suave detrás del texto */
+/* Canal Magenta (::after) */
 .hero-title span::after {
   content: attr(data-text);
   position: absolute;
   top: 0;
-  left: 0;
+  left: -2px;
   width: 100%;
   height: 100%;
-  color: #ff0000;
-  filter: blur(12px);
-  opacity: 0.4;
-  animation: glow-pulse 2.5s ease-in-out infinite alternate;
-  z-index: -1;
-  -webkit-text-fill-color: #ff0000;
+  color: #ff00ff;
+  mix-blend-mode: screen;
+  clip-path: inset(0 0 0 0);
+  animation: glitch-after 4s infinite linear alternate-reverse;
+  opacity: 0;
 }
 
-@keyframes glow-pulse {
-  0% {
-    opacity: 0.3;
-    filter: blur(10px);
+/* Shake sutil del texto principal */
+@keyframes glitch-skew {
+  0%, 84% { transform: none; }
+  85% { transform: skewX(-1deg) translateX(2px); }
+  86% { transform: skewX(2deg) translateX(-1px); }
+  87% { transform: skewX(-0.5deg); }
+  88% { transform: none; }
+  93% { transform: none; }
+  94% { transform: skewX(1deg) translateX(-2px); }
+  95% { transform: skewX(-2deg) translateX(1px); }
+  96% { transform: none; }
+  100% { transform: none; }
+}
+
+/* Glitch del canal cyan */
+@keyframes glitch-before {
+  0%, 84% { opacity: 0; }
+  85% {
+    opacity: 0.8;
+    left: 3px;
+    clip-path: inset(10% 0 60% 0);
   }
-  100% {
-    opacity: 0.6;
-    filter: blur(18px);
+  85.5% {
+    opacity: 0.8;
+    left: -2px;
+    clip-path: inset(50% 0 20% 0);
   }
+  86% {
+    opacity: 0.8;
+    left: 4px;
+    clip-path: inset(30% 0 35% 0);
+  }
+  87% {
+    opacity: 0;
+    left: 2px;
+  }
+  93% { opacity: 0; }
+  94% {
+    opacity: 0.7;
+    left: -3px;
+    clip-path: inset(15% 0 50% 0);
+  }
+  94.5% {
+    opacity: 0.7;
+    left: 2px;
+    clip-path: inset(65% 0 10% 0);
+  }
+  95% {
+    opacity: 0.7;
+    left: -1px;
+    clip-path: inset(40% 0 25% 0);
+  }
+  96% { opacity: 0; }
+  100% { opacity: 0; }
+}
+
+/* Glitch del canal magenta */
+@keyframes glitch-after {
+  0%, 84% { opacity: 0; }
+  85% {
+    opacity: 0.8;
+    left: -3px;
+    clip-path: inset(55% 0 15% 0);
+  }
+  85.5% {
+    opacity: 0.8;
+    left: 2px;
+    clip-path: inset(20% 0 45% 0);
+  }
+  86% {
+    opacity: 0.8;
+    left: -4px;
+    clip-path: inset(70% 0 5% 0);
+  }
+  87% {
+    opacity: 0;
+    left: -2px;
+  }
+  93% { opacity: 0; }
+  94% {
+    opacity: 0.7;
+    left: 3px;
+    clip-path: inset(45% 0 30% 0);
+  }
+  94.5% {
+    opacity: 0.7;
+    left: -2px;
+    clip-path: inset(5% 0 70% 0);
+  }
+  95% {
+    opacity: 0.7;
+    left: 1px;
+    clip-path: inset(60% 0 15% 0);
+  }
+  96% { opacity: 0; }
+  100% { opacity: 0; }
 }
 
 .hero-subtitle {
