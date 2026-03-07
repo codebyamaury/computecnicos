@@ -181,9 +181,7 @@ include __DIR__ . '/includes/header.php';
 .carousel-destacados {
     display: flex;
     gap: 1.25rem;
-    overflow-x: auto;
-    scroll-behavior: smooth;
-    scroll-snap-type: x mandatory;
+    overflow-x: hidden;
     -webkit-overflow-scrolling: touch;
     padding: 0.5rem 0 1.5rem;
     scrollbar-width: none;
@@ -192,7 +190,6 @@ include __DIR__ . '/includes/header.php';
 .carousel-dest-card {
     flex: 0 0 calc(25% - 0.94rem);
     min-width: 260px;
-    scroll-snap-align: start;
 }
 /* Flechas */
 .carousel-dest-arrow {
@@ -218,15 +215,6 @@ include __DIR__ . '/includes/header.php';
 }
 .carousel-dest-prev { left: -18px; }
 .carousel-dest-next { right: -18px; }
-/* Indicador de pausa */
-.carousel-destacados-wrap.paused .carousel-dest-arrow::after {
-    content: '';
-    position: absolute;
-    bottom: -6px;
-    width: 6px; height: 6px;
-    border-radius: 50%;
-    background: #ef4444;
-}
 /* Responsive */
 @media (max-width: 1200px) {
     .carousel-dest-card { flex: 0 0 calc(33.333% - 0.84rem); }
@@ -247,52 +235,61 @@ include __DIR__ . '/includes/header.php';
     if (!track) return;
     var btnPrev = document.getElementById('dest-prev');
     var btnNext = document.getElementById('dest-next');
-    var autoInterval = null;
-    var SPEED = 3500;
+    var paused = false;
+    var speed = 0.8; // pixeles por frame (~48px/seg a 60fps)
+    var rafId = null;
+
+    // Duplicar las tarjetas para loop infinito
+    var cards = track.innerHTML;
+    track.innerHTML = cards + cards;
+
+    var halfWidth = track.scrollWidth / 2;
+
+    function animate() {
+        if (!paused) {
+            track.scrollLeft += speed;
+            // Cuando llegamos a la mitad (el duplicado), volvemos al inicio sin que se note
+            if (track.scrollLeft >= halfWidth) {
+                track.scrollLeft -= halfWidth;
+            }
+        }
+        rafId = requestAnimationFrame(animate);
+    }
+
+    // Flechas: salto manual suave
+    function jumpBy(px) {
+        var target = track.scrollLeft + px;
+        var start = track.scrollLeft;
+        var duration = 400;
+        var startTime = null;
+        function step(ts) {
+            if (!startTime) startTime = ts;
+            var progress = Math.min((ts - startTime) / duration, 1);
+            var ease = progress < 0.5 ? 2*progress*progress : 1-Math.pow(-2*progress+2,2)/2;
+            track.scrollLeft = start + (target - start) * ease;
+            if (progress < 1) requestAnimationFrame(step);
+        }
+        requestAnimationFrame(step);
+    }
 
     function getCardWidth() {
         var card = track.querySelector('.carousel-dest-card');
-        if (!card) return 300;
-        return card.offsetWidth + 20;
+        return card ? card.offsetWidth + 20 : 300;
     }
 
-    function scrollNext() {
-        var cw = getCardWidth();
-        if (track.scrollLeft + track.offsetWidth >= track.scrollWidth - 10) {
-            track.scrollTo({ left: 0, behavior: 'smooth' });
-        } else {
-            track.scrollBy({ left: cw, behavior: 'smooth' });
-        }
-    }
-
-    function scrollPrev() {
-        var cw = getCardWidth();
-        if (track.scrollLeft <= 10) {
-            track.scrollTo({ left: track.scrollWidth, behavior: 'smooth' });
-        } else {
-            track.scrollBy({ left: -cw, behavior: 'smooth' });
-        }
-    }
-
-    function startAuto() {
-        stopAuto();
-        autoInterval = setInterval(scrollNext, SPEED);
-    }
-
-    function stopAuto() {
-        if (autoInterval) { clearInterval(autoInterval); autoInterval = null; }
-    }
-
-    // Flechas
-    if (btnPrev) btnPrev.addEventListener('click', function(e){ e.stopPropagation(); scrollPrev(); });
-    if (btnNext) btnNext.addEventListener('click', function(e){ e.stopPropagation(); scrollNext(); });
+    if (btnPrev) btnPrev.addEventListener('click', function(e){ e.stopPropagation(); jumpBy(-getCardWidth()); });
+    if (btnNext) btnNext.addEventListener('click', function(e){ e.stopPropagation(); jumpBy(getCardWidth()); });
 
     // Mouse encima = pausa, mouse fuera = reanuda
-    track.addEventListener('mouseenter', stopAuto);
-    track.addEventListener('mouseleave', startAuto);
+    track.addEventListener('mouseenter', function(){ paused = true; });
+    track.addEventListener('mouseleave', function(){ paused = false; });
 
-    // Iniciar auto-scroll
-    startAuto();
+    // Touch: pausa al tocar
+    track.addEventListener('touchstart', function(){ paused = true; }, {passive:true});
+    track.addEventListener('touchend', function(){ paused = false; }, {passive:true});
+
+    // Iniciar animación
+    animate();
 })();
 </script>
 
