@@ -26,6 +26,9 @@ if (!$hash || !password_verify($password, $hash)) {
     exit;
 }
 
+// Eliminar todos los tokens Remember Me del usuario
+$rememberMe->invalidateAllTokens($usuario_id);
+
 // Eliminar usuario
 $stmt = $pdo->prepare('DELETE FROM usuarios WHERE id = ?');
 $stmt->execute([$usuario_id]);

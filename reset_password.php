@@ -55,6 +55,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // Invalidar todos los tokens del email
             $pdo->prepare("UPDATE password_resets SET usado = 1 WHERE email = ?")->execute([$reset['email']]);
             
+            // Invalidar tokens Remember Me de todos los dispositivos (forzar re-login)
+            $rememberMe->invalidateAllTokens($reset['user_id']);
+            
             $msg = '¡Contraseña actualizada exitosamente! Ya puedes iniciar sesión.';
             $msgType = 'success';
             $success = true;

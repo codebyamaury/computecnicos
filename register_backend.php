@@ -62,6 +62,9 @@ try {
 
     $_SESSION['login_success'] = '¡Registro exitoso! Bienvenido a Computécnicos.';
 
+    // Crear token persistente para mantener sesion activa (30 dias)
+    $rememberMe->createToken($idUsuario);
+
     respuesta(true, 'Registro exitoso.');
 
 } catch (Exception $e) {

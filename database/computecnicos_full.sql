@@ -268,6 +268,21 @@ CREATE TABLE IF NOT EXISTS password_resets (
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci;
 
 -- =====================================
+-- FEATURE: Sesion persistente (Remember Me)
+-- =====================================
+CREATE TABLE IF NOT EXISTS remember_tokens (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    id_usuario INT NOT NULL,
+    token VARCHAR(128) NOT NULL UNIQUE,
+    expira DATETIME NOT NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    INDEX idx_token (token),
+    INDEX idx_usuario (id_usuario),
+    INDEX idx_expira (expira),
+    FOREIGN KEY (id_usuario) REFERENCES usuarios(id) ON DELETE CASCADE
+) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci;
+
+-- =====================================
 -- DATOS DE PRUEBA
 -- =====================================
 

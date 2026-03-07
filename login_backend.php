@@ -45,6 +45,9 @@ try {
     // Mensaje de éxito para mostrar toast en la página principal
     $_SESSION['login_success'] = '¡Bienvenido, ' . ($usuario['nombre'] ?? 'usuario') . '! Has iniciado sesión correctamente.';
     
+    // Crear token persistente para mantener sesion activa (30 dias)
+    $rememberMe->createToken($usuario['id']);
+    
     respuesta(true, 'Inicio de sesión exitoso.');
     
 } catch (Exception $e) {

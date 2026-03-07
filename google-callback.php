@@ -51,6 +51,8 @@ if (isset($_GET['code'])) {
                     'foto' => $usuarioNuevo['foto']
                 ];
                 $_SESSION['login_success'] = '¡Bienvenido, ' . ($usuarioNuevo['nombre'] ?? 'usuario') . '! Tu cuenta fue creada con Google y has iniciado sesión.';
+                // Crear token persistente para mantener sesion activa (30 dias)
+                $rememberMe->createToken($usuarioNuevo['id']);
                 header('Location: index.php');
                 exit;
             } else {
@@ -76,6 +78,8 @@ if (isset($_GET['code'])) {
                 ];
                 // Mensaje de éxito para mostrar toast al volver a la página principal
                 $_SESSION['login_success'] = '¡Bienvenido, ' . ($usuario['nombre'] ?? 'usuario') . '! Has iniciado sesión con Google.';
+                // Crear token persistente para mantener sesion activa (30 dias)
+                $rememberMe->createToken($usuario['id']);
                 // Redirigir a la página principal
                 header('Location: index.php');
                 exit;

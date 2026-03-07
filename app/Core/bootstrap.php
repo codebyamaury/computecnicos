@@ -124,6 +124,14 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
+// ─── Sistema Remember Me (sesion persistente con cookie) ───
+// Mantiene al usuario logueado entre sesiones del navegador.
+// Los tokens se invalidan al cambiar contraseña o por expiracion (30 dias).
+require_once BASE_PATH . '/app/Core/RememberMe.php';
+$rememberMe = new RememberMe($pdo);
+$rememberMe->ensureTable();
+$rememberMe->tryRestore();
+
 // Ajuste de esquema: asegurar estado 'preparacion' en ENUM de pedidos y pedido_estados
 try {
     // Chequear columna pedidos.estado

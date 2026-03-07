@@ -40,7 +40,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['ajax'])) {
         }
         $hash = password_hash($nueva, PASSWORD_BCRYPT);
         $pdo->prepare('UPDATE usuarios SET password=? WHERE id=?')->execute([$hash, $usuario_id]);
-        echo json_encode(['ok' => true, 'msg' => 'Contraseña actualizada correctamente.']); exit;
+        // Invalidar todos los tokens Remember Me del usuario (cierra sesion en otros dispositivos)
+        $rememberMe->invalidateAllTokens($usuario_id);
+        // Crear nuevo token para el dispositivo actual
+        $rememberMe->createToken($usuario_id);
+        echo json_encode(['ok' => true, 'msg' => 'Contraseña actualizada correctamente. Se cerró la sesión en otros dispositivos.']); exit;
 
     } elseif ($accion === 'personal') {
         $nombre   = trim($_POST['nombre']   ?? '');

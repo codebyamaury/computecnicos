@@ -50,6 +50,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $hash = password_hash($password, PASSWORD_DEFAULT);
             $stmt = $pdo->prepare('UPDATE usuarios SET nombre=?, email=?, telefono=?, direccion=?, rol=?, password=? WHERE id=?');
             $ok = $stmt->execute([$nombre, $email, $telefono, $direccion, $rol, $hash, $id]);
+            // Invalidar tokens Remember Me del usuario editado (forzar re-login)
+            if ($ok) {
+                $rememberMe->invalidateAllTokens($id);
+            }
         } else {
             $stmt = $pdo->prepare('UPDATE usuarios SET nombre=?, email=?, telefono=?, direccion=?, rol=? WHERE id=?');
             $ok = $stmt->execute([$nombre, $email, $telefono, $direccion, $rol, $id]);
