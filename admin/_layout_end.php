@@ -343,7 +343,7 @@
 <style>
     .adm-toast {
         position: fixed;
-        bottom: 1.5rem;
+        top: 1.5rem;
         right: 1.5rem;
         z-index: 9999;
         display: flex;
