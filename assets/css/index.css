@@ -69,42 +69,40 @@ body {
 }
 
 /* Título con efecto Glitch/Neon */
-/* COMPU (Blanco) con Brillo Rojo */
 .hero-title {
   font-size: 4rem;
   font-weight: 900;
   color: #fff;
   text-transform: uppercase;
   letter-spacing: 4px;
-  text-shadow:
-    0 0 5px var(--neon-red),
-    0 0 15px var(--neon-red);
   margin-bottom: 1.5rem;
   position: relative;
   display: inline-block;
+  
+  /* Contorno rojo verdadero sobre las letras que parpadea */
+  -webkit-text-stroke: 2px transparent;
+  animation: stroke-neon-parpadeante 3s infinite alternate;
 }
 
-@keyframes neon-blink {
+/* Letras de TECNICOS en rojo interno */
+.hero-title span {
+  color: #ff1a1a;
+}
+
+/* Animación del contorno de las letras (stroke y shadow) */
+@keyframes stroke-neon-parpadeante {
   0%, 18%, 22%, 25%, 53%, 57%, 100% {
+    -webkit-text-stroke: 2px #ff0000;
     text-shadow:
-      0 0 8px var(--neon-red),
-      0 0 20px var(--neon-red),
-      0 0 40px var(--neon-red);
-    color: #ff3b3b;
+      0 0 10px #ff0000,
+      0 0 20px #ff0000,
+      0 0 40px #ff0000,
+      0 0 80px #ff0000;
   }
   20%, 24%, 55% {
-    text-shadow: none;
-    color: #4a0000;
+    -webkit-text-stroke: 2px #330000;
+    text-shadow: 0 0 2px rgba(255, 0, 0, 0.3);
   }
-}
-
-/* TECNICOS (Rojo) con Brillo Rojo también y animación de parpadeo */
-.hero-title span {
-  color: #dc2626;
-  text-shadow:
-    0 0 5px var(--neon-red),
-    0 0 15px var(--neon-red);
-  animation: neon-blink 4s infinite alternate;
 }
 
 .hero-subtitle {
