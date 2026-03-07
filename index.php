@@ -272,7 +272,7 @@ include __DIR__ . '/includes/header.php';
         <!-- Samuel -->
         <div class="team-card" data-aos="flip-right" data-aos-delay="300">
             <div class="team-img-wrapper">
-                <img src="assets/images/Samuel.jpg" onerror="this.onerror=null;this.src='https://ui-avatars.com/api/?name=Samuel+Ramos&background=0a0a0a&color=dc2626&size=200&bold=true';" alt="Samuel David Ramos Teran">
+                <img src="assets/images/Samuel.jpg?v=2" onerror="this.onerror=null;this.src='https://ui-avatars.com/api/?name=Samuel+Ramos&background=0a0a0a&color=dc2626&size=200&bold=true';" alt="Samuel David Ramos Teran">
             </div>
             <h3 class="team-name">Samuel David<br>Ramos Teran</h3>
             <p class="team-role">Frontend &<br>Documentación</p>
