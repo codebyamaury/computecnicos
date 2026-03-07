@@ -8,7 +8,7 @@ $productos_destacados = $stmt->fetchAll();
 
 // Título y CSS extra para esta página (Flowbite + index.css)
 $page_title = 'Inicio';
-    $extra_css = '<link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.1/flowbite.min.css" rel="stylesheet" />' . "\n" . '<link rel="stylesheet" href="' . asset('css/index.css') . '?v=' . time() . '_14">' . "\n" . '<link rel="stylesheet" href="' . asset('css/productos.css') . '?v=' . time() . '_7">';
+    $extra_css = '<link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.1/flowbite.min.css" rel="stylesheet" />' . "\n" . '<link rel="stylesheet" href="' . base_url() . '/assets/css/index.css?v=' . time() . '_16">' . "\n" . '<link rel="stylesheet" href="' . base_url() . '/assets/css/productos.css?v=' . time() . '_8">';
 
 // Incluir header común
 include __DIR__ . '/includes/header.php';
@@ -26,8 +26,6 @@ include __DIR__ . '/includes/header.php';
         <br>
 
 
-        <h2 class="hero-subtitle animate-slide-up delay-100">SYSTEM STATUS: ONLINE | Palabras claves: <span
-                id="animacion-palabras" class="text-red-500"></span></h2>
         <p
             class="max-w-xl sm:max-w-2xl text-base sm:text-lg md:text-xl text-gray-400 mb-8 px-2 mx-auto animate-slide-up delay-200">
             Accede a la mejor tecnología del futuro. Componentes de alto rendimiento y sistemas avanzados.

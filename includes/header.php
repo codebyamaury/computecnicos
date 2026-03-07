@@ -29,12 +29,12 @@ if (isset($_SESSION['usuario']['id']) && isset($pdo)) {
     <link
         href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Orbitron:wght@400;500;700;900&display=swap"
         rel="stylesheet">
-    <link rel="stylesheet" href="<?= asset('css/main.css') ?>?v=<?= time() ?>_2">
+    <link rel="stylesheet" href="<?= base_url() ?>/assets/css/main.css?v=<?= time() ?>_2">
     <?php if (isset($extra_css))
         echo $extra_css; ?>
-    <link rel="stylesheet" href="<?= asset('css/theme.css') ?>?v=<?= time() ?>_1">
-    <link rel="stylesheet" href="<?= asset('css/responsive.css') ?>?v=<?= time() ?>_1">
-    <link rel="stylesheet" href="<?= asset('css/large-screens.css') ?>?v=<?= time() ?>_1">
+    <link rel="stylesheet" href="<?= base_url() ?>/assets/css/theme.css?v=<?= time() ?>_1">
+    <link rel="stylesheet" href="<?= base_url() ?>/assets/css/responsive.css?v=<?= time() ?>_3">
+    <link rel="stylesheet" href="<?= base_url() ?>/assets/css/large-screens.css?v=<?= time() ?>_1">
     <script src="<?= asset('js/cart.js') ?>"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <!-- AOS (Animate On Scroll) -->
@@ -47,7 +47,7 @@ if (isset($_SESSION['usuario']['id']) && isset($pdo)) {
     <header class="py-4 px-4 flex justify-between items-center relative z-50">
         <!-- Logo y Menú Hamburger a la izquierda -->
         <div class="flex items-center gap-2">
-            <button id="mobile-menu-btn" class="md:hidden p-2 text-white hover:text-red-500 transition-colors" aria-label="Abrir menú">
+            <button id="mobile-menu-btn" class="lg:hidden p-2 text-white hover:text-red-500 transition-colors" aria-label="Abrir menú">
                 <i data-lucide="menu" class="w-7 h-7"></i>
             </button>
             <a href="index.php"
@@ -60,7 +60,7 @@ if (isset($_SESSION['usuario']['id']) && isset($pdo)) {
         </div>
 
         <!-- Menú centrado (Desktop) -->
-        <nav class="hidden md:flex justify-center absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
+        <nav class="hidden lg:flex justify-center absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
             <ul class="flex gap-4 lg:gap-6 text-base lg:text-lg font-semibold">
                 <li>
                     <a href="index.php"
@@ -322,7 +322,7 @@ if (isset($_SESSION['usuario']['id']) && isset($pdo)) {
     <?php endif; ?>
 
     <!-- Mobile Menu (Futuristic Style) -->
-    <div id="mobile-menu" class="hidden md:hidden mobile-menu-panel">
+    <div id="mobile-menu" class="hidden lg:hidden mobile-menu-panel">
         <!-- Scan line animation -->
         <div class="mobile-menu-scanline"></div>
 

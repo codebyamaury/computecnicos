@@ -81,12 +81,13 @@ img {
 }
 
 .mobile-menu-label {
-    font-family: 'Courier New', monospace;
-    font-size: 0.7rem;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 0.8rem;
     font-weight: 700;
-    color: rgba(255, 0, 0, 0.6);
+    color: var(--neon-red, #ff0000);
     letter-spacing: 2px;
     text-transform: uppercase;
+    text-shadow: 0 0 8px rgba(255, 0, 0, 0.4);
 }
 
 .mobile-menu-close {
@@ -95,9 +96,9 @@ img {
     display: flex;
     align-items: center;
     justify-content: center;
-    background: rgba(255, 0, 0, 0.08);
-    border: 1px solid rgba(255, 0, 0, 0.25);
-    border-radius: 0.625rem;
+    background: rgba(255, 0, 0, 0.05);
+    border: 1px solid rgba(255, 0, 0, 0.4);
+    clip-path: polygon(8px 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px);
     color: #ff0000;
     cursor: pointer;
     transition: all 0.3s ease;
@@ -105,8 +106,9 @@ img {
 
 .mobile-menu-close:hover {
     background: rgba(255, 0, 0, 0.2);
-    box-shadow: 0 0 15px rgba(255, 0, 0, 0.3);
-    transform: rotate(90deg);
+    box-shadow: 0 0 15px rgba(255, 0, 0, 0.5);
+    border-color: #ff0000;
+    transform: rotate(90deg) scale(1.1);
 }
 
 /* Navigation items */
@@ -123,28 +125,32 @@ img {
     align-items: center;
     gap: 1rem;
     padding: 1rem 1.25rem;
-    border-radius: 0.875rem;
+    clip-path: polygon(12px 0, 100% 0, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0 100%, 0 12px);
     text-decoration: none;
-    color: #999;
+    color: #ccc;
+    font-family: 'Orbitron', sans-serif;
     font-size: 1.05rem;
     font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
-    overflow: hidden;
-    border: 1px solid transparent;
+    background: rgba(255, 255, 255, 0.03);
+    border-left: 2px solid transparent;
 }
 
 /* Hover effect */
 .mobile-menu-item:hover {
     color: #fff;
-    background: rgba(255, 255, 255, 0.04);
-    border-color: rgba(255, 255, 255, 0.08);
+    background: rgba(255, 0, 0, 0.05);
+    border-left: 2px solid var(--neon-red, #ff0000);
 }
 
 .mobile-menu-item:hover .mobile-menu-icon {
     color: #ff0000;
     background: rgba(255, 0, 0, 0.15);
-    box-shadow: 0 0 12px rgba(255, 0, 0, 0.2);
+    box-shadow: 0 0 12px rgba(255, 0, 0, 0.3);
+    border-color: rgba(255, 0, 0, 0.3);
 }
 
 .mobile-menu-item:hover .mobile-menu-arrow {
@@ -156,28 +162,20 @@ img {
 /* Active state */
 .mobile-menu-item.active {
     color: #fff;
-    background: rgba(255, 0, 0, 0.08);
-    border-color: rgba(255, 0, 0, 0.3);
-    box-shadow:
-        0 0 20px rgba(255, 0, 0, 0.08),
-        inset 0 0 20px rgba(255, 0, 0, 0.04);
+    background: rgba(255, 0, 0, 0.15);
+    border-left: 3px solid var(--neon-red, #ff0000);
+    box-shadow: inset 0 0 15px rgba(255, 0, 0, 0.2);
 }
 
 .mobile-menu-item.active .mobile-menu-icon {
-    color: #ff0000;
-    background: rgba(255, 0, 0, 0.2);
-    box-shadow: 0 0 15px rgba(255, 0, 0, 0.3);
+    color: #fff;
+    background: var(--neon-red, #ff0000);
+    box-shadow: 0 0 15px rgba(255, 0, 0, 0.5);
+    border-color: transparent;
 }
 
 .mobile-menu-item.active::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 15%;
-    bottom: 15%;
-    width: 3px;
-    background: linear-gradient(180deg, transparent, #ff0000, transparent);
-    border-radius: 0 2px 2px 0;
+    content: none;
 }
 
 /* Icon container */
@@ -187,9 +185,10 @@ img {
     display: flex;
     align-items: center;
     justify-content: center;
-    background: rgba(255, 255, 255, 0.04);
-    border-radius: 0.75rem;
-    color: #666;
+    background: rgba(255, 255, 255, 0.05);
+    clip-path: polygon(8px 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #888;
     transition: all 0.3s ease;
     flex-shrink: 0;
 }
@@ -197,21 +196,21 @@ img {
 /* Text */
 .mobile-menu-text {
     flex: 1;
-    letter-spacing: 0.5px;
+    letter-spacing: 1.5px;
 }
 
 /* Arrow */
 .mobile-menu-arrow {
     opacity: 0;
-    transform: translateX(-8px);
-    transition: all 0.3s ease;
+    transform: translateX(-10px);
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
     color: #555;
 }
 
 .mobile-menu-item.active .mobile-menu-arrow {
     opacity: 1;
     transform: translateX(0);
-    color: #ff0000;
+    color: var(--neon-red, #ff0000);
 }
 
 /* Footer */
