@@ -76,38 +76,37 @@ body {
   color: #fff;
   text-transform: uppercase;
   letter-spacing: 4px;
-  text-shadow:
-    0 0 5px var(--neon-red),
-    0 0 15px var(--neon-red);
   margin-bottom: 1.5rem;
   position: relative;
   display: inline-block;
+  /* El contorno iluminado (resplandor) que envuelve toda la palabra y parpadea */
+  animation: resplandor-parpadeante 2s infinite alternate;
 }
 
-@keyframes neon-blink {
-  0%, 18%, 22%, 25%, 53%, 57%, 100% {
-    text-shadow:
-      0 0 10px var(--neon-red),
-      0 0 20px var(--neon-red),
-      0 0 40px var(--neon-red);
-    color: transparent;
-    -webkit-text-stroke: 2.5px #ff3b3b;
-  }
-  20%, 24%, 55% {
-    text-shadow: none;
-    color: transparent;
-    -webkit-text-stroke: 1px #4a0000;
-  }
-}
-
-/* TECNICOS (Rojo) con Brillo Rojo también y animación de parpadeo */
+/* COMPU es blanco nativo, TECNICOS es rojo nativo */
 .hero-title span {
-  color: transparent;
-  -webkit-text-stroke: 2.5px #dc2626;
-  text-shadow:
-    0 0 5px var(--neon-red),
-    0 0 15px var(--neon-red);
-  animation: neon-blink 4s infinite alternate;
+  color: #ff1a1a;
+}
+
+/* Animación del contorno brillante exterior */
+@keyframes resplandor-parpadeante {
+  0% {
+    text-shadow:
+      0 0 5px rgba(255, 0, 0, 0.4),
+      0 0 10px rgba(255, 0, 0, 0.4);
+  }
+  50% {
+    text-shadow:
+      0 0 2px rgba(255, 0, 0, 0.1);
+  }
+  100% {
+    text-shadow:
+      0 0 10px #ff0000,
+      0 0 20px #ff0000,
+      0 0 30px #ff0000,
+      0 0 40px #ff0000,
+      0 0 60px #ff0000;
+  }
 }
 
 .hero-subtitle {
