@@ -202,31 +202,39 @@ include __DIR__ . '/includes/header.php';
     var track = document.getElementById('carousel-destacados');
     if (!track) return;
     var paused = false;
-    var speed = 0.8;
-
+    var speed = 0.8; // pixeles por frame
+    var currentScroll = 0; // Usar variable interna para evitar problemas de redondeo en Safari/iOS
+    
     // Duplicar las tarjetas para loop infinito
     var cards = track.innerHTML;
     track.innerHTML = cards + cards;
 
     function animate() {
         if (!paused) {
-            track.scrollLeft += speed;
             var halfWidth = track.scrollWidth / 2;
-            if (track.scrollLeft >= halfWidth) {
-                track.scrollLeft -= halfWidth;
+            currentScroll += speed;
+            if (currentScroll >= halfWidth) {
+                currentScroll -= halfWidth;
             }
+            track.scrollLeft = currentScroll;
         }
         requestAnimationFrame(animate);
     }
 
+    // Sincronizar el scroll manual (swipe del dedo) con nuestra variable
+    track.addEventListener('scroll', function(){
+        if (paused) {
+            currentScroll = track.scrollLeft;
+        }
+    }, {passive:true});
 
     // Mouse encima = pausa, mouse fuera = reanuda
-    track.addEventListener('mouseenter', function(){ paused = true; });
-    track.addEventListener('mouseleave', function(){ paused = false; });
+    track.addEventListener('mouseenter', function(){ paused = true; currentScroll = track.scrollLeft; });
+    track.addEventListener('mouseleave', function(){ paused = false; currentScroll = track.scrollLeft; });
 
-    // Touch: pausa al tocar
-    track.addEventListener('touchstart', function(){ paused = true; }, {passive:true});
-    track.addEventListener('touchend', function(){ paused = false; }, {passive:true});
+    // Touch: pausa al tocar y permite swipe
+    track.addEventListener('touchstart', function(){ paused = true; currentScroll = track.scrollLeft; }, {passive:true});
+    track.addEventListener('touchend', function(){ paused = false; currentScroll = track.scrollLeft; }, {passive:true});
 
     // Iniciar animación
     animate();
