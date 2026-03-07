@@ -36,10 +36,10 @@
         <div>
             <h3 class="text-base sm:text-lg font-bold mb-2 border-b-2 border-red-600 inline-block pb-1">Categorías</h3>
             <ul class="space-y-1 mt-2">
-                <li><a href="#" class="hover:text-red-500 transition text-sm sm:text-base">Laptops</a></li>
-                <li><a href="#" class="hover:text-red-500 transition text-sm sm:text-base">Computadoras</a></li>
-                <li><a href="#" class="hover:text-red-500 transition text-sm sm:text-base">Componentes</a></li>
-                <li><a href="#" class="hover:text-red-500 transition text-sm sm:text-base">Accesorios</a></li>
+                <li><a href="productos.php?categoria=laptops" class="hover:text-red-500 transition text-sm sm:text-base">Laptops</a></li>
+                <li><a href="productos.php?categoria=computadoras" class="hover:text-red-500 transition text-sm sm:text-base">Computadoras</a></li>
+                <li><a href="productos.php?categoria=componentes" class="hover:text-red-500 transition text-sm sm:text-base">Componentes</a></li>
+                <li><a href="productos.php?categoria=accesorios" class="hover:text-red-500 transition text-sm sm:text-base">Accesorios</a></li>
             </ul>
         </div>
         <!-- Contacto -->
