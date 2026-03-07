@@ -1,48 +1,6 @@
 // Aquí puedes agregar scripts personalizados si lo necesitas 
 
-// Animación de palabras clave
-const frases = [
-    "Tecnología",
-    "Innovación",
-    "Soluciones IT",
-    "Soporte Técnico",
-    "Computadoras",
-    "Accesorios",
-    "Repuestos",
-    "Servicio de calidad"
-];
-let fraseActual = 0;
-let letraActual = 0;
-let escribiendo = true;
-const span = document.getElementById('animacion-palabras');
-
-function escribirFrase() {
-    if (!span) return;
-    if (letraActual <= frases[fraseActual].length) {
-        span.textContent = frases[fraseActual].substring(0, letraActual);
-        letraActual++;
-        setTimeout(escribirFrase, 100);
-    } else {
-        escribiendo = false;
-        setTimeout(borrarFrase, 750);
-    }
-}
-
-function borrarFrase() {
-    if (!span) return;
-    if (letraActual > 0) {
-        span.textContent = frases[fraseActual].substring(0, letraActual - 1);
-        letraActual--;
-        setTimeout(borrarFrase, 50);
-    } else {
-        escribiendo = true;
-        fraseActual = (fraseActual + 1) % frases.length;
-        setTimeout(escribirFrase, 300);
-    }
-}
-
 document.addEventListener('DOMContentLoaded', function () {
-    escribirFrase();
 
     // Registro paso a paso (wizard)
     const steps = [

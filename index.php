@@ -26,8 +26,6 @@ include __DIR__ . '/includes/header.php';
         <br>
 
 
-        <h2 class="hero-subtitle animate-slide-up delay-100">SYSTEM STATUS: ONLINE | Palabras claves: <span
-                id="animacion-palabras" class="text-red-500"></span></h2>
         <p
             class="max-w-xl sm:max-w-2xl text-base sm:text-lg md:text-xl text-gray-400 mb-8 px-2 mx-auto animate-slide-up delay-200">
             Accede a la mejor tecnología del futuro. Componentes de alto rendimiento y sistemas avanzados.
