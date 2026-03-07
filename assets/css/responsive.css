@@ -332,9 +332,6 @@ img {
     .hero-title {
         font-size: 2rem !important;
         letter-spacing: 1px !important;
-        text-shadow:
-            0 0 3px var(--neon-red, #ff0000),
-            0 0 8px var(--neon-red, #ff0000) !important;
         transform: none !important;
     }
 
