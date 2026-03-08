@@ -895,11 +895,20 @@ document.addEventListener('DOMContentLoaded', function() {
             const tituloHtml = r.titulo ? `<div class="prod-review-title">${escapeHtml(r.titulo)}</div>` : '';
             const verificadoHtml = r.verificado ? `<span class="review-verified-badge"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg> Compra verificada</span>` : '';
             
+            // Avatar: mostrar foto de perfil si existe, sino la inicial
+            let avatarHtml;
+            if (r.usuario_foto) {
+                const fotoSrc = r.usuario_foto.startsWith('http') ? r.usuario_foto : `${BASE}/${r.usuario_foto}`;
+                avatarHtml = `<div class="prod-review-avatar prod-review-avatar-photo"><img src="${fotoSrc}" alt="${escapeHtml(r.usuario || 'Usuario')}" onerror="this.parentElement.innerHTML='${initial}';this.parentElement.classList.remove('prod-review-avatar-photo');"></div>`;
+            } else {
+                avatarHtml = `<div class="prod-review-avatar">${initial}</div>`;
+            }
+            
             html += `
                 <div class="prod-review-card">
                     <div class="prod-review-top">
                         <div class="prod-review-user">
-                            <div class="prod-review-avatar">${initial}</div>
+                            ${avatarHtml}
                             <div>
                                 <div class="prod-review-name">${escapeHtml(r.usuario || 'Usuario')}</div>
                                 <div class="prod-review-date">${fecha}</div>
