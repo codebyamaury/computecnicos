@@ -703,7 +703,7 @@
 
 /* Botón cerrar filtros (solo mobile) */
 .mobile-filter-close-btn {
-    display: flex;
+    display: none;
     align-items: center;
     justify-content: center;
     width: 36px;
@@ -721,7 +721,11 @@
     box-shadow: 0 0 10px rgba(255, 0, 0, 0.2);
 }
 
-/* X close button visible on all screens */
+@media (max-width: 1023px) {
+    .mobile-filter-close-btn {
+        display: flex;
+    }
+}
 
 /* Sidebar móvil */
 @media (max-width: 1023px) {
