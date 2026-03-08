@@ -456,59 +456,24 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Botón X cerrar — funciona en desktop Y mobile
+    // Botón X cerrar
     if (filterClose) {
         filterClose.addEventListener('click', function(e) {
             e.preventDefault();
             e.stopPropagation();
-            
-            // Detectar si estamos en mobile (filtro abierto como overlay) o desktop
-            if (isFilterOpen) {
-                // Mobile: cerrar overlay
-                cerrarFiltros();
-            } else {
-                // Desktop: ocultar/colapsar sidebar
-                if (sidebar) {
-                    sidebar.style.display = 'none';
-                    // Hacer que el grid use el ancho completo
-                    var layout = document.querySelector('.products-layout');
-                    if (layout) {
-                        layout.style.gridTemplateColumns = '1fr';
-                    }
-                    // Mostrar botón flotante para reabrir filtros
-                    var reopenBtn = document.getElementById('reopen-filters-btn');
-                    if (!reopenBtn) {
-                        reopenBtn = document.createElement('button');
-                        reopenBtn.id = 'reopen-filters-btn';
-                        reopenBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" x2="20" y1="21" y2="21"/><line x1="4" x2="20" y1="3" y2="3"/><line x1="4" x2="20" y1="12" y2="12"/></svg> Filtros';
-                        reopenBtn.style.cssText = 'display:flex;align-items:center;gap:0.5rem;padding:0.6rem 1.2rem;background:rgba(255,0,0,0.1);border:1px solid rgba(255,0,0,0.3);border-radius:0.5rem;color:#ff0000;font-weight:600;cursor:pointer;transition:all 0.3s ease;margin-bottom:1rem;';
-                        var productsHeader = document.querySelector('.products-header');
-                        if (productsHeader) {
-                            productsHeader.parentNode.insertBefore(reopenBtn, productsHeader);
-                        }
-                        reopenBtn.addEventListener('click', function() {
-                            sidebar.style.display = '';
-                            if (layout) layout.style.gridTemplateColumns = '';
-                            reopenBtn.style.display = 'none';
-                        });
-                        reopenBtn.addEventListener('mouseenter', function() {
-                            this.style.background = 'rgba(255,0,0,0.2)';
-                        });
-                        reopenBtn.addEventListener('mouseleave', function() {
-                            this.style.background = 'rgba(255,0,0,0.1)';
-                        });
-                    } else {
-                        reopenBtn.style.display = 'flex';
-                    }
-                }
-            }
+            cerrarFiltros();
         });
     }
 
     // BLOQUEAR todos los eventos dentro del sidebar para que no cierren nada
+    // EXCEPTO el botón de cerrar (.mobile-filter-close-btn)
     if (sidebar) {
         ['click','touchstart','touchend','mousedown','mouseup','pointerdown','pointerup'].forEach(function(evtName) {
             sidebar.addEventListener(evtName, function(e) {
+                // Permitir que el botón de cerrar funcione normalmente
+                if (e.target.closest('#mobile-filter-close') || e.target.closest('.mobile-filter-close-btn')) {
+                    return;
+                }
                 e.stopPropagation();
             }, true); // useCapture = true para interceptar ANTES que cualquier hijo
         });
