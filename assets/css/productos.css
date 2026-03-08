@@ -721,11 +721,7 @@
     box-shadow: 0 0 10px rgba(255, 0, 0, 0.2);
 }
 
-@media (min-width: 1024px) {
-    .mobile-filter-close-btn {
-        display: none;
-    }
-}
+/* X close button visible on all screens */
 
 /* Sidebar móvil */
 @media (max-width: 1023px) {
