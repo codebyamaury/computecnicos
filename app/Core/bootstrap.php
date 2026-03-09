@@ -1,5 +1,5 @@
+<?php
 // Bootstrap central del proyecto — optimizado para VPS
-
 // Zona horaria por defecto
 date_default_timezone_set('America/Bogota');
 
