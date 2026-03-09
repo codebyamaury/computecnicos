@@ -318,60 +318,7 @@ document.getElementById('form-nuevo-producto').addEventListener('submit', async 
         m.style.display='block';
     }
 });
-// --- Paginación + Búsqueda ---
-(function(){
-    const PER_PAGE = 10;
-    const tbody = document.querySelector('#tabla-productos tbody');
-    const allRows = Array.from(tbody.querySelectorAll('tr'));
-    const pagDiv = document.getElementById('paginacion');
-    const buscar = document.getElementById('buscar-producto');
-    let filteredRows = allRows.slice();
-    let currentPage = 1;
-
-    function renderPage() {
-        const totalPages = Math.max(1, Math.ceil(filteredRows.length / PER_PAGE));
-        if (currentPage > totalPages) currentPage = totalPages;
-        const start = (currentPage - 1) * PER_PAGE;
-        const end = start + PER_PAGE;
-        allRows.forEach(r => r.style.display = 'none');
-        filteredRows.slice(start, end).forEach(r => r.style.display = '');
-        // Render controls
-        let html = '';
-        html += '<button onclick="paginaProductos(\'prev\')" class="adm-btn" style="font-size:.72rem;padding:.3rem .7rem"' + (currentPage <= 1 ? ' disabled style="font-size:.72rem;padding:.3rem .7rem;opacity:.4;pointer-events:none"' : '') + '>← Anterior</button>';
-        for (let i = 1; i <= totalPages; i++) {
-            if (totalPages > 7 && i > 2 && i < totalPages - 1 && Math.abs(i - currentPage) > 1) {
-                if (i === 3 || i === totalPages - 2) html += '<span style="color:#555;font-size:.8rem">…</span>';
-                continue;
-            }
-            html += '<button onclick="paginaProductos(' + i + ')" class="adm-btn' + (i === currentPage ? ' adm-btn-primary' : '') + '" style="font-size:.72rem;padding:.3rem .65rem;min-width:30px">' + i + '</button>';
-        }
-        html += '<button onclick="paginaProductos(\'next\')" class="adm-btn" style="font-size:.72rem;padding:.3rem .7rem"' + (currentPage >= totalPages ? ' disabled style="font-size:.72rem;padding:.3rem .7rem;opacity:.4;pointer-events:none"' : '') + '>Siguiente →</button>';
-        html += '<span style="color:#555;font-size:.72rem;margin-left:8px">Mostrando ' + (filteredRows.length ? start+1 : 0) + '-' + Math.min(end, filteredRows.length) + ' de ' + filteredRows.length + '</span>';
-        pagDiv.innerHTML = html;
-    }
-
-    window.paginaProductos = function(action) {
-        const totalPages = Math.max(1, Math.ceil(filteredRows.length / PER_PAGE));
-        if (action === 'prev') currentPage = Math.max(1, currentPage - 1);
-        else if (action === 'next') currentPage = Math.min(totalPages, currentPage + 1);
-        else currentPage = parseInt(action);
-        renderPage();
-    };
-
-    if (buscar) {
-        buscar.addEventListener('input', function() {
-            const q = this.value.toLowerCase().trim();
-            filteredRows = allRows.filter(r => {
-                const text = r.textContent.toLowerCase();
-                return !q || text.includes(q);
-            });
-            currentPage = 1;
-            renderPage();
-        });
-    }
-
-    renderPage();
-})();
 </script>
 
 <?php include '_layout_end.php'; ?>
+<script>initPagination('#tabla-productos tbody','paginacion',10,'buscar-producto');</script>
