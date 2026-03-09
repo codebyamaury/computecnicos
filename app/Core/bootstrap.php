@@ -39,9 +39,16 @@ if (!defined('APP_ENV')) {
 function base_url(): string {
     $host = $_SERVER['HTTP_HOST'] ?? 'localhost';
     $isLocal = strpos($host, 'localhost') !== false || strpos($host, '127.0.0.1') !== false;
+    $isIp = filter_var(preg_replace('/:\d+$/', '', $host), FILTER_VALIDATE_IP);
     $isSecure = (!empty($_SERVER['HTTPS']) && strtolower($_SERVER['HTTPS']) !== 'off') || (isset($_SERVER['SERVER_PORT']) && $_SERVER['SERVER_PORT'] == 443);
-    $scheme = $isSecure ? 'https' : 'http';
-    $host = $_SERVER['HTTP_HOST'] ?? 'localhost';
+    
+    // Forzar HTTP siempre para IPs puras (VPS) a menos que esté en puerto 443 estricto
+    if ($isIp && (!isset($_SERVER['SERVER_PORT']) || $_SERVER['SERVER_PORT'] != 443)) {
+        $scheme = 'http';
+    } else {
+        $scheme = $isSecure ? 'https' : 'http';
+    }
+
     // Normalizar rutas de servidor
     $docRoot = isset($_SERVER['DOCUMENT_ROOT']) ? str_replace('\\', '/', rtrim($_SERVER['DOCUMENT_ROOT'], '/')) : '';
     $basePath = str_replace('\\', '/', rtrim(BASE_PATH, '/'));
