@@ -1,0 +1,35 @@
+name: Deploy to Azure VPS
+
+on:
+  push:
+    branches:
+      - main  # Cambia esto si usas otra rama (ej. master)
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout del código
+        uses: actions/checkout@v3
+
+      - name: Desplegar en servidor Azure mediante SSH
+        uses: appleboy/ssh-action@v0.1.10
+        with:
+          host: ${{ secrets.AZURE_HOST }}
+          username: ${{ secrets.AZURE_USERNAME }}
+          key: ${{ secrets.AZURE_SSH_KEY }}
+          port: 22
+          script: |
+            # Entramos a la carpeta de tu proyecto (Cámbialo si tu ruta en el VPS es diferente)
+            cd /var/www/computecnicosproject
+            
+            # Descargar los últimos cambios de GitHub
+            git pull origin main
+            
+            # (Opcional) Instalar dependencias si usas Composer
+            # composer install --no-dev --optimize-autoloader
+            
+            # Limpiar caché o reiniciar servicios si fuera necesario
+            # sudo systemctl restart apache2
+            # sudo systemctl restart nginx
