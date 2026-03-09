@@ -43,7 +43,7 @@ jobs:
             git reset --hard origin/main
             
             # Instalar dependencias de PHP (Google Client, etc)
-            composer install --no-dev --optimize-autoloader
+            COMPOSER_ALLOW_SUPERUSER=1 composer install --no-dev --optimize-autoloader
 
             # ── 4. Configurar Apache: DocumentRoot + AllowOverride ──
             cat > "$APACHE_CONF" << 'VHOST'
