@@ -39,7 +39,8 @@ if (!defined('APP_ENV')) {
 function base_url(): string {
     $host = $_SERVER['HTTP_HOST'] ?? 'localhost';
     $isLocal = strpos($host, 'localhost') !== false || strpos($host, '127.0.0.1') !== false;
-    $scheme = $isLocal ? 'http' : 'https';
+    $isSecure = (!empty($_SERVER['HTTPS']) && strtolower($_SERVER['HTTPS']) !== 'off') || (isset($_SERVER['SERVER_PORT']) && $_SERVER['SERVER_PORT'] == 443);
+    $scheme = $isSecure ? 'https' : 'http';
     $host = $_SERVER['HTTP_HOST'] ?? 'localhost';
     // Normalizar rutas de servidor
     $docRoot = isset($_SERVER['DOCUMENT_ROOT']) ? str_replace('\\', '/', rtrim($_SERVER['DOCUMENT_ROOT'], '/')) : '';
