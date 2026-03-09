@@ -111,39 +111,45 @@ $rememberMe = new RememberMe($pdo);
 $rememberMe->tryRestore();
 
 // ─── Migraciones de esquema (se ejecutan UNA SOLA VEZ) ───
-// Usa un archivo bandera para evitar consultas de esquema en cada request
-$migrationFlag = BASE_PATH . '/logs/.schema_migrated_v3';
-if (!file_exists($migrationFlag)) {
-    try {
-        // Crear tabla de sesiones si no existe
-        $pdo->exec('CREATE TABLE IF NOT EXISTS sessions (
-            id VARCHAR(128) NOT NULL PRIMARY KEY,
-            data TEXT NOT NULL,
-            expires_at DATETIME NOT NULL,
-            INDEX idx_expires (expires_at)
-        )');
+    // Usa un archivo bandera para evitar consultas de esquema en cada request
+    $migrationFlag = BASE_PATH . '/logs/.schema_migrated_v4';
+    if (!file_exists($migrationFlag)) {
+        try {
+            // Crear tabla de sesiones si no existe
+            $pdo->exec('CREATE TABLE IF NOT EXISTS sessions (
+                id VARCHAR(128) NOT NULL PRIMARY KEY,
+                data TEXT NOT NULL,
+                expires_at DATETIME NOT NULL,
+                INDEX idx_expires (expires_at)
+            )');
 
-        // Crear tabla de remember_tokens si no existe
-        $rememberMe->ensureTable();
+            // Crear tabla de remember_tokens si no existe
+            $rememberMe->ensureTable();
 
-        // Ajustar ENUM de estados en pedidos
-        $col = $pdo->query("SHOW COLUMNS FROM pedidos LIKE 'estado'")->fetch();
-        if ($col && isset($col['Type']) && strpos($col['Type'], "'preparacion'") === false) {
-            $pdo->exec("ALTER TABLE pedidos MODIFY estado ENUM('pendiente','pagado','preparacion','enviado','entregado','cancelado') DEFAULT 'pendiente'");
-        }
-        $col2 = $pdo->query("SHOW COLUMNS FROM pedido_estados LIKE 'estado'")->fetch();
-        if ($col2 && isset($col2['Type']) && strpos($col2['Type'], "'preparacion'") === false) {
-            $pdo->exec("ALTER TABLE pedido_estados MODIFY estado ENUM('pendiente','pagado','preparacion','enviado','entregado','cancelado') NOT NULL");
-        }
+            // Ajustar ENUM de estados en pedidos
+            $col = $pdo->query("SHOW COLUMNS FROM pedidos LIKE 'estado'")->fetch();
+            if ($col && isset($col['Type']) && strpos($col['Type'], "'preparacion'") === false) {
+                $pdo->exec("ALTER TABLE pedidos MODIFY estado ENUM('pendiente','pagado','preparacion','enviado','entregado','cancelado') DEFAULT 'pendiente'");
+            }
+            $col2 = $pdo->query("SHOW COLUMNS FROM pedido_estados LIKE 'estado'")->fetch();
+            if ($col2 && isset($col2['Type']) && strpos($col2['Type'], "'preparacion'") === false) {
+                $pdo->exec("ALTER TABLE pedido_estados MODIFY estado ENUM('pendiente','pagado','preparacion','enviado','entregado','cancelado') NOT NULL");
+            }
 
-        // Agregar columnas a productos si faltan
-        $cols = $pdo->query("SHOW COLUMNS FROM productos")->fetchAll(PDO::FETCH_COLUMN, 0);
-        if (!in_array('destacado', $cols))
-            $pdo->exec("ALTER TABLE productos ADD COLUMN destacado TINYINT(1) NOT NULL DEFAULT 0");
-        if (!in_array('nuevo_hasta', $cols))
-            $pdo->exec("ALTER TABLE productos ADD COLUMN nuevo_hasta DATE NULL DEFAULT NULL");
-        if (!in_array('oferta_hasta', $cols))
-            $pdo->exec("ALTER TABLE productos ADD COLUMN oferta_hasta DATE NULL DEFAULT NULL");
+            // Agregar columna notificado_admin a pedidos
+            $colsPed = $pdo->query("SHOW COLUMNS FROM pedidos")->fetchAll(PDO::FETCH_COLUMN, 0);
+            if (!in_array('notificado_admin', $colsPed)) {
+                $pdo->exec("ALTER TABLE pedidos ADD COLUMN notificado_admin TINYINT(1) NOT NULL DEFAULT 0");
+            }
+
+            // Agregar columnas a productos si faltan
+            $cols = $pdo->query("SHOW COLUMNS FROM productos")->fetchAll(PDO::FETCH_COLUMN, 0);
+            if (!in_array('destacado', $cols))
+                $pdo->exec("ALTER TABLE productos ADD COLUMN destacado TINYINT(1) NOT NULL DEFAULT 0");
+            if (!in_array('nuevo_hasta', $cols))
+                $pdo->exec("ALTER TABLE productos ADD COLUMN nuevo_hasta DATE NULL DEFAULT NULL");
+            if (!in_array('oferta_hasta', $cols))
+                $pdo->exec("ALTER TABLE productos ADD COLUMN oferta_hasta DATE NULL DEFAULT NULL");
 
         // Marcar migraciones como completadas
         @mkdir(BASE_PATH . '/logs', 0775, true);

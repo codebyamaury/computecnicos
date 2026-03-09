@@ -445,6 +445,39 @@ document.addEventListener('DOMContentLoaded', function(){
 </script>
 <?php unset($_SESSION['admin_toast']); endif; ?>
 
+<!-- Notificaciones en vivo de pedidos nuevos -->
+<script>
+    (function () {
+        // Solo corre si estamos en el panel de admin (asegurado por PHP pero no esta de mas
+        function checkNewOrders() {
+            fetch('api_check_orders.php')
+                .then(res => res.json())
+                .then(data => {
+                    if (data && data.nuevos && data.nuevos.length > 0) {
+                        data.nuevos.forEach(pedido => {
+                            admToast(
+                                `¡A las armas! Nuevo pedido de ${pedido.nombre} por $${Number(pedido.total).toLocaleString('es-CO')} COP`,
+                                'success',
+                                8000
+                            );
+                            // Opcionalmente recargar la página si estamos en pedidos.php
+                            if (window.location.pathname.includes('pedidos.php')) {
+                                setTimeout(() => window.location.reload(), 2000);
+                            }
+                        });
+                    }
+                })
+                .catch(err => console.error('Error revisando pedidos:', err));
+        }
+
+        // Revisar cada 15 segundos
+        setInterval(checkNewOrders, 15000);
+        
+        // Primera revision al cargar la página a los 3 segundos
+        setTimeout(checkNewOrders, 3000);
+    })();
+</script>
+
 <!-- Admin Particle Background -->
 <script>
     (function () {
