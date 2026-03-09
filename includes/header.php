@@ -53,7 +53,7 @@ if (isset($_SESSION['usuario']['id']) && isset($pdo)) {
             <a href="index.php"
                 class="flex items-center justify-center p-2 rounded-full hover:bg-white/5 transition-all group"
                 aria-label="Inicio">
-                <span class="text-3xl text-red-600 group-hover:scale-110 transition-transform">
+                <span class="text-3xl text-red-800 group-hover:scale-110 transition-transform">
                     <i data-lucide="power" class="w-8 h-8 md:w-10 md:h-10"></i>
                 </span>
             </a>
