@@ -194,7 +194,7 @@ include '_layout.php';
         <div class="adm-card">
             <div class="adm-card-title">
                 <span class="adm-card-title-text">Productos con stock bajo (≤ 5 unidades)</span>
-                <a href="inventario.php?nuevo=1" class="adm-btn adm-btn-warning"
+                <a href="#" onclick="abrirModalMovimiento(event)" class="adm-btn adm-btn-warning"
                     style="font-size:0.75rem;padding:0.4rem 0.85rem">+ Reponer stock</a>
             </div>
             <?php if (!$productos_bajo): ?>
@@ -329,4 +329,5 @@ include '_layout.php';
     });
 </script>
 
+<?php include '_modal_movimiento.php'; ?>
 <?php include '_layout_end.php'; ?>
