@@ -27,9 +27,9 @@ jobs:
             APACHE_CONF="/etc/apache2/sites-available/000-default.conf"
 
             # ── 1. Instalar dependencias si faltan ──
-            if ! command -v git &> /dev/null || ! command -v php &> /dev/null; then
+            if ! command -v git &> /dev/null || ! command -v php &> /dev/null || ! command -v composer &> /dev/null; then
               apt-get update -qq
-              apt-get install -y -qq apache2 php libapache2-mod-php php-mysql php-curl php-json php-gd php-mbstring git
+              apt-get install -y -qq apache2 php libapache2-mod-php php-mysql php-curl php-json php-gd php-mbstring git unzip composer
             fi
 
             # ── 2. Clonar repositorio si no existe ──
@@ -37,10 +37,13 @@ jobs:
               git clone https://github.com/codebyamaury/computecnicos.git "$PROJECT_DIR"
             fi
 
-            # ── 3. Descargar los últimos cambios ──
+            # ── 3. Descargar los últimos cambios y dependencias ──
             cd "$PROJECT_DIR"
             git fetch origin main
             git reset --hard origin/main
+            
+            # Instalar dependencias de PHP (Google Client, etc)
+            composer install --no-dev --optimize-autoloader
 
             # ── 4. Configurar Apache: DocumentRoot + AllowOverride ──
             cat > "$APACHE_CONF" << 'VHOST'
