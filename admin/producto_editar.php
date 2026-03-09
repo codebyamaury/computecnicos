@@ -49,19 +49,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_FILES['imagenes']) && count($_FILES['imagenes']['name']) > 0) {
         foreach ($_FILES['imagenes']['tmp_name'] as $idx => $tmp_name) {
             if ($_FILES['imagenes']['error'][$idx] === UPLOAD_ERR_OK) {
-                $ch = curl_init();
-                curl_setopt($ch, CURLOPT_URL, 'https://api.imgur.com/3/image');
-                curl_setopt($ch, CURLOPT_POST, TRUE);
-                curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
-                curl_setopt($ch, CURLOPT_HTTPHEADER, ['Authorization: Client-ID 546c25a59c58ad7']);
-                curl_setopt($ch, CURLOPT_POSTFIELDS, [
-                    'image' => base64_encode(file_get_contents($tmp_name)),
-                    'type'  => 'base64'
-                ]);
-                $reply = json_decode(curl_exec($ch));
-                curl_close($ch);
-                if (isset($reply->data->link)) {
-                    $nuevas_imagenes[] = $reply->data->link;
+                $upload_dir = __DIR__ . '/../uploads/productos/';
+                if (!is_dir($upload_dir)) {
+                    mkdir($upload_dir, 0777, true);
+                }
+                
+                $ext = strtolower(pathinfo($_FILES['imagenes']['name'][$idx], PATHINFO_EXTENSION));
+                $nuevo_nombre = uniqid('prod_') . '_' . time() . '.' . $ext;
+                $destino_fisico = $upload_dir . $nuevo_nombre;
+                
+                if (move_uploaded_file($tmp_name, $destino_fisico)) {
+                    $nuevas_imagenes[] = base_url() . '/uploads/productos/' . $nuevo_nombre;
                 }
             }
         }
@@ -83,24 +81,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_FILES['imagen']) && $_FILES['imagen']['error'] === UPLOAD_ERR_OK && !empty($_FILES['imagen']['tmp_name'])) {
         $ext = strtolower(pathinfo($_FILES['imagen']['name'], PATHINFO_EXTENSION));
         if (in_array($ext, ['jpg','jpeg','png','gif','webp'])) {
-            $ch = curl_init();
-            curl_setopt($ch, CURLOPT_URL, 'https://api.imgur.com/3/image');
-            curl_setopt($ch, CURLOPT_POST, TRUE);
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
-            curl_setopt($ch, CURLOPT_HTTPHEADER, ['Authorization: Client-ID 546c25a59c58ad7']);
-            curl_setopt($ch, CURLOPT_POSTFIELDS, [
-                'image' => base64_encode(file_get_contents($_FILES['imagen']['tmp_name'])),
-                'type'  => 'base64'
-            ]);
-            $reply = json_decode(curl_exec($ch));
-            curl_close($ch);
+            $upload_dir = __DIR__ . '/../uploads/productos/';
+            if (!is_dir($upload_dir)) {
+                mkdir($upload_dir, 0777, true);
+            }
             
-            if (isset($reply->data->link)) {
+            $nuevo_nombre = uniqid('main_') . '_' . time() . '.' . $ext;
+            $destino_fisico = $upload_dir . $nuevo_nombre;
+            
+            if (move_uploaded_file($_FILES['imagen']['tmp_name'], $destino_fisico)) {
                 if (!empty($producto['imagen']) && strpos($producto['imagen'], 'http') !== 0) {
                     $ruta_anterior = '../' . $producto['imagen'];
                     if (is_file($ruta_anterior)) { @unlink($ruta_anterior); }
                 }
-                $producto['imagen'] = $reply->data->link;
+                $producto['imagen'] = base_url() . '/uploads/productos/' . $nuevo_nombre;
             }
         }
     }

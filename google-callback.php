@@ -24,8 +24,6 @@ if (isset($_GET['code'])) {
             
             if (!$usuario) {
                 // Usuario no registrado: crear cuenta automáticamente con Google
-                $foto_final = $foto;
-                // En Vercel no guardamos fotos localmente (filesystem efímero)
                 // Usaremos directamente la URL provista por Google.
                 $foto_final = $foto;
 
@@ -57,9 +55,6 @@ if (isset($_GET['code'])) {
                 exit;
             } else {
                 // Usuario existe - actualizar foto y nombre con los datos de Google
-                // Intentar descargar y guardar la foto localmente para mayor fiabilidad
-                $foto_final = $foto;
-                // En Vercel no podemos descargar la foto y guardarla en local (filesystem efímero).
                 // Pasamos directamente el enlace de Google a la base de datos.
                 $foto_final = $foto;
 

@@ -1,5 +1,4 @@
-<?php
-// Bootstrap central del proyecto — optimizado para VPS + Vercel
+// Bootstrap central del proyecto — optimizado para VPS
 
 // Zona horaria por defecto
 date_default_timezone_set('America/Bogota');
@@ -59,12 +58,6 @@ function base_url(): string {
         if ($sub !== '') { $projectSubdir = '/' . $sub; }
     }
 
-    // Vercel: forzar dominio canónico para OAuth callbacks
-    if (strpos($host, 'vercel.app') !== false) {
-        $cached = "https://computecnicos-kappa.vercel.app";
-        return $cached;
-    }
-
     $cached = "$scheme://$host$projectSubdir";
     return $cached;
 }
@@ -97,17 +90,8 @@ require_once BASE_PATH . '/config/database.php';
 
 // ─── Sesiones ───
 // En VPS: usar sesiones nativas de PHP (rápido, filesystem persistente)
-// En Vercel: usar sesiones en base de datos (filesystem efímero)
-$isVercel = !empty($_ENV['VERCEL']) || !empty(getenv('VERCEL'));
 
 if (session_status() === PHP_SESSION_NONE) {
-    if ($isVercel) {
-        // Vercel: sesiones en DB porque el filesystem no persiste
-        require_once BASE_PATH . '/app/Core/DatabaseSessionHandler.php';
-        $dbSessionHandler = new DatabaseSessionHandler($pdo);
-        session_set_save_handler($dbSessionHandler, true);
-    }
-
     $isSecure = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off');
     session_set_cookie_params([
         'lifetime' => 86400,

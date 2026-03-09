@@ -39,23 +39,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $error_imagen = 'Formato de imagen no permitido: ' . htmlspecialchars($ext);
                     break;
                 }
-                // Subir a Imgur API de forma anónima para evitar fallos de Vercel (Read-Only)
-                $ch = curl_init();
-                curl_setopt($ch, CURLOPT_URL, 'https://api.imgur.com/3/image');
-                curl_setopt($ch, CURLOPT_POST, TRUE);
-                curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
-                curl_setopt($ch, CURLOPT_HTTPHEADER, ['Authorization: Client-ID 546c25a59c58ad7']);
-                curl_setopt($ch, CURLOPT_POSTFIELDS, [
-                    'image' => base64_encode(file_get_contents($tmp_name)),
-                    'type'  => 'base64'
-                ]);
-                $reply = json_decode(curl_exec($ch));
-                curl_close($ch);
+                // Crear directorio si no existe
+                $upload_dir = __DIR__ . '/../uploads/productos/';
+                if (!is_dir($upload_dir)) {
+                    mkdir($upload_dir, 0777, true);
+                }
+
+                // Generar nombre de archivo único
+                $nuevo_nombre = uniqid('prod_') . '_' . time() . '.' . $ext;
+                $destino_fisico = $upload_dir . $nuevo_nombre;
                 
-                if (isset($reply->data->link)) {
-                    $imagenes_urls[] = $reply->data->link;
+                // Mover archivo
+                if (move_uploaded_file($tmp_name, $destino_fisico)) {
+                    // Guardar URL relativa para accederlo públicamente
+                    $imagenes_urls[] = base_url() . '/uploads/productos/' . $nuevo_nombre;
                 } else {
-                    $error_imagen = 'Imgur Error: ' . ($reply->data->error->message ?? json_encode($reply->data->error ?? 'Desconocido'));
+                    $error_imagen = 'Error al mover el archivo al servidor. Verifica los permisos de carpeta: ' . htmlspecialchars($_FILES['imagenes']['name'][$idx]);
                     break;
                 }
             } else if ($_FILES['imagenes']['error'][$idx] !== UPLOAD_ERR_NO_FILE) {
