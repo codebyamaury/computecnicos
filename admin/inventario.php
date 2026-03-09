@@ -222,12 +222,30 @@ document.getElementById('btn-nuevo-movimiento').addEventListener('click', abrirM
 document.getElementById('form-nuevo-movimiento').addEventListener('submit', async function(e) {
     e.preventDefault();
     const data = new FormData(this);
-    const res = await fetch('inventario_nuevo.php', { method: 'POST', body: data });
-    const text = await res.text();
-    if (text.includes('Location: inventario.php') || text.includes('registrado')) { window.location.reload(); }
-    else {
+    try {
+        const res = await fetch('inventario_nuevo.php', { method: 'POST', body: data });
+        const result = await res.text();
+        if (result.trim() === 'success') {
+            window.location.href = 'inventario.php?exito=1';
+        } else {
+            const m = document.getElementById('modal-nuevo-msg');
+            m.textContent = result || 'Error al registrar movimiento. Revisa los datos.';
+            m.style.display = 'block';
+        }
+    } catch (err) {
         const m = document.getElementById('modal-nuevo-msg');
-        m.textContent='Error al registrar movimiento. Revisa los datos.'; m.style.display='block';
+        m.textContent = 'Error de conexión al registrar.';
+        m.style.display = 'block';
+    }
+});
+
+// Auto-abrir modal si viene el parámetro ?nuevo=1 (desde Dashboard)
+document.addEventListener('DOMContentLoaded', function() {
+    if (new URLSearchParams(window.location.search).has('nuevo')) {
+        abrirModal();
+        // Limpiamos la URL visualmente
+        var cleanUrl = window.location.pathname;
+        history.replaceState(null, '', cleanUrl);
     }
 });
 </script>
