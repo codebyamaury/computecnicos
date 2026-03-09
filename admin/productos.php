@@ -232,6 +232,9 @@ include '_layout.php';
 </div>
 
 <script>
+// --- Búsqueda ---
+// (La búsqueda se gestiona dentro del bloque de paginación más abajo)
+
 // --- Modal Editar ---
 async function cargarGaleria(id) {
     const div = document.getElementById('edit-galeria');
@@ -308,14 +311,14 @@ document.getElementById('form-nuevo-producto').addEventListener('submit', async 
     else {
         const m = document.getElementById('modal-nuevo-producto-msg');
         console.error('Server response:', text);
+        // Intentar extraer el mensaje de error del HTML
         const errorMatch = text.match(/<div[^>]*bg-red-600[^>]*>\s*([\s\S]*?)\s*<\/div>/);
         const serverError = errorMatch ? errorMatch[1].trim() : 'Error al registrar. Revisa los datos.';
         m.textContent = serverError; 
         m.style.display='block';
     }
 });
-
-// --- Paginación (10 productos por página) + Búsqueda integrada ---
+// --- Paginación + Búsqueda ---
 (function(){
     const PER_PAGE = 10;
     const tbody = document.querySelector('#tabla-productos tbody');
@@ -330,44 +333,20 @@ document.getElementById('form-nuevo-producto').addEventListener('submit', async 
         if (currentPage > totalPages) currentPage = totalPages;
         const start = (currentPage - 1) * PER_PAGE;
         const end = start + PER_PAGE;
-
-        // Ocultar todas las filas primero, luego mostrar solo las de la página actual
         allRows.forEach(r => r.style.display = 'none');
         filteredRows.slice(start, end).forEach(r => r.style.display = '');
-
-        // Render controles de paginación
+        // Render controls
         let html = '';
-
-        // Botón Anterior
-        if (currentPage > 1) {
-            html += '<button onclick="paginaProductos(\'prev\')" class="adm-btn" style="font-size:.75rem;padding:.35rem .75rem">← Anterior</button>';
-        } else {
-            html += '<button disabled class="adm-btn" style="font-size:.75rem;padding:.35rem .75rem;opacity:.35;cursor:not-allowed">← Anterior</button>';
-        }
-
-        // Números de página
+        html += '<button onclick="paginaProductos(\'prev\')" class="adm-btn" style="font-size:.72rem;padding:.3rem .7rem"' + (currentPage <= 1 ? ' disabled style="font-size:.72rem;padding:.3rem .7rem;opacity:.4;pointer-events:none"' : '') + '>← Anterior</button>';
         for (let i = 1; i <= totalPages; i++) {
             if (totalPages > 7 && i > 2 && i < totalPages - 1 && Math.abs(i - currentPage) > 1) {
-                if (i === 3 || i === totalPages - 2) html += '<span style="color:#555;font-size:.8rem;padding:0 2px">…</span>';
+                if (i === 3 || i === totalPages - 2) html += '<span style="color:#555;font-size:.8rem">…</span>';
                 continue;
             }
-            if (i === currentPage) {
-                html += '<button class="adm-btn adm-btn-primary" style="font-size:.75rem;padding:.35rem .7rem;min-width:32px;pointer-events:none">' + i + '</button>';
-            } else {
-                html += '<button onclick="paginaProductos(' + i + ')" class="adm-btn" style="font-size:.75rem;padding:.35rem .7rem;min-width:32px">' + i + '</button>';
-            }
+            html += '<button onclick="paginaProductos(' + i + ')" class="adm-btn' + (i === currentPage ? ' adm-btn-primary' : '') + '" style="font-size:.72rem;padding:.3rem .65rem;min-width:30px">' + i + '</button>';
         }
-
-        // Botón Siguiente
-        if (currentPage < totalPages) {
-            html += '<button onclick="paginaProductos(\'next\')" class="adm-btn" style="font-size:.75rem;padding:.35rem .75rem">Siguiente →</button>';
-        } else {
-            html += '<button disabled class="adm-btn" style="font-size:.75rem;padding:.35rem .75rem;opacity:.35;cursor:not-allowed">Siguiente →</button>';
-        }
-
-        // Info text
-        html += '<span style="color:#666;font-size:.75rem;margin-left:10px">Mostrando ' + (filteredRows.length ? start + 1 : 0) + '–' + Math.min(end, filteredRows.length) + ' de ' + filteredRows.length + '</span>';
-
+        html += '<button onclick="paginaProductos(\'next\')" class="adm-btn" style="font-size:.72rem;padding:.3rem .7rem"' + (currentPage >= totalPages ? ' disabled style="font-size:.72rem;padding:.3rem .7rem;opacity:.4;pointer-events:none"' : '') + '>Siguiente →</button>';
+        html += '<span style="color:#555;font-size:.72rem;margin-left:8px">Mostrando ' + (filteredRows.length ? start+1 : 0) + '-' + Math.min(end, filteredRows.length) + ' de ' + filteredRows.length + '</span>';
         pagDiv.innerHTML = html;
     }
 
@@ -377,23 +356,20 @@ document.getElementById('form-nuevo-producto').addEventListener('submit', async 
         else if (action === 'next') currentPage = Math.min(totalPages, currentPage + 1);
         else currentPage = parseInt(action);
         renderPage();
-        // Scroll al inicio de la tabla
-        document.querySelector('.adm-table-wrap')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     };
 
-    // Búsqueda integrada con paginación
     if (buscar) {
         buscar.addEventListener('input', function() {
             const q = this.value.toLowerCase().trim();
             filteredRows = allRows.filter(r => {
-                return !q || r.textContent.toLowerCase().includes(q);
+                const text = r.textContent.toLowerCase();
+                return !q || text.includes(q);
             });
             currentPage = 1;
             renderPage();
         });
     }
 
-    // Renderizar la primera página al cargar
     renderPage();
 })();
 </script>

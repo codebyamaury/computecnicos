@@ -220,6 +220,5 @@ document.getElementById('form-nuevo-usuario').addEventListener('submit', async f
     }
 });
 </script>
-<script>initPagination('#tabla-usuarios tbody','pag-usuarios',10);</script>
-
 <?php include '_layout_end.php'; ?>
+<script>initPagination('#tabla-usuarios tbody','pag-usuarios',10);</script>

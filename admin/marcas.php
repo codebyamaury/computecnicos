@@ -174,6 +174,5 @@ document.getElementById('form-editar-marca').addEventListener('submit', async fu
     }
 });
 </script>
-<script>initPagination('#tabla-marcas tbody','pag-marcas',10);</script>
-
 <?php include '_layout_end.php'; ?>
+<script>initPagination('#tabla-marcas tbody','pag-marcas',10);</script>
