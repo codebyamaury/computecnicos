@@ -512,8 +512,18 @@ $step_confirm = 'pending';
 <?php if ($es_compra_directa && !$id_pedido): ?>
 <script>
 // Limpiar compra directa si el usuario sale sin completar
+let isSubmitting = false;
+const forms = document.querySelectorAll('form');
+forms.forEach(form => {
+    form.addEventListener('submit', () => {
+        isSubmitting = true;
+    });
+});
+
 window.addEventListener('beforeunload', function () {
-    navigator.sendBeacon('limpiar_compra_directa.php');
+    if (!isSubmitting) {
+        navigator.sendBeacon('limpiar_compra_directa.php');
+    }
 });
 </script>
 <?php endif; ?>
