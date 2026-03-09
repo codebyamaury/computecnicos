@@ -25,7 +25,9 @@ if ($id > 0) {
                 ->execute([$d['cantidad'], $d['id_producto']]);
         }
     }
-    // Eliminar detalles primero
+    // Eliminar dependencias primero
+    $pdo->prepare('DELETE FROM pedido_estados WHERE id_pedido = ?')->execute([$id]);
+    $pdo->prepare('DELETE FROM facturas_electronicas WHERE id_pedido = ?')->execute([$id]);
     $stmt = $pdo->prepare('DELETE FROM detalle_pedido WHERE id_pedido = ?');
     $stmt->execute([$id]);
     // Eliminar pedido
