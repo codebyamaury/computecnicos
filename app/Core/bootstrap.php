@@ -1,8 +1,5 @@
 <?php
-// Bootstrap central del proyecto (no rompe rutas existentes)
-
-// NO iniciar sesión aún — se hace después de conectar a la BD
-// para poder usar el handler de sesiones en base de datos.
+// Bootstrap central del proyecto — optimizado para VPS + Vercel
 
 // Zona horaria por defecto
 date_default_timezone_set('America/Bogota');
@@ -35,12 +32,14 @@ if (!defined('APP_ENV')) {
     }
 }
 
-// Helper simple para construir URLs públicas basadas en el path del script
+// Helper para construir URLs públicas (resultado cacheado por request)
 function base_url(): string {
+    static $cached = null;
+    if ($cached !== null) return $cached;
+
     $host = $_SERVER['HTTP_HOST'] ?? 'localhost';
 
-    // ── 1. Detectar protocolo REAL de la petición actual ──
-    // Soporta: proxy inverso (X-Forwarded-Proto), HTTPS nativo, puerto 443
+    // Detectar protocolo REAL de la petición actual
     $isSecure = false;
     if (!empty($_SERVER['HTTPS']) && strtolower($_SERVER['HTTPS']) !== 'off') {
         $isSecure = true;
@@ -51,7 +50,7 @@ function base_url(): string {
     }
     $scheme = $isSecure ? 'https' : 'http';
 
-    // ── 2. Calcular subcarpeta (solo aplica en XAMPP local) ──
+    // Calcular subcarpeta (solo aplica en XAMPP local)
     $docRoot = isset($_SERVER['DOCUMENT_ROOT']) ? str_replace('\\', '/', rtrim($_SERVER['DOCUMENT_ROOT'], '/')) : '';
     $basePath = str_replace('\\', '/', rtrim(BASE_PATH, '/'));
     $projectSubdir = '';
@@ -60,12 +59,14 @@ function base_url(): string {
         if ($sub !== '') { $projectSubdir = '/' . $sub; }
     }
 
-    // ── 3. Vercel: forzar dominio canónico para OAuth callbacks ──
+    // Vercel: forzar dominio canónico para OAuth callbacks
     if (strpos($host, 'vercel.app') !== false) {
-        return "https://computecnicos-kappa.vercel.app";
+        $cached = "https://computecnicos-kappa.vercel.app";
+        return $cached;
     }
 
-    return "$scheme://$host$projectSubdir";
+    $cached = "$scheme://$host$projectSubdir";
+    return $cached;
 }
 
 // Helpers de rutas públicas (ajustables cuando migremos assets/storage)
@@ -91,37 +92,25 @@ if (APP_ENV === 'dev') {
     header('Expires: 0');
 }
 
-// Conexión a base de datos (mantiene el archivo actual para no romper)
-// Archivo de configuración de base de datos movido a config/
+// Conexión a base de datos
 require_once BASE_PATH . '/config/database.php';
 
-// ─── Sesiones persistentes en base de datos ───
-// En Vercel (serverless) el sistema de archivos no persiste entre requests,
-// por lo tanto las sesiones PHP normales se pierden inmediatamente.
-// Solución: guardar las sesiones en MySQL usando un handler personalizado.
+// ─── Sesiones ───
+// En VPS: usar sesiones nativas de PHP (rápido, filesystem persistente)
+// En Vercel: usar sesiones en base de datos (filesystem efímero)
+$isVercel = !empty($_ENV['VERCEL']) || !empty(getenv('VERCEL'));
+
 if (session_status() === PHP_SESSION_NONE) {
-    // Crear la tabla de sesiones automáticamente si no existe
-    try {
-        $pdo->exec('CREATE TABLE IF NOT EXISTS sessions (
-            id VARCHAR(128) NOT NULL PRIMARY KEY,
-            data TEXT NOT NULL,
-            expires_at DATETIME NOT NULL,
-            INDEX idx_expires (expires_at)
-        )');
-    } catch (Throwable $e) {
-        // No bloquear si ya existe o hay error menor
-        log_event('Aviso tabla sessions: ' . $e->getMessage());
+    if ($isVercel) {
+        // Vercel: sesiones en DB porque el filesystem no persiste
+        require_once BASE_PATH . '/app/Core/DatabaseSessionHandler.php';
+        $dbSessionHandler = new DatabaseSessionHandler($pdo);
+        session_set_save_handler($dbSessionHandler, true);
     }
 
-    // Registrar el handler de sesiones en base de datos
-    require_once BASE_PATH . '/app/Core/DatabaseSessionHandler.php';
-    $dbSessionHandler = new DatabaseSessionHandler($pdo);
-    session_set_save_handler($dbSessionHandler, true);
-
-    // Configurar cookie de sesión para que funcione correctamente
     $isSecure = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off');
     session_set_cookie_params([
-        'lifetime' => 86400, // 24 horas
+        'lifetime' => 86400,
         'path'     => '/',
         'domain'   => '',
         'secure'   => $isSecure,
@@ -132,50 +121,53 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-// ─── Sistema Remember Me (sesion persistente con cookie) ───
-// Mantiene al usuario logueado entre sesiones del navegador.
-// Los tokens se invalidan al cambiar contraseña o por expiracion (30 dias).
+// ─── Remember Me ───
 require_once BASE_PATH . '/app/Core/RememberMe.php';
 $rememberMe = new RememberMe($pdo);
-$rememberMe->ensureTable();
 $rememberMe->tryRestore();
 
-// Ajuste de esquema: asegurar estado 'preparacion' en ENUM de pedidos y pedido_estados
-try {
-    // Chequear columna pedidos.estado
-    $col = $pdo->query("SHOW COLUMNS FROM pedidos LIKE 'estado'")->fetch();
-    if ($col && isset($col['Type']) && strpos($col['Type'], "'preparacion'") === false) {
-        $pdo->exec("ALTER TABLE pedidos MODIFY estado ENUM('pendiente','pagado','preparacion','enviado','entregado','cancelado') DEFAULT 'pendiente'");
-        log_event('Esquema actualizado: agregado estado "preparacion" a pedidos.estado');
-    }
-    // Chequear columna pedido_estados.estado
-    $col2 = $pdo->query("SHOW COLUMNS FROM pedido_estados LIKE 'estado'")->fetch();
-    if ($col2 && isset($col2['Type']) && strpos($col2['Type'], "'preparacion'") === false) {
-        $pdo->exec("ALTER TABLE pedido_estados MODIFY estado ENUM('pendiente','pagado','preparacion','enviado','entregado','cancelado') NOT NULL");
-        log_event('Esquema actualizado: agregado estado "preparacion" a pedido_estados.estado');
-    }
-} catch (Throwable $e) {
-    // No bloquear la app por errores de ALTER; registrar y continuar
-    log_event('Error ajustando esquema ENUM estados: ' . $e->getMessage());
-}
+// ─── Migraciones de esquema (se ejecutan UNA SOLA VEZ) ───
+// Usa un archivo bandera para evitar consultas de esquema en cada request
+$migrationFlag = BASE_PATH . '/logs/.schema_migrated_v3';
+if (!file_exists($migrationFlag)) {
+    try {
+        // Crear tabla de sesiones si no existe
+        $pdo->exec('CREATE TABLE IF NOT EXISTS sessions (
+            id VARCHAR(128) NOT NULL PRIMARY KEY,
+            data TEXT NOT NULL,
+            expires_at DATETIME NOT NULL,
+            INDEX idx_expires (expires_at)
+        )');
 
-// Migración: columnas destacado, nuevo_hasta, oferta_hasta en productos
-try {
-    $cols = $pdo->query("SHOW COLUMNS FROM productos")->fetchAll(PDO::FETCH_COLUMN, 0);
-    if (!in_array('destacado', $cols)) {
-        $pdo->exec("ALTER TABLE productos ADD COLUMN destacado TINYINT(1) NOT NULL DEFAULT 0");
-        log_event('Esquema actualizado: agregada columna destacado a productos');
+        // Crear tabla de remember_tokens si no existe
+        $rememberMe->ensureTable();
+
+        // Ajustar ENUM de estados en pedidos
+        $col = $pdo->query("SHOW COLUMNS FROM pedidos LIKE 'estado'")->fetch();
+        if ($col && isset($col['Type']) && strpos($col['Type'], "'preparacion'") === false) {
+            $pdo->exec("ALTER TABLE pedidos MODIFY estado ENUM('pendiente','pagado','preparacion','enviado','entregado','cancelado') DEFAULT 'pendiente'");
+        }
+        $col2 = $pdo->query("SHOW COLUMNS FROM pedido_estados LIKE 'estado'")->fetch();
+        if ($col2 && isset($col2['Type']) && strpos($col2['Type'], "'preparacion'") === false) {
+            $pdo->exec("ALTER TABLE pedido_estados MODIFY estado ENUM('pendiente','pagado','preparacion','enviado','entregado','cancelado') NOT NULL");
+        }
+
+        // Agregar columnas a productos si faltan
+        $cols = $pdo->query("SHOW COLUMNS FROM productos")->fetchAll(PDO::FETCH_COLUMN, 0);
+        if (!in_array('destacado', $cols))
+            $pdo->exec("ALTER TABLE productos ADD COLUMN destacado TINYINT(1) NOT NULL DEFAULT 0");
+        if (!in_array('nuevo_hasta', $cols))
+            $pdo->exec("ALTER TABLE productos ADD COLUMN nuevo_hasta DATE NULL DEFAULT NULL");
+        if (!in_array('oferta_hasta', $cols))
+            $pdo->exec("ALTER TABLE productos ADD COLUMN oferta_hasta DATE NULL DEFAULT NULL");
+
+        // Marcar migraciones como completadas
+        @mkdir(BASE_PATH . '/logs', 0775, true);
+        @file_put_contents($migrationFlag, date('Y-m-d H:i:s') . ' - Schema migrations completed');
+        log_event('Migraciones de esquema completadas exitosamente');
+    } catch (Throwable $e) {
+        log_event('Error en migraciones: ' . $e->getMessage());
     }
-    if (!in_array('nuevo_hasta', $cols)) {
-        $pdo->exec("ALTER TABLE productos ADD COLUMN nuevo_hasta DATE NULL DEFAULT NULL");
-        log_event('Esquema actualizado: agregada columna nuevo_hasta a productos');
-    }
-    if (!in_array('oferta_hasta', $cols)) {
-        $pdo->exec("ALTER TABLE productos ADD COLUMN oferta_hasta DATE NULL DEFAULT NULL");
-        log_event('Esquema actualizado: agregada columna oferta_hasta a productos');
-    }
-} catch (Throwable $e) {
-    log_event('Error migrando columnas productos: ' . $e->getMessage());
 }
 
 // Logging sencillo a archivo local (opcional)
