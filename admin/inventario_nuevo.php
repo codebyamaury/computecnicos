@@ -59,7 +59,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $soporte_existente = null;
             if ($id_producto && $tipo === 'entrada') {
                 $stmt_existente = $pdo->prepare('SELECT soporte_documental FROM movimientos_inventario 
-                    WHERE id_producto = ? AND tipo = "entrada" AND soporte_documental IS NOT NULL 
+                    WHERE id_producto = ? AND tipo = 'entrada' AND soporte_documental IS NOT NULL 
                     ORDER BY fecha DESC LIMIT 1');
                 $stmt_existente->execute([$id_producto]);
                 $soporte_existente = $stmt_existente->fetchColumn();

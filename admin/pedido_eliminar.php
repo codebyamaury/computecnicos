@@ -26,8 +26,8 @@ if ($id > 0) {
         // Si el pedido estaba pagado/entregado, reponer stock y registrar entrada
         if ($estado && in_array($estado, ['pagado','entregado'])) {
             foreach ($detalles as $d) {
-                $pdo->prepare('INSERT INTO movimientos_inventario (id_producto, tipo, cantidad, motivo, id_usuario) VALUES (?, "entrada", ?, ?, ?)')
-                    ->execute([$d['id_producto'], $d['cantidad'], 'Eliminación Pedido #' . $id, $id_admin]);
+                $pdo->prepare('INSERT INTO movimientos_inventario (id_producto, tipo, cantidad, motivo, id_usuario) VALUES (?, ?, ?, ?, ?)')
+                    ->execute([$d['id_producto'], 'entrada', $d['cantidad'], 'Eliminación Pedido #' . $id, $id_admin]);
                 $pdo->prepare('UPDATE productos SET stock = stock + ? WHERE id = ?')
                     ->execute([$d['cantidad'], $d['id_producto']]);
             }

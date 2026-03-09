@@ -137,8 +137,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 // Si pasa a pagado/entregado y antes no lo era
                 if (in_array($estado, ['pagado','entregado']) && !in_array($estado_anterior, ['pagado','entregado'])) {
                     foreach ($detalles_nuevos as $d) {
-                        $pdo->prepare('INSERT INTO movimientos_inventario (id_producto, tipo, cantidad, motivo, id_usuario) VALUES (?, "salida", ?, ?, ?)')
-                            ->execute([$d['id_producto'], $d['cantidad'], 'Venta/Pedido #' . $id, $id_admin]);
+                        $pdo->prepare('INSERT INTO movimientos_inventario (id_producto, tipo, cantidad, motivo, id_usuario) VALUES (?, ?, ?, ?, ?)')
+                            ->execute([$d['id_producto'], 'salida', $d['cantidad'], 'Venta/Pedido #' . $id, $id_admin]);
                         $pdo->prepare('UPDATE productos SET stock = stock - ? WHERE id = ?')
                             ->execute([$d['cantidad'], $d['id_producto']]);
                     }
@@ -146,8 +146,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 // Si pasa a cancelado y antes era pagado/entregado
                 if ($estado === 'cancelado' && in_array($estado_anterior, ['pagado','entregado'])) {
                     foreach ($detalles_anteriores as $d) {
-                        $pdo->prepare('INSERT INTO movimientos_inventario (id_producto, tipo, cantidad, motivo, id_usuario) VALUES (?, "entrada", ?, ?, ?)')
-                            ->execute([$d['id_producto'], $d['cantidad'], 'Cancelación Pedido #' . $id, $id_admin]);
+                        $pdo->prepare('INSERT INTO movimientos_inventario (id_producto, tipo, cantidad, motivo, id_usuario) VALUES (?, ?, ?, ?, ?)')
+                            ->execute([$d['id_producto'], 'entrada', $d['cantidad'], 'Cancelación Pedido #' . $id, $id_admin]);
                         $pdo->prepare('UPDATE productos SET stock = stock + ? WHERE id = ?')
                             ->execute([$d['cantidad'], $d['id_producto']]);
                     }
@@ -160,15 +160,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         if ($cant_nuevo < $cant_ant) {
                             // Devolver stock
                             $diff = $cant_ant - $cant_nuevo;
-                            $pdo->prepare('INSERT INTO movimientos_inventario (id_producto, tipo, cantidad, motivo, id_usuario) VALUES (?, "entrada", ?, ?, ?)')
-                                ->execute([$idp, $diff, 'Ajuste edición Pedido #' . $id, $id_admin]);
+                            $pdo->prepare('INSERT INTO movimientos_inventario (id_producto, tipo, cantidad, motivo, id_usuario) VALUES (?, ?, ?, ?, ?)')
+                                ->execute([$idp, 'entrada', $diff, 'Ajuste edición Pedido #' . $id, $id_admin]);
                             $pdo->prepare('UPDATE productos SET stock = stock + ? WHERE id = ?')
                                 ->execute([$diff, $idp]);
                         } elseif ($cant_nuevo > $cant_ant) {
                             // Descontar stock extra
                             $diff = $cant_nuevo - $cant_ant;
-                            $pdo->prepare('INSERT INTO movimientos_inventario (id_producto, tipo, cantidad, motivo, id_usuario) VALUES (?, "salida", ?, ?, ?)')
-                                ->execute([$idp, $diff, 'Ajuste edición Pedido #' . $id, $id_admin]);
+                            $pdo->prepare('INSERT INTO movimientos_inventario (id_producto, tipo, cantidad, motivo, id_usuario) VALUES (?, ?, ?, ?, ?)')
+                                ->execute([$idp, 'salida', $diff, 'Ajuste edición Pedido #' . $id, $id_admin]);
                             $pdo->prepare('UPDATE productos SET stock = stock - ? WHERE id = ?')
                                 ->execute([$diff, $idp]);
                         }
@@ -176,8 +176,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     // Si hay productos nuevos
                     foreach ($mapa_nuevo as $idp => $cant_nuevo) {
                         if (!isset($mapa_ant[$idp])) {
-                            $pdo->prepare('INSERT INTO movimientos_inventario (id_producto, tipo, cantidad, motivo, id_usuario) VALUES (?, "salida", ?, ?, ?)')
-                                ->execute([$idp, $cant_nuevo, 'Ajuste edición Pedido #' . $id, $id_admin]);
+                            $pdo->prepare('INSERT INTO movimientos_inventario (id_producto, tipo, cantidad, motivo, id_usuario) VALUES (?, ?, ?, ?, ?)')
+                                ->execute([$idp, 'salida', $cant_nuevo, 'Ajuste edición Pedido #' . $id, $id_admin]);
                             $pdo->prepare('UPDATE productos SET stock = stock - ? WHERE id = ?')
                                 ->execute([$cant_nuevo, $idp]);
                         }
