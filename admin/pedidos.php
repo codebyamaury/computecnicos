@@ -505,7 +505,7 @@ document.getElementById('form-nuevo-pedido').addEventListener('submit', async fu
     const data = new FormData(this);
     const res  = await fetch('pedido_nuevo.php', { method:'POST', body:data });
     const text = await res.text();
-    if (text.includes('Location: pedidos.php') || text.includes('registrado')) { window.location.reload(); }
+    if (text.includes('Location: pedidos.php') || text.includes('registrado')) { window.location.href = window.location.pathname + '?exito=1'; }
     else {
         var m = document.getElementById('modal-nuevo-msg');
         m.textContent = 'Error al registrar pedido. Revisa los datos.'; m.style.display='block';
@@ -517,7 +517,7 @@ document.getElementById('form-editar-pedido').addEventListener('submit', async f
     const data = new FormData(this);
     const res  = await fetch('pedido_editar.php?id=' + data.get('id'), { method:'POST', body:data });
     const text = await res.text();
-    if (text.includes('Location: pedidos.php') || text.includes('actualizado')) { window.location.reload(); }
+    if (text.includes('Location: pedidos.php') || text.includes('actualizado')) { window.location.href = window.location.pathname + '?editado=1'; }
     else {
         var m = document.getElementById('modal-editar-msg');
         m.textContent = 'Error al editar pedido.'; m.style.display='block';

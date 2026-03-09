@@ -153,7 +153,7 @@ document.getElementById('form-proveedor').addEventListener('submit', async funct
     const data = new FormData(this);
     const res = await fetch('proveedor_nuevo.php', { method: 'POST', body: data });
     const text = await res.text();
-    if (text.includes('Location: proveedores.php') || text.includes('registrado')) { window.location.reload(); }
+    if (text.includes('Location: proveedores.php') || text.includes('registrado')) { window.location.href = window.location.pathname + '?exito=1'; }
     else {
         const m = document.getElementById('modal-nuevo-msg');
         m.textContent='Error al registrar proveedor.'; m.style.display='block';
@@ -164,7 +164,7 @@ document.getElementById('form-editar-proveedor').addEventListener('submit', asyn
     const data = new FormData(this);
     const res = await fetch('proveedor_editar.php?id=' + data.get('id'), { method: 'POST', body: data });
     const text = await res.text();
-    if (text.includes('Location: proveedores.php') || text.includes('actualizado')) { window.location.reload(); }
+    if (text.includes('Location: proveedores.php') || text.includes('actualizado')) { window.location.href = window.location.pathname + '?editado=1'; }
     else {
         const m = document.getElementById('modal-editar-msg');
         m.textContent='Error al editar proveedor.'; m.style.display='block';

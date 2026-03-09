@@ -166,7 +166,7 @@ document.getElementById('form-editar-marca').addEventListener('submit', async fu
     const res = await fetch('marca_editar.php?id=' + data.get('id'), { method: 'POST', body: data });
     const text = await res.text();
     if (text.includes('Marca actualizada correctamente')) {
-        window.location.reload();
+        window.location.href = window.location.pathname + '?editado=1';
     } else {
         const msg = document.getElementById('modal-editar-msg');
         msg.textContent = 'Error al editar marca. Revisa los datos.';

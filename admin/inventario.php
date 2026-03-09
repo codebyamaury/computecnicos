@@ -134,7 +134,7 @@ async function confirmarEliminarMov() {
     cerrarDelMov();
     const res = await fetch('eliminar_movimiento.php', { method: 'POST', headers: {'Content-Type':'application/x-www-form-urlencoded'}, body: 'id=' + id });
     const text = await res.text();
-    if (text === 'success') { window.location.reload(); }
+    if (text === 'success') { window.location.href = window.location.pathname + '?exito=1'; }
     else {
         // Mostrar toast de error
         var t = document.createElement('div');

@@ -172,8 +172,8 @@ document.getElementById('form-editar-categoria').addEventListener('submit', asyn
     const data = new FormData(this);
     const res = await fetch('categoria_editar.php?id=' + data.get('id'), { method: 'POST', body: data });
     const text = await res.text();
-    if (text.includes('actualizada correctamente')) {
-        window.location.reload();
+    if (text.includes('Location: categorias.php') || text.includes('actualizado')) { 
+        window.location.href = window.location.pathname + '?editado=1'; 
     } else {
         const msg = document.getElementById('modal-editar-msg');
         msg.textContent = 'Error al editar. Revisa los datos.';

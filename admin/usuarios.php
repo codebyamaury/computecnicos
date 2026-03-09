@@ -200,19 +200,15 @@ document.getElementById('form-editar-usuario').addEventListener('submit', async 
     const data = new FormData(this);
     const res = await fetch('usuario_editar.php?id=' + data.get('id'), { method: 'POST', body: data });
     const text = await res.text();
-    if (text.includes('Location: usuarios.php') || text.includes('actualizado')) { window.location.reload(); }
-    else {
-        const msg = document.getElementById('modal-editar-msg');
-        msg.textContent = 'Error al editar. Revisa los datos.';
-        msg.style.display = 'block';
-    }
+    if (text.includes('Location: usuarios.php') || text.includes('actualizado')) { window.location.href = window.location.pathname + '?editado=1'; }
+    else { document.getElementById('modal-editar-msg').innerText = text; document.getElementById('modal-editar-msg').style.display='block'; }
 });
 document.getElementById('form-nuevo-usuario').addEventListener('submit', async function(e) {
     e.preventDefault();
     const data = new FormData(this);
     const res = await fetch('usuario_nuevo.php', { method: 'POST', body: data });
     const text = await res.text();
-    if (text.includes('Location: usuarios.php') || text.includes('registrado')) { window.location.reload(); }
+    if (text.includes('Location: usuarios.php') || text.includes('registrado')) { window.location.href = window.location.pathname + '?exito=1'; }
     else {
         const msg = document.getElementById('modal-nuevo-msg');
         msg.textContent = 'Error al registrar usuario. Revisa los datos.';
