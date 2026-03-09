@@ -38,33 +38,33 @@ if (!defined('APP_ENV')) {
 // Helper simple para construir URLs públicas basadas en el path del script
 function base_url(): string {
     $host = $_SERVER['HTTP_HOST'] ?? 'localhost';
-    $isLocal = strpos($host, 'localhost') !== false || strpos($host, '127.0.0.1') !== false;
-    $isIp = filter_var(preg_replace('/:\d+$/', '', $host), FILTER_VALIDATE_IP);
-    $isSecure = (!empty($_SERVER['HTTPS']) && strtolower($_SERVER['HTTPS']) !== 'off') || (isset($_SERVER['SERVER_PORT']) && $_SERVER['SERVER_PORT'] == 443);
-    
-    // Forzar HTTP siempre para IPs puras (VPS) a menos que esté en puerto 443 estricto
-    if ($isIp && (!isset($_SERVER['SERVER_PORT']) || $_SERVER['SERVER_PORT'] != 443)) {
-        $scheme = 'http';
-    } else {
-        $scheme = $isSecure ? 'https' : 'http';
-    }
 
-    // Normalizar rutas de servidor
+    // ── 1. Detectar protocolo REAL de la petición actual ──
+    // Soporta: proxy inverso (X-Forwarded-Proto), HTTPS nativo, puerto 443
+    $isSecure = false;
+    if (!empty($_SERVER['HTTPS']) && strtolower($_SERVER['HTTPS']) !== 'off') {
+        $isSecure = true;
+    } elseif (!empty($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https') {
+        $isSecure = true;
+    } elseif (isset($_SERVER['SERVER_PORT']) && $_SERVER['SERVER_PORT'] == 443) {
+        $isSecure = true;
+    }
+    $scheme = $isSecure ? 'https' : 'http';
+
+    // ── 2. Calcular subcarpeta (solo aplica en XAMPP local) ──
     $docRoot = isset($_SERVER['DOCUMENT_ROOT']) ? str_replace('\\', '/', rtrim($_SERVER['DOCUMENT_ROOT'], '/')) : '';
     $basePath = str_replace('\\', '/', rtrim(BASE_PATH, '/'));
-    // Calcular subcarpeta del proyecto respecto al DOCUMENT_ROOT
     $projectSubdir = '';
     if ($docRoot && strpos($basePath, $docRoot) === 0) {
         $sub = trim(substr($basePath, strlen($docRoot)), '/');
         if ($sub !== '') { $projectSubdir = '/' . $sub; }
     }
-    // Si es entorno de producción, forzar el dominio oficial para que los Redirect URIs de Google Oauth siempre coincidan
-    // sin importar si Vercel cargó la página desde un subdominio generado aleatoriamente.
-    if ($scheme === 'https' && strpos($host, 'vercel.app') !== false) {
+
+    // ── 3. Vercel: forzar dominio canónico para OAuth callbacks ──
+    if (strpos($host, 'vercel.app') !== false) {
         return "https://computecnicos-kappa.vercel.app";
     }
 
-    // Retornar siempre la raíz del proyecto, independiente del directorio del script en local
     return "$scheme://$host$projectSubdir";
 }
 
