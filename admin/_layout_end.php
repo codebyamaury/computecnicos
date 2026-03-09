@@ -445,6 +445,39 @@ document.addEventListener('DOMContentLoaded', function(){
 </script>
 <?php unset($_SESSION['admin_toast']); endif; ?>
 
+<!-- Toast universal por URL params (aplica a TODAS las páginas admin) -->
+<script>
+document.addEventListener('DOMContentLoaded', function(){
+    var params = new URLSearchParams(window.location.search);
+    if (params.has('exito')) {
+        admToast('Acción realizada exitosamente.', 'success', 5000);
+    }
+    if (params.has('editado')) {
+        admToast('Registro editado exitosamente.', 'success', 5000);
+    }
+    if (params.has('eliminado')) {
+        admToast('Registro eliminado exitosamente.', 'success', 5000);
+    }
+    if (params.has('error')) {
+        var errorMsg = params.get('error') || 'Ocurrió un error procesando la solicitud.';
+        admToast(decodeURIComponent(errorMsg), 'error', 6000);
+    }
+    // Limpiar la URL después de mostrar el toast (quita los params sin recargar)
+    if (params.has('exito') || params.has('editado') || params.has('eliminado') || params.has('error')) {
+        var cleanUrl = window.location.pathname;
+        // Preservar params que NO son de toast (ej: estado=pagado)
+        var keepParams = new URLSearchParams();
+        params.forEach(function(val, key){
+            if (!['exito','editado','eliminado','error'].includes(key)) {
+                keepParams.set(key, val);
+            }
+        });
+        var qs = keepParams.toString();
+        history.replaceState(null, '', cleanUrl + (qs ? '?' + qs : ''));
+    }
+});
+</script>
+
 <!-- Notificaciones en vivo de pedidos nuevos -->
 <script>
     (function () {

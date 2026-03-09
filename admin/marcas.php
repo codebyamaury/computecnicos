@@ -26,7 +26,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['nueva_marca'])) {
 if (isset($_GET['eliminar'])) {
     $id = intval($_GET['eliminar']);
     $pdo->prepare('DELETE FROM marcas WHERE id = ?')->execute([$id]);
-    header('Location: marcas.php');
+    header('Location: marcas.php?eliminado=1');
     exit;
 }
 

@@ -33,7 +33,7 @@ if (isset($_GET['eliminar'])) {
         $mensaje_tipo = 'error';
     } else {
         $pdo->prepare('DELETE FROM categorias WHERE id = ?')->execute([$id]);
-        header('Location: categorias.php');
+        header('Location: categorias.php?eliminado=1');
         exit;
     }
 }

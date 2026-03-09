@@ -11,7 +11,7 @@ if (isset($_GET['eliminar'])) {
     $id = intval($_GET['eliminar']);
     $stmt = $pdo->prepare('DELETE FROM contactos WHERE id = ?');
     $stmt->execute([$id]);
-    header('Location: contactos.php');
+    header('Location: contactos.php?eliminado=1');
     exit;
 }
 // Obtener mensajes

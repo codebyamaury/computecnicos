@@ -12,7 +12,7 @@ if (isset($_GET['eliminar'])) {
     if ($id > 0 && $id !== (int)$_SESSION['usuario']['id']) {
         $pdo->prepare('DELETE FROM usuarios WHERE id = ?')->execute([$id]);
     }
-    header('Location: usuarios.php');
+    header('Location: usuarios.php?eliminado=1');
     exit;
 }
 

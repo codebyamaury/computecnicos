@@ -20,7 +20,7 @@ if (isset($_GET['eliminar'])) {
         }
         $pdo->prepare('DELETE FROM resenas WHERE id = ?')->execute([$id]);
     }
-    header('Location: resenas.php');
+    header('Location: resenas.php?eliminado=1');
     exit;
 }
 

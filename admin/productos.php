@@ -30,7 +30,7 @@ if (isset($_GET['eliminar'])) {
             }
         } catch (Exception $e) {}
     }
-    header('Location: productos.php');
+    header('Location: productos.php?eliminado=1');
     exit;
 }
 

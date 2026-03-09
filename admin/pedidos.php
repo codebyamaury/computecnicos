@@ -111,13 +111,6 @@ include '_layout.php';
     <div class="adm-alert adm-alert-error"><?= htmlspecialchars($_SESSION['flash_error']); unset($_SESSION['flash_error']); ?></div>
     <?php endif; ?>
 
-    <?php if (isset($_GET['eliminado'])): ?>
-    <script>document.addEventListener('DOMContentLoaded', function(){ admToast('El pedido ha sido eliminado exitosamente.', 'success', 5000); });</script>
-    <?php endif; ?>
-    <?php if (isset($_GET['editado'])): ?>
-    <script>document.addEventListener('DOMContentLoaded', function(){ admToast('El pedido ha sido editado exitosamente.', 'success', 5000); });</script>
-    <?php endif; ?>
-
     <!-- Filtros de estado -->
     <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:1.5rem">
         <?php
