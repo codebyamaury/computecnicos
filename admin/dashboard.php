@@ -224,8 +224,8 @@ include '_layout.php';
                                     <td><?= htmlspecialchars($p['categoria']) ?></td>
                                     <td><?= htmlspecialchars($p['marca']) ?></td>
                                     <td>
-                                        <a href="producto_editar.php?id=<?= $p['id'] ?>" class="adm-btn adm-btn-warning"
-                                            style="font-size:0.72rem;padding:0.35rem 0.75rem">Editar</a>
+                                        <button type="button" onclick="abrirModalEditarProducto(<?= $p['id'] ?>, event)" class="adm-btn adm-btn-warning"
+                                            style="font-size:0.72rem;padding:0.35rem 0.75rem">Editar</button>
                                     </td>
                                 </tr>
                             <?php endforeach; ?>

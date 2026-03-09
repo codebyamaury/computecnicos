@@ -119,9 +119,9 @@ include '_layout.php';
                     </td>
                     <td>
                         <div style="display:flex;gap:6px;flex-wrap:wrap">
-                            <a href="producto_editar.php?id=<?= $p['id'] ?>" class="adm-btn adm-btn-warning" style="font-size:0.72rem;padding:0.3rem 0.7rem;text-decoration:none">
+                            <button type="button" onclick="abrirModalEditarProducto(<?= $p['id'] ?>, event)" class="adm-btn adm-btn-warning" style="font-size:0.72rem;padding:0.3rem 0.7rem;text-decoration:none">
                                 Editar
-                            </a>
+                            </button>
                             <button type="button" class="adm-btn adm-btn-danger" style="font-size:0.72rem;padding:0.3rem 0.7rem"
                                onclick="confirmarEliminar('?eliminar=<?= $p['id'] ?>', '<?= htmlspecialchars($p['nombre'], ENT_QUOTES) ?>', 'producto')">
                                 Eliminar

@@ -433,6 +433,65 @@ function admToast(message, type, duration) {
 }
 </script>
 
+<script>
+// Funciones globales para Editar Producto en Modal
+async function abrirModalEditarProducto(id, event) {
+    if (event) event.preventDefault();
+    try {
+        const res = await fetch('modal_producto_editar.php?id=' + id);
+        const html = await res.text();
+        let container = document.getElementById('modal-editar-producto-container');
+        if (!container) {
+            container = document.createElement('div');
+            container.id = 'modal-editar-producto-container';
+            document.body.appendChild(container);
+        }
+        container.innerHTML = html;
+        document.getElementById('modal-edit-bg').classList.add('show');
+        document.getElementById('modal-edit-producto').classList.remove('hidden');
+        document.getElementById('modal-edit-producto').classList.add('show');
+        document.body.style.overflow = 'hidden';
+    } catch (e) {
+        admToast('Error al cargar formulario de edición.', 'error');
+    }
+}
+
+function cerrarModalEditarProducto() {
+    const bg = document.getElementById('modal-edit-bg');
+    const modal = document.getElementById('modal-edit-producto');
+    if (bg) bg.classList.remove('show');
+    if (modal) {
+        modal.classList.add('hidden');
+        modal.classList.remove('show');
+    }
+    document.body.style.overflow = '';
+}
+
+async function guardarEdicionProducto(e, id) {
+    e.preventDefault();
+    const data = new FormData(e.target);
+    try {
+        const res = await fetch('modal_producto_editar.php?id=' + id, { method: 'POST', body: data });
+        const result = await res.text();
+        if (result.trim() === 'success') {
+            cerrarModalEditarProducto();
+            admToast('Producto actualizado exitosamente.', 'success');
+            setTimeout(() => window.location.reload(), 1500);
+        } else {
+            const m = document.getElementById('modal-edit-msg');
+            if (m) {
+                m.innerHTML = result || 'Error crítico al guardar. Revisa los datos.';
+                m.style.display = 'block';
+            } else {
+                admToast(result || 'Error crítico al guardar.', 'error');
+            }
+        }
+    } catch (err) {
+        admToast('Error de conexión persistente.', 'error');
+    }
+}
+</script>
+
 <?php if (!empty($_SESSION['admin_toast'])): ?>
 <script>
 document.addEventListener('DOMContentLoaded', function(){
