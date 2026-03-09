@@ -474,9 +474,7 @@ async function guardarEdicionProducto(e, id) {
         const res = await fetch('modal_producto_editar.php?id=' + id, { method: 'POST', body: data });
         const result = await res.text();
         if (result.trim() === 'success') {
-            cerrarModalEditarProducto();
-            admToast('Producto actualizado exitosamente.', 'success');
-            setTimeout(() => window.location.reload(), 1500);
+            window.location.href = window.location.pathname + '?editado=1';
         } else {
             const m = document.getElementById('modal-edit-msg');
             if (m) {
