@@ -230,7 +230,7 @@ include 'includes/header.php';
                             Agregar al Carrito
                         </button>
                     </form>
-                    <form method="POST" action="checkout.php" class="prod-action-form">
+                    <form method="POST" action="checkout.php" class="prod-action-form" id="form-comprar-ahora">
                         <input type="hidden" name="id_producto" value="<?php echo intval($producto['id']); ?>">
                         <input type="hidden" name="cantidad" id="qty-hidden-buy" value="1">
                         <input type="hidden" name="compra_directa" value="1">
@@ -573,6 +573,27 @@ include 'includes/header.php';
                 }
             });
         });
+
+        // Intercept "Comprar Ahora" form — require login
+        const formComprarAhora = document.getElementById('form-comprar-ahora');
+        if (formComprarAhora) {
+            formComprarAhora.addEventListener('submit', function (e) {
+                if (!isLoggedIn) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    showToast('Debes iniciar sesión para comprar.', 'warning', 4000);
+                    setTimeout(function() {
+                        if (typeof abrirModalLogin === 'function') {
+                            abrirModalLogin();
+                        } else {
+                            window.location.href = 'index.php';
+                        }
+                    }, 500);
+                    return;
+                }
+                // If logged in, allow normal form submission to checkout.php
+            });
+        }
     });
 </script>
 

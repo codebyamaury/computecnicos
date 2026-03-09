@@ -253,7 +253,24 @@ include __DIR__ . '/includes/header.php';
 
     <!-- Contenido del Carrito -->
     <section class="container mx-auto px-4 pb-20">
-        <?php if (empty($_SESSION['carrito'])): ?>
+        <?php if (!isset($_SESSION['usuario'])): ?>
+            <!-- Requiere iniciar sesión -->
+            <div class="cart-empty animate-slide-up delay-100">
+                <div class="cart-empty-icon" style="color:#ff4444;">
+                    <i data-lucide="lock" style="width:48px;height:48px"></i>
+                </div>
+                <h2 class="cart-empty-title">Inicia sesión para ver tu carrito</h2>
+                <p class="cart-empty-text">Necesitas una cuenta para agregar productos y gestionar tu carrito de compras.</p>
+                <button type="button" onclick="if(typeof abrirModalLogin==='function'){abrirModalLogin();}else{window.location.href='index.php';}" class="cart-empty-btn">
+                    <i data-lucide="user" style="width:20px;height:20px"></i>
+                    Iniciar Sesión
+                </button>
+                <a href="productos.php" class="cart-empty-btn" style="background:transparent;border:1px solid rgba(255,255,255,0.15);color:#ccc;margin-top:0.75rem;">
+                    <i data-lucide="shopping-bag" style="width:20px;height:20px"></i>
+                    Explorar Productos
+                </a>
+            </div>
+        <?php elseif (empty($_SESSION['carrito'])): ?>
             <!-- Carrito Vacío -->
             <div class="cart-empty animate-slide-up delay-100">
                 <div class="cart-empty-icon">

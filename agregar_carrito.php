@@ -26,6 +26,15 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     exit;
 }
 
+// Verificar que el usuario esté logueado
+if (!isset($_SESSION['usuario'])) {
+    if (expects_json()) {
+        respond_json(['ok' => false, 'msg' => 'Debes iniciar sesión para agregar productos al carrito.', 'total' => null]);
+    }
+    header('Location: index.php');
+    exit;
+}
+
 $id_producto = intval($_POST['id_producto'] ?? 0);
 $cantidad = max(1, intval($_POST['cantidad'] ?? 1));
 

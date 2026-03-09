@@ -4,6 +4,12 @@ require_once __DIR__ . '/app/Core/bootstrap.php';
 // Configuración de PayPal
 $paypal_config = require __DIR__ . '/config/paypal_config.php';
 
+// Verificar que el usuario esté logueado
+if (!isset($_SESSION['usuario'])) {
+    header('Location: index.php');
+    exit;
+}
+
 // ── Compra directa: recibir producto desde "Comprar Ahora" ──
 $es_compra_directa = false;
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST['compra_directa'])) {
