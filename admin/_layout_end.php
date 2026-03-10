@@ -280,7 +280,6 @@
             h += '<button onclick="pagNav_' + uid + '(\'next\')" class="adm-pag-btn ' + (page >= total ? 'disabled' : '') + '" title="Siguiente">';
             h += '<svg style="width:16px;height:16px" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/></svg></button>';
             
-            h += '<div class="adm-pag-info">Mostrando ' + (filtered.length ? s + 1 : 0) + '-' + Math.min(e, filtered.length) + ' de ' + filtered.length + '</div>';
             pagDiv.innerHTML = h;
         }
 
