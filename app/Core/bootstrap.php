@@ -112,7 +112,7 @@ $rememberMe->tryRestore();
 
 // ─── Migraciones de esquema (se ejecutan UNA SOLA VEZ) ───
     // Usa un archivo bandera para evitar consultas de esquema en cada request
-    $migrationFlag = BASE_PATH . '/logs/.schema_migrated_v4';
+    $migrationFlag = BASE_PATH . '/logs/.schema_migrated_v5';
     if (!file_exists($migrationFlag)) {
         try {
             // Crear tabla de sesiones si no existe
@@ -150,6 +150,13 @@ $rememberMe->tryRestore();
                 $pdo->exec("ALTER TABLE productos ADD COLUMN nuevo_hasta DATE NULL DEFAULT NULL");
             if (!in_array('oferta_hasta', $cols))
                 $pdo->exec("ALTER TABLE productos ADD COLUMN oferta_hasta DATE NULL DEFAULT NULL");
+
+            // Migrar usuarios es_principal
+            $colsUsers = $pdo->query("SHOW COLUMNS FROM usuarios")->fetchAll(PDO::FETCH_COLUMN, 0);
+            if (!in_array('es_principal', $colsUsers)) {
+                $pdo->exec("ALTER TABLE usuarios ADD COLUMN es_principal TINYINT(1) NOT NULL DEFAULT 0");
+                $pdo->exec("UPDATE usuarios SET es_principal = 1 ORDER BY id ASC LIMIT 1");
+            }
 
         // Marcar migraciones como completadas
         @mkdir(BASE_PATH . '/logs', 0775, true);

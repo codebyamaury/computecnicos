@@ -10,9 +10,55 @@ $usuario = $_SESSION['usuario'];
 if (isset($_GET['eliminar'])) {
     $id = intval($_GET['eliminar']);
     if ($id > 0 && $id !== (int)$_SESSION['usuario']['id']) {
-        $pdo->prepare('DELETE FROM usuarios WHERE id = ?')->execute([$id]);
+        if (!isset($_SESSION['usuario']['es_principal'])) {
+            $stmtUser = $pdo->prepare('SELECT es_principal FROM usuarios WHERE id = ?');
+            $stmtUser->execute([$_SESSION['usuario']['id']]);
+            $_SESSION['usuario']['es_principal'] = $stmtUser->fetchColumn() ? 1 : 0;
+        }
+        $is_main_admin = $_SESSION['usuario']['es_principal'];
+        
+        $can_delete = true;
+        if (!$is_main_admin) {
+            $stmtRole = $pdo->prepare('SELECT rol FROM usuarios WHERE id = ?');
+            $stmtRole->execute([$id]);
+            if ($stmtRole->fetchColumn() === 'admin') {
+                $can_delete = false;
+            }
+        }
+        
+        if ($can_delete) {
+            $pdo->prepare('DELETE FROM usuarios WHERE id = ?')->execute([$id]);
+        }
     }
     header('Location: usuarios.php?eliminado=1');
+    exit;
+}
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cambiar_rol'])) {
+    $id_usuario = intval($_POST['id_usuario'] ?? 0);
+    $nuevo_rol = $_POST['nuevo_rol'] ?? '';
+    if ($id_usuario > 0 && $id_usuario !== (int)$_SESSION['usuario']['id'] && in_array($nuevo_rol, ['cliente', 'admin'])) {
+        if (!isset($_SESSION['usuario']['es_principal'])) {
+            $stmtUser = $pdo->prepare('SELECT es_principal FROM usuarios WHERE id = ?');
+            $stmtUser->execute([$_SESSION['usuario']['id']]);
+            $_SESSION['usuario']['es_principal'] = $stmtUser->fetchColumn() ? 1 : 0;
+        }
+        $is_main_admin = $_SESSION['usuario']['es_principal'];
+        
+        $u_to_edit = $pdo->prepare('SELECT rol FROM usuarios WHERE id = ?');
+        $u_to_edit->execute([$id_usuario]);
+        $u_role = $u_to_edit->fetchColumn();
+        
+        $can_edit = true;
+        if (!$is_main_admin && ($u_role === 'admin' || $nuevo_rol === 'admin')) {
+            $can_edit = false; 
+        }
+        
+        if ($can_edit) {
+            $pdo->prepare('UPDATE usuarios SET rol = ? WHERE id = ?')->execute([$nuevo_rol, $id_usuario]);
+        }
+    }
+    header('Location: usuarios.php?editado=1');
     exit;
 }
 
@@ -23,6 +69,13 @@ $admin_page       = 'usuarios';
 $admin_title      = 'Usuarios';
 $admin_breadcrumb = [['label' => 'Usuarios']];
 $admin_header_extra = '<button id="btn-abrir-nuevo-usuario" class="adm-btn adm-btn-success"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width:14px;height:14px"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg> Nuevo usuario</button>';
+
+if (!isset($_SESSION['usuario']['es_principal'])) {
+    $stmtUser = $pdo->prepare('SELECT es_principal FROM usuarios WHERE id = ?');
+    $stmtUser->execute([$_SESSION['usuario']['id']]);
+    $_SESSION['usuario']['es_principal'] = $stmtUser->fetchColumn() ? 1 : 0;
+}
+$is_main_admin = $_SESSION['usuario']['es_principal'];
 
 include '_layout.php';
 ?>
@@ -56,20 +109,32 @@ include '_layout.php';
                     <td><?= htmlspecialchars($u['email']) ?></td>
                     <td><?= htmlspecialchars($u['telefono'] ?: '—') ?></td>
                     <td>
+                        <?php if ($u['id'] == $_SESSION['usuario']['id']): ?>
+                            <select class="adm-select" style="padding:0.3rem 0.6rem;font-size:0.72rem;width:auto" disabled>
+                                <option><?= ucfirst(htmlspecialchars($u['rol'])) ?></option>
+                            </select>
+                        <?php elseif (!$is_main_admin && $u['rol'] === 'admin'): ?>
+                            <select class="adm-select" style="padding:0.3rem 0.6rem;font-size:0.72rem;width:auto" disabled>
+                                <option>Admin</option>
+                            </select>
+                        <?php else: ?>
                         <form method="post" style="display:inline-flex;align-items:center;gap:6px">
                             <input type="hidden" name="id_usuario" value="<?= $u['id'] ?>">
-                            <select name="nuevo_rol" class="adm-select" style="padding:0.3rem 0.6rem;font-size:0.72rem;width:auto" <?= $u['id'] == $_SESSION['usuario']['id'] ? 'disabled' : '' ?>>
+                            <select name="nuevo_rol" class="adm-select" style="padding:0.3rem 0.6rem;font-size:0.72rem;width:auto">
                                 <option value="cliente" <?= $u['rol'] === 'cliente' ? 'selected' : '' ?>>Cliente</option>
+                                <?php if ($is_main_admin): ?>
                                 <option value="admin"   <?= $u['rol'] === 'admin'   ? 'selected' : '' ?>>Admin</option>
+                                <?php endif; ?>
                             </select>
-                            <?php if ($u['id'] != $_SESSION['usuario']['id']): ?>
                             <button type="submit" name="cambiar_rol" class="adm-btn adm-btn-blue" style="font-size:0.68rem;padding:0.25rem 0.6rem">OK</button>
-                            <?php endif; ?>
                         </form>
+                        <?php endif; ?>
                     </td>
                     <td style="color:#555;font-size:0.75rem"><?= date('d/m/Y', strtotime($u['fecha_registro'])) ?></td>
                     <td>
-                        <?php if ($u['id'] != $_SESSION['usuario']['id']): ?>
+                        <?php if ($u['id'] == $_SESSION['usuario']['id'] || (!$is_main_admin && $u['rol'] === 'admin')): ?>
+                            <span style="color:#444;font-size:0.75rem">—</span>
+                        <?php else: ?>
                         <div style="display:flex;gap:6px;flex-wrap:wrap">
                             <button class="adm-btn adm-btn-warning btn-editar-usuario" style="font-size:0.72rem;padding:0.3rem 0.7rem"
                                 data-usuario='<?= json_encode(["id"=>$u["id"],"nombre"=>$u["nombre"],"email"=>$u["email"],"telefono"=>$u["telefono"],"direccion"=>$u["direccion"],"rol"=>$u["rol"]]) ?>'>
@@ -80,8 +145,6 @@ include '_layout.php';
                                 Eliminar
                             </button>
                         </div>
-                        <?php else: ?>
-                        <span style="color:#444;font-size:0.75rem">—</span>
                         <?php endif; ?>
                     </td>
                 </tr>
@@ -111,7 +174,9 @@ include '_layout.php';
                 <div><label class="adm-label">Rol</label>
                     <select name="rol" id="edit-rol" class="adm-select">
                         <option value="cliente">Cliente</option>
+                        <?php if ($is_main_admin): ?>
                         <option value="admin">Admin</option>
+                        <?php endif; ?>
                     </select>
                 </div>
             </div>
@@ -140,7 +205,9 @@ include '_layout.php';
                 <div><label class="adm-label">Rol</label>
                     <select name="rol" class="adm-select">
                         <option value="cliente">Cliente</option>
+                        <?php if ($is_main_admin): ?>
                         <option value="admin">Admin</option>
+                        <?php endif; ?>
                     </select>
                 </div>
             </div>

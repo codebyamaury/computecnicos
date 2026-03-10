@@ -20,13 +20,32 @@ if (!$usuario) {
     exit;
 }
 
+if (!isset($_SESSION['usuario']['es_principal'])) {
+    $stmtUser = $pdo->prepare('SELECT es_principal FROM usuarios WHERE id = ?');
+    $stmtUser->execute([$_SESSION['usuario']['id']]);
+    $_SESSION['usuario']['es_principal'] = $stmtUser->fetchColumn() ? 1 : 0;
+}
+$is_main_admin = $_SESSION['usuario']['es_principal'];
+
+// If trying to edit another admin and user is not main admin, redirect
+if (!$is_main_admin && $usuario['rol'] === 'admin') {
+    header('Location: usuarios.php?error=no_permiso');
+    exit;
+}
+
 $errores = [];
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $nombre = trim($_POST['nombre'] ?? '');
     $email = trim($_POST['email'] ?? '');
     $telefono = trim($_POST['telefono'] ?? '');
     $direccion = trim($_POST['direccion'] ?? '');
+    
     $rol = $_POST['rol'] ?? 'cliente';
+    // If not main admin, force role to client or keep existing role
+    if (!$is_main_admin) {
+        $rol = 'cliente';
+    }
+
     $password = $_POST['password'] ?? '';
     $password2 = $_POST['password2'] ?? '';
 
@@ -109,7 +128,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <label class="block mb-1 font-semibold">Rol *</label>
                 <select name="rol" class="w-full bg-[#181818] border border-[#333] rounded px-3 py-2 text-white">
                     <option value="cliente" <?php if(($_POST['rol'] ?? $usuario['rol'])==='cliente') echo 'selected'; ?>>Cliente</option>
+                    <?php if ($is_main_admin): ?>
+                    <?php if ($is_main_admin): ?>
                     <option value="admin" <?php if(($_POST['rol'] ?? $usuario['rol'])==='admin') echo 'selected'; ?>>Admin</option>
+                    <?php endif; ?>
+                    <?php endif; ?>
                 </select>
             </div>
             <div>
