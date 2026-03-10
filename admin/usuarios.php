@@ -120,13 +120,13 @@ include '_layout.php';
                         <?php else: ?>
                         <form method="post" style="display:inline-flex;align-items:center;gap:6px">
                             <input type="hidden" name="id_usuario" value="<?= $u['id'] ?>">
-                            <select name="nuevo_rol" class="adm-select" style="padding:0.3rem 0.6rem;font-size:0.72rem;width:auto">
+                            <input type="hidden" name="cambiar_rol" value="1">
+                            <select name="nuevo_rol" class="adm-select" style="padding:0.3rem 0.6rem;font-size:0.72rem;width:auto" onchange="this.form.submit()">
                                 <option value="cliente" <?= $u['rol'] === 'cliente' ? 'selected' : '' ?>>Cliente</option>
                                 <?php if ($is_main_admin): ?>
                                 <option value="admin"   <?= $u['rol'] === 'admin'   ? 'selected' : '' ?>>Admin</option>
                                 <?php endif; ?>
                             </select>
-                            <button type="submit" name="cambiar_rol" class="adm-btn adm-btn-blue" style="font-size:0.68rem;padding:0.25rem 0.6rem">OK</button>
                         </form>
                         <?php endif; ?>
                     </td>
