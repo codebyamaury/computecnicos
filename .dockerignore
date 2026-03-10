@@ -1,0 +1,61 @@
+# ============================================
+# .dockerignore - CompuTécnicos Project
+# Excluir archivos innecesarios del build de Docker
+# ============================================
+
+# Control de versiones
+.git
+.gitignore
+
+# IDE y editores
+.vscode
+.idea
+*.swp
+*.swo
+*~
+
+# Docker (evitar recursión)
+docker-compose.yml
+docker-compose.override.yml
+Dockerfile
+.dockerignore
+
+# Documentación no necesaria en producción
+docs/
+*.md
+!assets/README.md
+
+# Logs locales
+logs/*
+!logs/.gitkeep
+
+# Archivos de sistema
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Backups
+*.backup
+*.bak
+
+# Archivos de entorno
+.env
+.env.local
+.env.*.local
+
+# Dependencias (se instalan en el build)
+vendor/
+
+# Uploads locales (se montan como volumen)
+uploads/*
+!uploads/.gitkeep
+
+# Scripts de desarrollo
+schema_dump.txt
+check_schema.php
+create_test_products.php
+
+# Gemini / Agent
+.gemini/
+.agent/
+.agents/
