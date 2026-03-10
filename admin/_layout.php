@@ -83,7 +83,9 @@ $nav_items = [
         <aside id="admin-sidebar" class="admin-sidebar drawer open">
             <div class="sidebar-inner">
                 <a href="dashboard.php" class="admin-logo">
-                    <i data-lucide="power" class="admin-logo-icon" style="width:28px;height:28px"></i>
+                    <span class="admin-logo-power-wrap">
+                        <i data-lucide="power" class="admin-logo-icon" style="width:32px;height:32px"></i>
+                    </span>
                     <span class="admin-logo-text">COMPU<em>TECNICOS</em></span>
                 </a>
 
