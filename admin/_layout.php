@@ -25,6 +25,18 @@ if (!isset($admin_head_scripts))
 if (!isset($usuario))
     $usuario = $_SESSION['usuario'] ?? ['nombre' => 'Admin', 'rol' => 'admin'];
 
+// Chequear rol real en base de datos para expulsar en tiempo real si fue degradado a cliente
+if (isset($usuario['id'])) {
+    $stmtRoleCheck = $pdo->prepare('SELECT rol FROM usuarios WHERE id = ?');
+    $stmtRoleCheck->execute([$usuario['id']]);
+    $realRole = $stmtRoleCheck->fetchColumn();
+    if ($realRole !== 'admin') {
+        $_SESSION['usuario']['rol'] = $realRole;
+        header('Location: ../index.php');
+        exit;
+    }
+}
+
 
 $nav_items = [
     ['href' => 'dashboard.php', 'label' => 'Dashboard', 'key' => 'dashboard', 'icon' => 'layout-dashboard'],
