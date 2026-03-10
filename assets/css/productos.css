@@ -795,3 +795,79 @@
         justify-content: center;
     }
 }
+
+/* ========================================
+   PAGINACIÓN TECH
+   ======================================== */
+.pagination-container {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+}
+
+.tech-pagination {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: rgba(20, 20, 20, 0.4);
+    backdrop-filter: blur(10px);
+    padding: 0.5rem;
+    border-radius: 100px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.pag-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    color: #fff;
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 0.9rem;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border: 1px solid transparent;
+}
+
+.pag-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: #ff0000;
+}
+
+.pag-btn.active {
+    background: #ff0000;
+    color: #fff;
+    box-shadow: 0 0 20px rgba(255, 0, 0, 0.4);
+}
+
+.pag-nav {
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+.pag-nav:hover {
+    background: #ff0000;
+    color: #fff;
+    border-color: #ff0000;
+    box-shadow: 0 0 15px rgba(255, 0, 0, 0.3);
+}
+
+.pag-dots {
+    color: #444;
+    padding: 0 0.5rem;
+    font-weight: 800;
+    letter-spacing: 2px;
+}
+
+@media (max-width: 480px) {
+    .pag-btn {
+        width: 35px;
+        height: 35px;
+        font-size: 0.8rem;
+    }
+    
+    .tech-pagination {
+        gap: 0.25rem;
+    }
+}

@@ -82,6 +82,21 @@ switch ($filtro_orden) {
         break;
 }
 
+// Parámetros de paginación
+$por_pagina = 12;
+$pagina_actual = isset($_GET['page']) ? max(1, intval($_GET['page'])) : 1;
+$offset = ($pagina_actual - 1) * $por_pagina;
+
+// Primero, contar el total de productos para estos filtros (sin el LIMIT)
+$sql_count = "SELECT COUNT(*) FROM (" . $sql . ") as total";
+$stmt_count = $pdo->prepare($sql_count);
+$stmt_count->execute($params);
+$total_productos = $stmt_count->fetchColumn();
+$total_paginas = ceil($total_productos / $por_pagina);
+
+// Ahora aplicar el LIMIT para la página actual
+$sql .= " LIMIT $por_pagina OFFSET $offset";
+
 $stmt = $pdo->prepare($sql);
 $stmt->execute($params);
 $productos = $stmt->fetchAll();
@@ -227,7 +242,7 @@ include __DIR__ . '/includes/header.php';
                 <!-- Contador y vista -->
                 <div class="products-header animate-slide-up delay-100">
                     <div class="products-count">
-                        <span class="count-number"><?php echo count($productos); ?></span>
+                        <span class="count-number"><?php echo $total_productos; ?></span>
                         <span class="count-text">productos encontrados</span>
                     </div>
                     
@@ -300,6 +315,58 @@ include __DIR__ . '/includes/header.php';
                         endforeach; 
                         ?>
                     </div>
+
+                    <!-- Paginación -->
+                    <?php if ($total_paginas > 1): ?>
+                    <div class="pagination-container animate-slide-up" style="margin-top: 3rem;">
+                        <div class="tech-pagination">
+                            <?php 
+                            // Construir URL base para los links preservando filtros
+                            $query_params = $_GET;
+                            unset($query_params['page']);
+                            $base_url = 'productos.php?' . http_build_query($query_params);
+                            if ($base_url !== 'productos.php?') $base_url .= '&';
+                            else $base_url = 'productos.php?';
+                            ?>
+
+                            <?php if ($pagina_actual > 1): ?>
+                                <a href="<?php echo $base_url; ?>page=<?php echo $pagina_actual - 1; ?>" class="pag-btn pag-nav" title="Anterior">
+                                    <i data-lucide="chevron-left"></i>
+                                </a>
+                            <?php endif; ?>
+
+                            <?php
+                            $start = max(1, $pagina_actual - 2);
+                            $end = min($total_paginas, $pagina_actual + 2);
+
+                            if ($start > 1) {
+                                echo '<a href="'.$base_url.'page=1" class="pag-btn">1</a>';
+                                if ($start > 2) echo '<span class="pag-dots">...</span>';
+                            }
+
+                            for ($i = $start; $i <= $end; $i++):
+                            ?>
+                                <a href="<?php echo $base_url; ?>page=<?php echo $i; ?>" 
+                                   class="pag-btn <?php echo ($i == $pagina_actual) ? 'active' : ''; ?>">
+                                    <?php echo $i; ?>
+                                </a>
+                            <?php endfor; ?>
+
+                            <?php
+                            if ($end < $total_paginas) {
+                                if ($end < $total_paginas - 1) echo '<span class="pag-dots">...</span>';
+                                echo '<a href="'.$base_url.'page='.$total_paginas.'" class="pag-btn">'.$total_paginas.'</a>';
+                            }
+                            ?>
+
+                            <?php if ($pagina_actual < $total_paginas): ?>
+                                <a href="<?php echo $base_url; ?>page=<?php echo $pagina_actual + 1; ?>" class="pag-btn pag-nav" title="Siguiente">
+                                    <i data-lucide="chevron-right"></i>
+                                </a>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+                    <?php endif; ?>
                 <?php endif; ?>
             </div>
         </div>
