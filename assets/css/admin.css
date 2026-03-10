@@ -1667,6 +1667,22 @@ body {
         padding: 0.5rem 0.625rem;
     }
 
+    /* Logo Responsive */
+    .admin-logo-text {
+        font-size: 0.95rem;
+        letter-spacing: 1px;
+    }
+
+    .admin-logo-power-wrap {
+        width: 38px;
+        height: 38px;
+    }
+
+    .admin-logo-icon {
+        width: 26px;
+        height: 26px;
+    }
+
     .admin-header-actions .adm-btn span,
     .admin-header-actions .adm-btn-primary span {
         display: none;
