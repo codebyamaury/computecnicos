@@ -86,7 +86,7 @@ $nav_items = [
                     <span class="admin-logo-power-wrap">
                         <i data-lucide="power" class="admin-logo-icon" style="width:32px;height:32px"></i>
                     </span>
-                    <span class="admin-logo-text">COMPU<em>TECNICOS</em></span>
+                    <span class="admin-logo-text">COMPU<span data-text="TECNICOS">TECNICOS</span></span>
                 </a>
 
                 <nav class="admin-nav">
