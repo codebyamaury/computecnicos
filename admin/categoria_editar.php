@@ -26,12 +26,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt = $pdo->prepare('UPDATE categorias SET nombre=?, descripcion=? WHERE id=?');
         $stmt->execute([$nombre, $descripcion, $id]);
         $mensaje = 'Categoría actualizada correctamente.';
+        
+        // Si es una petición AJAX/fetch, podemos terminar aquí con un mensaje simple
+        if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && $_SERVER['HTTP_X_REQUESTED_WITH'] === 'XMLHttpRequest' || !empty($_GET['ajax'])) {
+            echo 'actualizada';
+            exit;
+        }
+        // Para el fetch simple en categorias.php que no envía el header, 
+        // el texto de la página completa seguirá conteniendo "actualizada", 
+        // lo cual es detectado por el JS.
+
         // Refrescar datos
         $stmt = $pdo->prepare('SELECT * FROM categorias WHERE id = ?');
         $stmt->execute([$id]);
         $categoria = $stmt->fetch();
     } else {
         $mensaje = 'El nombre es obligatorio.';
+        if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && $_SERVER['HTTP_X_REQUESTED_WITH'] === 'XMLHttpRequest' || !empty($_GET['ajax'])) {
+            echo 'error: nombre obligatorio';
+            exit;
+        }
     }
 }
 ?>

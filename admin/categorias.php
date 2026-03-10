@@ -170,9 +170,9 @@ document.querySelectorAll('.btn-editar-categoria').forEach(btn => {
 document.getElementById('form-editar-categoria').addEventListener('submit', async function(e) {
     e.preventDefault();
     const data = new FormData(this);
-    const res = await fetch('categoria_editar.php?id=' + data.get('id'), { method: 'POST', body: data });
+    const res = await fetch('categoria_editar.php?ajax=1&id=' + data.get('id'), { method: 'POST', body: data });
     const text = await res.text();
-    if (text.includes('Location: categorias.php') || text.includes('actualizado')) { 
+    if (text.includes('Location: categorias.php') || text.includes('actualizada') || text.includes('actualizado')) { 
         window.location.href = window.location.pathname + '?editado=1'; 
     } else {
         const msg = document.getElementById('modal-editar-msg');
