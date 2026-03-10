@@ -1736,8 +1736,60 @@ body {
 #pag-marcas,
 #pag-usuarios,
 #pag-resenas {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 2rem;
+    flex-wrap: wrap;
     animation: fadeSlideUp 0.4s ease backwards;
-    animation-delay: 0.35s;
+    animation-delay: 0.2s;
+}
+
+.adm-pag-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 36px;
+    height: 36px;
+    padding: 0 12px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 8px;
+    color: #aaa;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.adm-pag-btn:hover:not(.disabled) {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.15);
+    color: #fff;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.adm-pag-btn.active {
+    background: linear-gradient(135deg, var(--adm-red-dark), var(--adm-red));
+    border-color: transparent;
+    color: #fff;
+    box-shadow: 0 4px 14px rgba(224, 0, 0, 0.3);
+}
+
+.adm-pag-btn.disabled {
+    opacity: 0.3;
+    pointer-events: none;
+    cursor: default;
+}
+
+.adm-pag-info {
+    font-size: 0.72rem;
+    color: #666;
+    margin-left: 12px;
+    font-weight: 500;
 }
 
 #paginacion .adm-btn,

@@ -263,13 +263,24 @@
             allItems.forEach(function (r) { r.style.display = 'none'; });
             filtered.slice(s, e).forEach(function (r) { r.style.display = ''; });
             var h = '';
-            h += '<button onclick="pagNav_' + uid + '(\'prev\')" class="adm-btn" style="font-size:.72rem;padding:.3rem .7rem' + (page <= 1 ? ';opacity:.4;pointer-events:none' : '') + '">← Anterior</button>';
+            
+            // Botón Anterior
+            h += '<button onclick="pagNav_' + uid + '(\'prev\')" class="adm-pag-btn ' + (page <= 1 ? 'disabled' : '') + '" title="Anterior">';
+            h += '<svg style="width:16px;height:16px" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/></svg></button>';
+
             for (var i = 1; i <= total; i++) {
-                if (total > 7 && i > 2 && i < total - 1 && Math.abs(i - page) > 1) { if (i === 3 || i === total - 2) h += '<span style="color:#555;font-size:.8rem">…</span>'; continue; }
-                h += '<button onclick="pagNav_' + uid + '(' + i + ')" class="adm-btn' + (i === page ? ' adm-btn-primary' : '') + '" style="font-size:.72rem;padding:.3rem .65rem;min-width:30px">' + i + '</button>';
+                if (total > 7 && i > 2 && i < total - 1 && Math.abs(i - page) > 1) {
+                    if (i === 3 || i === total - 2) h += '<span style="color:#444;margin:0 4px">…</span>'; 
+                    continue; 
+                }
+                h += '<button onclick="pagNav_' + uid + '(' + i + ')" class="adm-pag-btn ' + (i === page ? 'active' : '') + '">' + i + '</button>';
             }
-            h += '<button onclick="pagNav_' + uid + '(\'next\')" class="adm-btn" style="font-size:.72rem;padding:.3rem .7rem' + (page >= total ? ';opacity:.4;pointer-events:none' : '') + '">Siguiente →</button>';
-            h += '<span style="color:#555;font-size:.72rem;margin-left:8px">Mostrando ' + (filtered.length ? s + 1 : 0) + '-' + Math.min(e, filtered.length) + ' de ' + filtered.length + '</span>';
+
+            // Botón Siguiente
+            h += '<button onclick="pagNav_' + uid + '(\'next\')" class="adm-pag-btn ' + (page >= total ? 'disabled' : '') + '" title="Siguiente">';
+            h += '<svg style="width:16px;height:16px" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/></svg></button>';
+            
+            h += '<div class="adm-pag-info">Mostrando ' + (filtered.length ? s + 1 : 0) + '-' + Math.min(e, filtered.length) + ' de ' + filtered.length + '</div>';
             pagDiv.innerHTML = h;
         }
 
