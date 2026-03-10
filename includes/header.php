@@ -51,11 +51,12 @@ if (isset($_SESSION['usuario']['id']) && isset($pdo)) {
                 <i data-lucide="menu" class="w-7 h-7"></i>
             </button>
             <a href="index.php"
-                class="flex items-center justify-center p-2 rounded-full hover:bg-white/5 transition-all group"
+                class="flex items-center gap-2 p-2 rounded-xl hover:bg-white/5 transition-all group"
                 aria-label="Inicio">
-                <span class="text-3xl text-red-800 group-hover:scale-110 transition-transform">
+                <span class="text-red-600 group-hover:scale-110 transition-transform flex-shrink-0">
                     <i data-lucide="power" class="w-8 h-8 md:w-10 md:h-10"></i>
                 </span>
+                <span class="header-logo-text font-extrabold text-lg md:text-xl tracking-tight leading-none">COMPU<span class="text-red-600">TECNICOS</span></span>
             </a>
         </div>
 
