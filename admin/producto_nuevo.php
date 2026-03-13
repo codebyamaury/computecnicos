@@ -29,29 +29,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $oferta = 1;
     }
 
-    // Determinar si se debe remover el fondo
-    $remove_bg = isset($_POST['remove_bg']) ? true : false;
-
     $imagenes_urls = [];
     $error_imagen = '';
-    // Subida de imágenes múltiples — conversión automática a PNG
+    // Subida de imágenes — solo formato PNG permitido
     if (isset($_FILES['imagenes']) && count($_FILES['imagenes']['name']) > 0) {
         foreach ($_FILES['imagenes']['tmp_name'] as $idx => $tmp_name) {
             if ($_FILES['imagenes']['error'][$idx] === UPLOAD_ERR_OK) {
-                $ext = strtolower(pathinfo($_FILES['imagenes']['name'][$idx], PATHINFO_EXTENSION));
-                if (!in_array($ext, ['jpg','jpeg','png','gif','webp','bmp'])) {
-                    $error_imagen = 'Formato de imagen no permitido: ' . htmlspecialchars($ext);
-                    break;
-                }
-
                 $upload_dir = __DIR__ . '/../uploads/productos/';
-                // Procesar imagen: convertir a PNG y opcionalmente remover fondo
-                $result = upload_product_image($tmp_name, $upload_dir, base_url(), 'prod_', $remove_bg);
+                $result = upload_product_image($tmp_name, $upload_dir, base_url(), 'prod_');
 
                 if ($result['ok']) {
                     $imagenes_urls[] = $result['url'];
                 } else {
-                    $error_imagen = 'Error al procesar la imagen: ' . htmlspecialchars($result['error'] ?: $_FILES['imagenes']['name'][$idx]);
+                    $error_imagen = $result['error'];
                     break;
                 }
             } else if ($_FILES['imagenes']['error'][$idx] !== UPLOAD_ERR_NO_FILE) {
@@ -154,21 +144,9 @@ include '_layout.php';
 
                 <!-- Imágenes -->
                 <div class="adm-form-group">
-                    <label class="adm-label">Imágenes (puedes seleccionar varias) *</label>
-                    <input type="file" name="imagenes[]" accept="image/jpeg,image/png,image/gif,image/webp,image/bmp" class="adm-input" multiple required style="padding:0.5rem">
-                    <div style="font-size:0.7rem;color:#555;margin-top:0.35rem">Las imágenes serán convertidas automáticamente a PNG. Formatos aceptados: JPG, PNG, GIF, WebP, BMP.</div>
-                </div>
-
-                <!-- Remover fondo -->
-                <div class="adm-form-group" style="display:flex;align-items:center;gap:0.75rem;padding:1rem;background:rgba(255,255,255,0.03);border-radius:0.75rem;border:1px solid var(--adm-border)">
-                    <label style="position:relative;display:inline-block;width:48px;height:26px;flex-shrink:0">
-                        <input type="checkbox" name="remove_bg" value="1" style="opacity:0;width:0;height:0" id="toggle-removebg">
-                        <span style="position:absolute;cursor:pointer;top:0;left:0;right:0;bottom:0;background:rgba(255,255,255,0.08);border-radius:13px;transition:0.3s" id="slider-removebg"></span>
-                    </label>
-                    <div>
-                        <div style="font-size:0.88rem;font-weight:600;color:#e7e7ea">🎨 Remover fondo automáticamente</div>
-                        <div style="font-size:0.72rem;color:#666">Detecta y elimina el fondo de las imágenes. Funciona mejor con fondos sólidos (blanco, gris, etc.)</div>
-                    </div>
+                    <label class="adm-label">Imágenes PNG (puedes seleccionar varias) *</label>
+                    <input type="file" name="imagenes[]" accept="image/png" class="adm-input" multiple required style="padding:0.5rem">
+                    <div style="font-size:0.7rem;color:#555;margin-top:0.35rem">⚠️ Solo se permiten imágenes en formato <strong style="color:#fff">PNG</strong>. Asegúrate de que las imágenes tengan fondo transparente para mejor presentación.</div>
                 </div>
 
                 <!-- Separador visual -->
@@ -232,18 +210,15 @@ include '_layout.php';
 <style>
     /* Toggle switch styling */
     #toggle-destacado:checked + #slider-destacado,
-    #toggle-oferta:checked + #slider-oferta,
-    #toggle-removebg:checked + #slider-removebg {
+    #toggle-oferta:checked + #slider-oferta {
         background: var(--adm-red) !important;
     }
     #toggle-destacado:checked + #slider-destacado::before,
-    #toggle-oferta:checked + #slider-oferta::before,
-    #toggle-removebg:checked + #slider-removebg::before {
+    #toggle-oferta:checked + #slider-oferta::before {
         transform: translateX(22px);
     }
     #slider-destacado::before,
-    #slider-oferta::before,
-    #slider-removebg::before {
+    #slider-oferta::before {
         position: absolute;
         content: "";
         height: 20px;

@@ -45,16 +45,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $oferta = 1;
     }
 
-    // Determinar si se debe remover el fondo
-    $remove_bg = isset($_POST['remove_bg']) ? true : false;
-
-    // Subida de nuevas imágenes — conversión automática a PNG
+    // Subida de nuevas imágenes — solo formato PNG
     $nuevas_imagenes = [];
     if (isset($_FILES['imagenes']) && count($_FILES['imagenes']['name']) > 0) {
         foreach ($_FILES['imagenes']['tmp_name'] as $idx => $tmp_name) {
             if ($_FILES['imagenes']['error'][$idx] === UPLOAD_ERR_OK) {
                 $upload_dir = __DIR__ . '/../uploads/productos/';
-                $result = upload_product_image($tmp_name, $upload_dir, base_url(), 'prod_', $remove_bg);
+                $result = upload_product_image($tmp_name, $upload_dir, base_url(), 'prod_');
                 if ($result['ok']) {
                     $nuevas_imagenes[] = $result['url'];
                 }
@@ -74,10 +71,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $producto['imagen'] = $nuevas_imagenes[0];
         }
     }
-    // Reemplazar imagen principal si se sube una nueva — conversión automática a PNG
+    // Reemplazar imagen principal si se sube una nueva — solo formato PNG
     if (isset($_FILES['imagen']) && $_FILES['imagen']['error'] === UPLOAD_ERR_OK && !empty($_FILES['imagen']['tmp_name'])) {
         $upload_dir = __DIR__ . '/../uploads/productos/';
-        $result = upload_product_image($_FILES['imagen']['tmp_name'], $upload_dir, base_url(), 'main_', $remove_bg);
+        $result = upload_product_image($_FILES['imagen']['tmp_name'], $upload_dir, base_url(), 'main_');
         if ($result['ok']) {
             if (!empty($producto['imagen']) && strpos($producto['imagen'], 'http') !== 0) {
                 $ruta_anterior = '../' . $producto['imagen'];
@@ -171,9 +168,9 @@ include '_layout.php';
                     <div style="margin-bottom:0.75rem">
                         <img src="<?= htmlspecialchars((strpos($producto['imagen'], 'http') === 0) ? $producto['imagen'] : '../' . ($producto['imagen'] ?: 'uploads/products/default.png')) ?>" alt="Imagen actual" style="width:120px;height:80px;object-fit:cover;border-radius:0.5rem;border:1px solid var(--adm-border)">
                     </div>
-                    <label class="adm-label">Cambiar imagen principal</label>
-                    <input type="file" name="imagen" accept="image/jpeg,image/png,image/gif,image/webp,image/bmp" class="adm-input" style="padding:0.5rem">
-                    <div style="font-size:0.7rem;color:#555;margin-top:0.35rem">Se convertirá automáticamente a PNG.</div>
+                    <label class="adm-label">Cambiar imagen principal (Solo PNG)</label>
+                    <input type="file" name="imagen" accept="image/png" class="adm-input" style="padding:0.5rem">
+                    <div style="font-size:0.7rem;color:#555;margin-top:0.35rem">⚠️ Solo se permiten imágenes en formato <strong style="color:#fff">PNG</strong>.</div>
                 </div>
 
                 <!-- Categoría y Marca -->
@@ -218,21 +215,9 @@ include '_layout.php';
 
                 <!-- Agregar nuevas imágenes -->
                 <div class="adm-form-group">
-                    <label class="adm-label">Agregar nuevas imágenes</label>
-                    <input type="file" name="imagenes[]" accept="image/jpeg,image/png,image/gif,image/webp,image/bmp" class="adm-input" multiple style="padding:0.5rem">
-                    <div style="font-size:0.7rem;color:#555;margin-top:0.35rem">Las imágenes serán convertidas automáticamente a PNG.</div>
-                </div>
-
-                <!-- Remover fondo -->
-                <div class="adm-form-group" style="display:flex;align-items:center;gap:0.75rem;padding:1rem;background:rgba(255,255,255,0.03);border-radius:0.75rem;border:1px solid var(--adm-border)">
-                    <label style="position:relative;display:inline-block;width:48px;height:26px;flex-shrink:0">
-                        <input type="checkbox" name="remove_bg" value="1" style="opacity:0;width:0;height:0" id="toggle-removebg">
-                        <span style="position:absolute;cursor:pointer;top:0;left:0;right:0;bottom:0;background:rgba(255,255,255,0.08);border-radius:13px;transition:0.3s" id="slider-removebg"></span>
-                    </label>
-                    <div>
-                        <div style="font-size:0.88rem;font-weight:600;color:#e7e7ea">🎨 Remover fondo automáticamente</div>
-                        <div style="font-size:0.72rem;color:#666">Detecta y elimina el fondo de las imágenes que subas. Funciona mejor con fondos sólidos.</div>
-                    </div>
+                    <label class="adm-label">Agregar nuevas imágenes (Solo PNG)</label>
+                    <input type="file" name="imagenes[]" accept="image/png" class="adm-input" multiple style="padding:0.5rem">
+                    <div style="font-size:0.7rem;color:#555;margin-top:0.35rem">⚠️ Solo se permiten imágenes en formato <strong style="color:#fff">PNG</strong>.</div>
                 </div>
 
                 <!-- Separador visual -->
@@ -312,18 +297,15 @@ include '_layout.php';
 <style>
     /* Toggle switch styling */
     #toggle-destacado:checked + #slider-destacado,
-    #toggle-oferta:checked + #slider-oferta,
-    #toggle-removebg:checked + #slider-removebg {
+    #toggle-oferta:checked + #slider-oferta {
         background: var(--adm-red) !important;
     }
     #toggle-destacado:checked + #slider-destacado::before,
-    #toggle-oferta:checked + #slider-oferta::before,
-    #toggle-removebg:checked + #slider-removebg::before {
+    #toggle-oferta:checked + #slider-oferta::before {
         transform: translateX(22px);
     }
     #slider-destacado::before,
-    #slider-oferta::before,
-    #slider-removebg::before {
+    #slider-oferta::before {
         position: absolute;
         content: "";
         height: 20px;
