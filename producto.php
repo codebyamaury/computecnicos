@@ -189,23 +189,7 @@ include 'includes/header.php';
                 <?php endif; ?>
             </div>
 
-            <!-- Stock Alert -->
-            <?php if (intval($producto['stock']) <= 2): ?>
-                <div class="prod-stock-alert">
-                    <p><i data-lucide="bell" class="w-4 h-4"></i> Notifícame cuando haya stock</p>
-                    <form id="stock-alert-form">
-                        <input type="hidden" name="id_producto" value="<?php echo intval($producto['id']); ?>">
-                        <?php if (!isset($_SESSION['usuario'])): ?>
-                            <input type="email" name="email" placeholder="Tu correo electrónico" required>
-                        <?php else: ?>
-                            <span style="flex:1;font-size:0.85rem;color:#888;padding:0.5rem">Usando:
-                                <?php echo htmlspecialchars($_SESSION['usuario']['email']); ?></span>
-                        <?php endif; ?>
-                        <button type="submit">Notificarme</button>
-                    </form>
-                    <div id="stock-alert-msg" style="font-size:0.82rem;margin-top:0.5rem"></div>
-                </div>
-            <?php endif; ?>
+
 
             <!-- Carrito -->
             <div id="cart-form-wrapper" style="<?php echo $stockEfectivo <= 0 ? 'display:none' : ''; ?>">
@@ -727,35 +711,7 @@ include 'includes/header.php';
         });
     });
 
-    // Stock alert subscription
-    document.addEventListener('DOMContentLoaded', function () {
-        const form = document.getElementById('stock-alert-form');
-        const msg = document.getElementById('stock-alert-msg');
-        if (!form) return;
-        form.addEventListener('submit', async function (e) {
-            e.preventDefault();
-            msg.textContent = '';
-            const fd = new FormData(form);
-            try {
-                const res = await fetch('alerta_stock.php', {
-                    method: 'POST',
-                    headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' },
-                    body: fd
-                });
-                const data = await res.json();
-                if (data && data.ok) {
-                    msg.textContent = data.msg || 'Suscripción registrada';
-                    msg.className = 'text-sm mt-2 text-green-500';
-                } else {
-                    msg.textContent = (data && data.msg) ? data.msg : 'No se pudo suscribir';
-                    msg.className = 'text-sm mt-2 text-red-500';
-                }
-            } catch (err) {
-                msg.textContent = 'Error de red. Intenta nuevamente';
-                msg.className = 'text-sm mt-2 text-red-500';
-            }
-        });
-    });
+
 
     // Combo functionality
     document.addEventListener('DOMContentLoaded', function () {

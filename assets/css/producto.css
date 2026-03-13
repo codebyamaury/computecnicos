@@ -535,64 +535,7 @@
     z-index: 1;
 }
 
-/* Stock Alert */
-.prod-stock-alert {
-    background: rgba(234, 179, 8, 0.06);
-    border: 1px solid rgba(234, 179, 8, 0.2);
-    border-radius: 0.75rem;
-    padding: 1.25rem;
-}
 
-.prod-stock-alert p {
-    color: #eab308;
-    font-size: 0.85rem;
-    font-weight: 600;
-    margin-bottom: 0.75rem;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-}
-
-.prod-stock-alert form {
-    display: flex;
-    gap: 0.5rem;
-}
-
-.prod-stock-alert input[type="email"] {
-    flex: 1;
-    padding: 0.5rem 0.75rem;
-    background: rgba(0, 0, 0, 0.4);
-    border: 1px solid #333;
-    border-radius: 0.5rem;
-    color: #fff;
-    font-size: 0.85rem;
-    outline: none;
-    transition: border-color 0.2s;
-}
-
-.prod-stock-alert input[type="email"]:focus {
-    border-color: #eab308;
-}
-
-.prod-stock-alert input[type="email"]::placeholder {
-    color: #555;
-}
-
-.prod-stock-alert button {
-    background: #ca8a04;
-    color: #fff;
-    font-weight: 700;
-    padding: 0.5rem 1rem;
-    border: none;
-    border-radius: 0.5rem;
-    cursor: pointer;
-    transition: background 0.2s;
-    font-size: 0.82rem;
-}
-
-.prod-stock-alert button:hover {
-    background: #a16207;
-}
 
 /* ── Cart Form (Quantity Selector) ─────────────────── */
 .prod-cart-form {

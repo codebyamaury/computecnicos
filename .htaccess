@@ -31,7 +31,7 @@ RewriteRule ^(.*)$ $1.php [L]
 
 # Denegar acceso a directorios sensibles
 <IfModule mod_rewrite.c>
-    RewriteRule ^docker/ - [F,L]
+
     RewriteRule ^config/ - [F,L]
     RewriteRule ^logs/ - [F,L]
     RewriteRule ^database/ - [F,L]
