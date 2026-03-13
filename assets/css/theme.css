@@ -311,9 +311,14 @@ header {
   box-shadow: var(--ring-primary);
 }
 
+/* Bloquear resize en TODOS los textarea del sitio */
+textarea {
+  resize: none !important;
+}
+
 select.input,
 textarea.input {
-  resize: vertical;
+  resize: none;
 }
 
 /* Tablas */

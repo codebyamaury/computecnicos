@@ -1626,7 +1626,7 @@
     font-size: 0.9rem;
     outline: none;
     transition: border-color 0.2s, box-shadow 0.2s;
-    resize: vertical;
+    resize: none;
     font-family: inherit;
     box-sizing: border-box;
 }
