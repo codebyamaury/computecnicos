@@ -151,7 +151,7 @@ include '_layout.php';
             <div><label class="adm-label">Nombre *</label><input type="text" name="nombre" class="adm-input" required></div>
             <div><label class="adm-label">Descripción</label><textarea name="descripcion" rows="2" class="adm-textarea"></textarea></div>
             <div class="adm-form-row" style="margin-bottom:0">
-                <div><label class="adm-label">Precio (COP) *</label><input type="text" inputmode="decimal" pattern="[0-9,\.]+" name="precio" class="adm-input" required></div>
+                <div><label class="adm-label">Precio (COP) *</label><input type="number" name="precio" min="0" step="1" class="adm-input" required></div>
                 <div><label class="adm-label">Stock *</label><input type="number" name="stock" min="0" class="adm-input" required></div>
             </div>
             <div class="adm-form-row" style="margin-bottom:0">
@@ -253,7 +253,7 @@ async function cargarGaleria(id) {
             ? imgs.map(i=>`<img src="../${i.url_imagen}" style="width:54px;height:40px;object-fit:cover;border-radius:4px;border:1px solid rgba(255,255,255,0.06)">`).join('')
             : '<span style="font-size:0.72rem;color:#555">Sin imágenes extra</span>';
     } catch { div.innerHTML = ''; }
-// La carga y envío del modal de Edición es ahora dinámica y se gestiona en _layout_end.php
+}
 
 // --- Modal Nuevo ---
 function abrirNuevo() {
