@@ -153,7 +153,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     </div>
                     <label class="adm-label">Cambiar imagen principal (Solo PNG)</label>
                     <input type="file" name="imagen" accept="image/png" class="adm-input" style="padding:0.5rem">
-                    <div style="font-size:0.7rem;color:#555;margin-top:0.35rem">⚠️ Solo se permiten imágenes en formato <strong style="color:#fff">PNG</strong>.</div>
+                    <div style="font-size:0.7rem;color:#555;margin-top:0.35rem">⚠️ Solo se permiten imágenes en formato <strong style="color:#fff">PNG</strong>. Ésta será la portada del producto.</div>
                 </div>
 
                 <!-- Categoría y Marca -->
@@ -198,9 +198,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 <!-- Agregar nuevas imágenes -->
                 <div class="adm-form-group">
-                    <label class="adm-label">Agregar nuevas imágenes (Solo PNG)</label>
+                    <label class="adm-label">Agregar nuevas imágenes a la galería (Solo PNG)</label>
                     <input type="file" name="imagenes[]" accept="image/png" class="adm-input" multiple style="padding:0.5rem">
-                    <div style="font-size:0.7rem;color:#555;margin-top:0.35rem">⚠️ Solo se permiten imágenes en formato <strong style="color:#fff">PNG</strong>.</div>
+                    <div style="font-size:0.7rem;color:#555;margin-top:0.35rem">Puedes seleccionar múltiples imágenes adicionales para la galería del producto.</div>
                 </div>
 
                 <!-- Separador visual -->
