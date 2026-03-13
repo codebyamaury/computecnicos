@@ -248,7 +248,7 @@ async function cargarGaleria(id) {
     const div = document.getElementById('edit-galeria');
     div.innerHTML = '<span style="font-size:0.72rem;color:#555">Cargando...</span>';
     try {
-        const imgs = await fetch('producto_galeria.php?id='+id).then(r=>r.json());
+        const imgs = await fetch('producto_galeria?id='+id).then(r=>r.json());
         div.innerHTML = imgs.length
             ? imgs.map(i=>`<img src="../${i.url_imagen}" style="width:54px;height:40px;object-fit:cover;border-radius:4px;border:1px solid rgba(255,255,255,0.06)">`).join('')
             : '<span style="font-size:0.72rem;color:#555">Sin imágenes extra</span>';
@@ -283,7 +283,7 @@ document.getElementById('form-nuevo-producto').addEventListener('submit', async 
 
     try {
         const data = new FormData(this);
-        const res = await fetch('producto_nuevo.php', {method:'POST', body:data});
+        const res = await fetch('producto_nuevo', {method:'POST', body:data});
         if (!res.ok) throw new Error('HTTP ' + res.status);
         
         const text = await res.text();

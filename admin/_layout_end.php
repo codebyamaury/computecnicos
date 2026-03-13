@@ -448,7 +448,7 @@ function admToast(message, type, duration) {
 async function abrirModalEditarProducto(id, event) {
     if (event) event.preventDefault();
     try {
-        const res = await fetch('modal_producto_editar.php?id=' + id);
+        const res = await fetch('modal_producto_editar?id=' + id);
         const html = await res.text();
         let container = document.getElementById('modal-editar-producto-container');
         if (!container) {
@@ -481,7 +481,7 @@ async function guardarEdicionProducto(e, id) {
     e.preventDefault();
     const data = new FormData(e.target);
     try {
-        const res = await fetch('modal_producto_editar.php?id=' + id, { method: 'POST', body: data });
+        const res = await fetch('modal_producto_editar?id=' + id, { method: 'POST', body: data });
         const result = await res.text();
         if (result.trim() === 'success') {
             window.location.href = window.location.pathname + '?editado=1';
