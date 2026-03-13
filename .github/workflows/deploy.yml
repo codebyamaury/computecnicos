@@ -29,7 +29,7 @@ jobs:
             # ── 1. Instalar dependencias si faltan ──
             if ! command -v git &> /dev/null || ! command -v php &> /dev/null || ! command -v composer &> /dev/null; then
               apt-get update -qq
-              apt-get install -y -qq apache2 php libapache2-mod-php php-mysql php-curl php-json php-gd php-mbstring php-xml php-zip git unzip composer
+              apt-get install -y -qq apache2 php libapache2-mod-php php-mysql php-curl php-json php-gd php-mbstring php-xml php-zip git unzip composer mysql-server mysql-client
             fi
 
             # ── 2. Clonar repositorio si no existe ──
