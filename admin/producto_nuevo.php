@@ -31,13 +31,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $imagenes_urls = [];
     $error_imagen = '';
-    // Subida de imágenes — solo formato PNG permitido
-    if (isset($_FILES['imagenes']) && count($_FILES['imagenes']['name']) > 0) {
+    $imagen_principal = '';
+
+    // Subida de imagen principal (Requerida) — solo formato PNG
+    if (isset($_FILES['imagen']) && $_FILES['imagen']['error'] === UPLOAD_ERR_OK) {
+        $upload_dir = __DIR__ . '/../uploads/productos/';
+        $result = upload_product_image($_FILES['imagen']['tmp_name'], $upload_dir, base_url(), 'main_');
+        if ($result['ok']) {
+            $imagen_principal = $result['url'];
+        } else {
+            $error_imagen = $result['error'];
+        }
+    } else if (isset($_FILES['imagen']) && $_FILES['imagen']['error'] !== UPLOAD_ERR_NO_FILE) {
+        $error_imagen = 'Error al subir la imagen principal: ' . $_FILES['imagen']['error'];
+    }
+
+    // Subida de imágenes secundarias (Opcional) — solo formato PNG
+    if (!$error_imagen && isset($_FILES['imagenes']) && count($_FILES['imagenes']['name']) > 0) {
         foreach ($_FILES['imagenes']['tmp_name'] as $idx => $tmp_name) {
             if ($_FILES['imagenes']['error'][$idx] === UPLOAD_ERR_OK) {
                 $upload_dir = __DIR__ . '/../uploads/productos/';
                 $result = upload_product_image($tmp_name, $upload_dir, base_url(), 'prod_');
-
                 if ($result['ok']) {
                     $imagenes_urls[] = $result['url'];
                 } else {
@@ -45,12 +59,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     break;
                 }
             } else if ($_FILES['imagenes']['error'][$idx] !== UPLOAD_ERR_NO_FILE) {
-                $error_imagen = 'Error al subir la imagen: ' . $_FILES['imagenes']['name'][$idx];
+                $error_imagen = 'Error al subir imagen secundaria: ' . $_FILES['imagenes']['name'][$idx];
                 break;
             }
         }
     }
-    $imagen_principal = $imagenes_urls[0] ?? '';
+
     if ($error_imagen) {
         $mensaje = $error_imagen;
     } else if ($nombre && $precio > 0 && $id_categoria && $id_marca && $imagen_principal) {
@@ -142,11 +156,17 @@ include '_layout.php';
                     </div>
                 </div>
 
-                <!-- Imágenes -->
+                <!-- Imagene Principal y Galería -->
                 <div class="adm-form-group">
-                    <label class="adm-label">Imágenes PNG (puedes seleccionar varias) *</label>
-                    <input type="file" name="imagenes[]" accept="image/png" class="adm-input" multiple required style="padding:0.5rem">
-                    <div style="font-size:0.7rem;color:#555;margin-top:0.35rem">⚠️ Solo se permiten imágenes en formato <strong style="color:#fff">PNG</strong>. Asegúrate de que las imágenes tengan fondo transparente para mejor presentación.</div>
+                    <label class="adm-label">Imagen principal (Solo PNG) *</label>
+                    <input type="file" name="imagen" accept="image/png" class="adm-input" required style="padding:0.5rem">
+                    <div style="font-size:0.7rem;color:#555;margin-top:0.35rem">⚠️ Solo se permiten imágenes en formato <strong style="color:#fff">PNG</strong>. Ésta será la portada del producto.</div>
+                </div>
+
+                <div class="adm-form-group">
+                    <label class="adm-label">Agregar nuevas imágenes a la galería (Solo PNG, Opcional)</label>
+                    <input type="file" name="imagenes[]" accept="image/png" class="adm-input" multiple style="padding:0.5rem">
+                    <div style="font-size:0.7rem;color:#555;margin-top:0.35rem">Puedes seleccionar varias imágenes para la galería del producto.</div>
                 </div>
 
                 <!-- Separador visual -->

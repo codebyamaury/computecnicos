@@ -221,9 +221,14 @@ include '_layout.php';
                 </div>
             </div>
             <div>
-                <label class="adm-label">Imágenes PNG *</label>
-                <input type="file" name="imagenes[]" accept="image/png" multiple required class="adm-input" style="padding:0.4rem">
-                <div style="font-size:0.7rem;color:#555;margin-top:0.35rem">⚠️ Solo se permiten imágenes en formato <strong style="color:#fff">PNG</strong>.</div>
+                <label class="adm-label">Imagen principal (Solo PNG) *</label>
+                <input type="file" name="imagen" accept="image/png" required class="adm-input" style="padding:0.4rem">
+                <div style="font-size:0.7rem;color:#555;margin-top:0.35rem">⚠️ Solo se permiten imágenes en formato <strong style="color:#fff">PNG</strong>. Ésta será la portada.</div>
+            </div>
+            <div>
+                <label class="adm-label">Imágenes de galería (Solo PNG, Opcional)</label>
+                <input type="file" name="imagenes[]" accept="image/png" multiple class="adm-input" style="padding:0.4rem">
+                <div style="font-size:0.7rem;color:#555;margin-top:0.35rem">Puedes seleccionar múltiples imágenes adicionales.</div>
             </div>
             <!-- Separador visual -->
             <div style="border-top:1px solid var(--adm-border);margin:1.5rem 0;padding-top:1.5rem">
