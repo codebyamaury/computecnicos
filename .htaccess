@@ -7,8 +7,21 @@
 RewriteEngine On
 
 # Forzar HTTPS en producción (descomenta en producción)
-# RewriteCond %{HTTPS} off
-# RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+RewriteCond %{HTTPS} off
+RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+# Eliminar /index.php de la URL
+RewriteCond %{THE_REQUEST} ^[A-Z]{3,9}\ /([^/]+/)*index\.php\ HTTP/
+RewriteRule ^(([^/]+/)*)index\.php$ https://%{HTTP_HOST}/$1 [R=301,L]
+
+# Ocultar extensión .php para el resto de páginas
+RewriteCond %{THE_REQUEST} ^[A-Z]{3,9}\ /([^.]+)\.php\ HTTP
+RewriteRule ^([^.]+)\.php$ https://%{HTTP_HOST}/$1 [R=301,L]
+
+# Internamente redirigir URLs sin .php al archivo físico .php
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME}.php -f
+RewriteRule ^(.*)$ $1.php [L]
 
 # Denegar acceso a archivos sensibles
 <FilesMatch "\.(env|ini|log|sh|sql)$">
