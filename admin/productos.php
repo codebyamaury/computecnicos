@@ -141,54 +141,6 @@ include '_layout.php';
 </div>
 </main>
 
-<!-- Modal Editar -->
-<div id="modal-editar-bg" class="adm-modal-overlay"></div>
-<div id="modal-editar-producto" class="adm-modal hidden">
-    <div class="adm-modal-box">
-        <button class="adm-modal-close" onclick="cerrarEditar()">&times;</button>
-        <div class="adm-modal-title">Editar Producto</div>
-        <form id="form-editar-producto" method="post" enctype="multipart/form-data" style="display:flex;flex-direction:column;gap:0.875rem">
-            <input type="hidden" name="id" id="edit-id">
-            <div><label class="adm-label">Nombre *</label><input type="text" name="nombre" id="edit-nombre" class="adm-input" required></div>
-            <div><label class="adm-label">Descripción</label><textarea name="descripcion" id="edit-descripcion" rows="2" class="adm-textarea"></textarea></div>
-            <div class="adm-form-row" style="margin-bottom:0">
-                <div><label class="adm-label">Precio (COP) *</label><input type="number" name="precio" id="edit-precio" min="0" step="0.01" class="adm-input" required></div>
-                <div><label class="adm-label">Stock *</label><input type="number" name="stock" id="edit-stock" min="0" class="adm-input" required></div>
-            </div>
-            <div class="adm-form-row" style="margin-bottom:0">
-                <div><label class="adm-label">Categoría *</label>
-                    <select name="id_categoria" id="edit-id_categoria" class="adm-select" required>
-                        <option value="">Selecciona</option>
-                        <?php foreach ($categorias as $cat): ?>
-                        <option value="<?= $cat['id'] ?>"><?= htmlspecialchars($cat['nombre']) ?></option>
-                        <?php endforeach; ?>
-                    </select>
-                </div>
-                <div><label class="adm-label">Marca *</label>
-                    <select name="id_marca" id="edit-id_marca" class="adm-select" required>
-                        <option value="">Selecciona</option>
-                        <?php foreach ($marcas as $m): ?>
-                        <option value="<?= $m['id'] ?>"><?= htmlspecialchars($m['nombre']) ?></option>
-                        <?php endforeach; ?>
-                    </select>
-                </div>
-            </div>
-            <div>
-                <label class="adm-label">Imágenes (nueva(s))</label>
-                <input type="file" name="imagenes[]" id="edit-imagen" accept="image/*" multiple class="adm-input" style="padding:0.4rem">
-                <img id="edit-imagen-preview" src="" alt="preview" style="display:none;width:80px;height:56px;object-fit:cover;border-radius:6px;margin-top:8px">
-                <div id="edit-galeria" style="display:flex;flex-wrap:wrap;gap:6px;margin-top:8px"></div>
-            </div>
-            <div style="display:flex;align-items:center;gap:8px">
-                <input type="checkbox" name="oferta" id="edit-oferta" value="1" style="accent-color:#e00000;width:15px;height:15px">
-                <label for="edit-oferta" style="font-size:0.82rem;color:#888;cursor:pointer">¿Producto en oferta?</label>
-            </div>
-            <button type="submit" class="adm-btn adm-btn-warning" style="width:100%;justify-content:center">Guardar cambios</button>
-        </form>
-        <div id="modal-editar-msg" style="display:none;margin-top:0.75rem;text-align:center;color:#ef4444;font-size:0.8rem"></div>
-    </div>
-</div>
-
 <!-- Modal Nuevo -->
 <div id="modal-nuevo-producto-bg" class="adm-modal-overlay"></div>
 <div id="modal-nuevo-producto" class="adm-modal hidden">
@@ -199,7 +151,7 @@ include '_layout.php';
             <div><label class="adm-label">Nombre *</label><input type="text" name="nombre" class="adm-input" required></div>
             <div><label class="adm-label">Descripción</label><textarea name="descripcion" rows="2" class="adm-textarea"></textarea></div>
             <div class="adm-form-row" style="margin-bottom:0">
-                <div><label class="adm-label">Precio (COP) *</label><input type="number" name="precio" min="0" step="0.01" class="adm-input" required></div>
+                <div><label class="adm-label">Precio (COP) *</label><input type="text" inputmode="decimal" pattern="[0-9,\.]+" name="precio" class="adm-input" required></div>
                 <div><label class="adm-label">Stock *</label><input type="number" name="stock" min="0" class="adm-input" required></div>
             </div>
             <div class="adm-form-row" style="margin-bottom:0">
@@ -301,46 +253,7 @@ async function cargarGaleria(id) {
             ? imgs.map(i=>`<img src="../${i.url_imagen}" style="width:54px;height:40px;object-fit:cover;border-radius:4px;border:1px solid rgba(255,255,255,0.06)">`).join('')
             : '<span style="font-size:0.72rem;color:#555">Sin imágenes extra</span>';
     } catch { div.innerHTML = ''; }
-}
-function abrirEditar(p) {
-    document.getElementById('modal-editar-bg').classList.add('show');
-    document.getElementById('modal-editar-producto').classList.remove('hidden');
-    document.getElementById('modal-editar-producto').classList.add('show');
-    document.getElementById('edit-id').value = p.id;
-    document.getElementById('edit-nombre').value = p.nombre;
-    document.getElementById('edit-descripcion').value = p.descripcion;
-    document.getElementById('edit-precio').value = p.precio;
-    document.getElementById('edit-stock').value = p.stock;
-    document.getElementById('edit-oferta').checked = p.oferta == 1;
-    document.getElementById('edit-id_categoria').value = String(p.categoria||'');
-    document.getElementById('edit-id_marca').value = String(p.marca||'');
-    const prev = document.getElementById('edit-imagen-preview');
-    if (p.imagen) { prev.src='../'+p.imagen; prev.style.display=''; } else { prev.style.display='none'; }
-    cargarGaleria(p.id);
-    document.getElementById('modal-editar-msg').style.display='none';
-    document.body.style.overflow='hidden';
-}
-function cerrarEditar() {
-    document.getElementById('modal-editar-bg').classList.remove('show');
-    document.getElementById('modal-editar-producto').classList.add('hidden');
-    document.getElementById('modal-editar-producto').classList.remove('show');
-    document.body.style.overflow='';
-}
-document.getElementById('modal-editar-bg').addEventListener('click', cerrarEditar);
-document.querySelectorAll('.btn-editar-producto').forEach(btn=>{
-    btn.addEventListener('click', e=>{ e.preventDefault(); abrirEditar(JSON.parse(btn.dataset.producto)); });
-});
-document.getElementById('form-editar-producto').addEventListener('submit', async function(e){
-    e.preventDefault();
-    const data = new FormData(this);
-    const res = await fetch('producto_editar.php?id='+data.get('id'), {method:'POST',body:data});
-    const text = await res.text();
-    if (text.includes('actualizado correctamente')) { window.location.reload(); }
-    else {
-        const m = document.getElementById('modal-editar-msg');
-        m.textContent='Error al editar. Revisa los datos.'; m.style.display='block';
-    }
-});
+// La carga y envío del modal de Edición es ahora dinámica y se gestiona en _layout_end.php
 
 // --- Modal Nuevo ---
 function abrirNuevo() {
@@ -360,18 +273,42 @@ document.getElementById('modal-nuevo-producto-bg').addEventListener('click', cer
 document.getElementById('btn-abrir-nuevo-producto').addEventListener('click', abrirNuevo);
 document.getElementById('form-nuevo-producto').addEventListener('submit', async function(e){
     e.preventDefault();
-    const data = new FormData(this);
-    const res = await fetch('producto_nuevo.php', {method:'POST',body:data});
-    const text = await res.text();
-    if (text.includes('Producto agregado correctamente')) { window.location.reload(); }
-    else {
-        const m = document.getElementById('modal-nuevo-producto-msg');
-        console.error('Server response:', text);
-        // Intentar extraer el mensaje de error del HTML
-        const errorMatch = text.match(/<div[^>]*bg-red-600[^>]*>\s*([\s\S]*?)\s*<\/div>/);
-        const serverError = errorMatch ? errorMatch[1].trim() : 'Error al registrar. Revisa los datos.';
-        m.textContent = serverError; 
-        m.style.display='block';
+    
+    const btn = this.querySelector('button[type="submit"]');
+    const oldText = btn.innerHTML;
+    btn.innerHTML = 'Guardando...';
+    btn.disabled = true;
+    const m = document.getElementById('modal-nuevo-producto-msg');
+    m.style.display = 'none';
+
+    try {
+        const data = new FormData(this);
+        const res = await fetch('producto_nuevo.php', {method:'POST', body:data});
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        
+        const text = await res.text();
+        if (text.includes('Producto agregado correctamente')) { 
+            window.location.reload(); 
+        } else {
+            console.error('Server response:', text);
+            // Extraer el mensaje del Toast que renderiza producto_nuevo.php (es un escape JS dentro de una etiqueta <script>)
+            const toastMatch = text.match(/admToast\('([^']+)'/);
+            let serverError = 'Error al registrar. Revisa los datos y asegúrate de elegir imágenes válidas.';
+            if (toastMatch && toastMatch[1]) {
+                serverError = toastMatch[1];
+            } else if (text.includes('Las imágenes seleccionadas superan')) {
+                serverError = 'Las imágenes seleccionadas superan el límite de tamaño del servidor.';
+            }
+            m.textContent = serverError; 
+            m.style.display = 'block';
+        }
+    } catch (error) {
+        console.error("Submit error:", error);
+        m.textContent = 'Error de conexión. ¿Son las imágenes muy pesadas (>8MB)? Intenta subir de menor peso.';
+        m.style.display = 'block';
+    } finally {
+        btn.innerHTML = oldText;
+        btn.disabled = false;
     }
 });
 </script>

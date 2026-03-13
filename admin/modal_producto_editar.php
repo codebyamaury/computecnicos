@@ -27,9 +27,14 @@ $marcas = $pdo->query('SELECT id, nombre FROM marcas ORDER BY nombre')->fetchAll
 
 $mensaje = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if (empty($_POST) && $_SERVER['CONTENT_LENGTH'] > 0) {
+        echo 'Error: Las imágenes seleccionadas superan el límite de tamaño del servidor. Por favor, sube menos imágenes o redúcelas.';
+        exit;
+    }
+
     $nombre = $_POST['nombre'] ?? '';
     $descripcion = $_POST['descripcion'] ?? '';
-    $precio = floatval($_POST['precio'] ?? 0);
+    $precio = floatval(str_replace(',', '.', $_POST['precio'] ?? 0));
     $stock = intval($_POST['stock'] ?? 0);
     $id_categoria = intval($_POST['id_categoria'] ?? 0);
     $id_marca = intval($_POST['id_marca'] ?? 0);
@@ -137,7 +142,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <div class="adm-form-row">
                     <div>
                         <label class="adm-label">Precio (COP) *</label>
-                        <input type="number" name="precio" min="0" step="0.01" class="adm-input" value="<?= htmlspecialchars($producto['precio']) ?>" required>
+                        <input type="text" inputmode="decimal" pattern="[0-9,\.]+" name="precio" class="adm-input" value="<?= htmlspecialchars($producto['precio']) ?>" required>
                     </div>
                     <div>
                         <label class="adm-label">Stock *</label>
