@@ -8,7 +8,7 @@ $productos_destacados = $stmt->fetchAll();
 
 // Título y CSS extra para esta página (Flowbite + index.css)
 $page_title = 'Inicio';
-    $extra_css = '<link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.1/flowbite.min.css" rel="stylesheet" />' . "\n" . '<link rel="stylesheet" href="' . base_url() . '/assets/css/index.css?v=' . time() . '_16">' . "\n" . '<link rel="stylesheet" href="' . base_url() . '/assets/css/productos.css?v=' . time() . '_8">';
+    $extra_css = '<link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.1/flowbite.min.css" rel="stylesheet" />' . "\n" . '<link rel="stylesheet" href="' . base_url() . '/assets/css/index.css?v=' . filemtime(__DIR__ . '/assets/css/index.css') . '">' . "\n" . '<link rel="stylesheet" href="' . base_url() . '/assets/css/productos.css?v=' . filemtime(__DIR__ . '/assets/css/productos.css') . '">';
 
 // Incluir header común
 include __DIR__ . '/includes/header.php';
@@ -40,7 +40,7 @@ include __DIR__ . '/includes/header.php';
 </section>
 
 <!-- Script 3D Background -->
-<script type="module" src="assets/js/hero-3d.js?v=<?php echo time(); ?>_6"></script>
+<script type="module" src="assets/js/hero-3d.js?v=<?php echo filemtime(__DIR__ . '/assets/js/hero-3d.js'); ?>"></script>
 <!-- Ventajas eliminadas -->
 <!-- Categorías -->
 <section class="container mx-auto px-2 sm:px-4 py-8 md:py-12 w-full">
