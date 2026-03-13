@@ -104,7 +104,7 @@ include 'includes/header.php';
                         </div>
                         <div class="info-content">
                             <h4>Llámanos</h4>
-                            <p>+57 300 000 0000</p>
+                            <p>+57 316 850 0131</p>
                             <p>Lun - Vie, 9am - 6pm</p>
                         </div>
                     </div>
@@ -115,8 +115,8 @@ include 'includes/header.php';
                         </div>
                         <div class="info-content">
                             <h4>Ubicación</h4>
-                            <p>Calle 123 #45-67</p>
-                            <p>Ciudad, País</p>
+                            <p>Paseo Bolívar Cra 17 #45-20</p>
+                            <p>Cartagena de Indias, Colombia</p>
                         </div>
                     </div>
                 </div>
@@ -335,9 +335,9 @@ include 'includes/header.php';
             const mapContainer = document.getElementById('mapcn-container');
             if (!mapContainer || typeof maplibregl === 'undefined') return;
 
-            // Coordenadas de la ubicación (Cartagena)
-            const LNG = -75.5330901;
-            const LAT = 10.4304111;
+            // Coordenadas de la ubicación (Paseo Bolívar, Cartagena)
+            const LNG = -75.5144;
+            const LAT = 10.4236;
 
             // Estilo satelital con Google Satellite + etiquetas de calles
             const map = new maplibregl.Map({
@@ -427,7 +427,7 @@ include 'includes/header.php';
             }).setHTML(`
                 <div style="padding: 8px 4px;">
                     <h4 style="margin: 0 0 6px; font-size: 14px; font-weight: 700; color: #fff;">CompuTécnicos</h4>
-                    <p style="margin: 0 0 4px; font-size: 12px; color: #aaa;">📍 Calle 123 #45-67</p>
+                    <p style="margin: 0 0 4px; font-size: 12px; color: #aaa;">📍 Paseo Bolívar Cra 17 #45-20, Cartagena</p>
                     <p style="margin: 0; font-size: 12px; color: #aaa;">🕐 Lun - Vie, 9am - 6pm</p>
                 </div>
             `);

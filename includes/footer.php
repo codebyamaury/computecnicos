@@ -54,7 +54,7 @@
             <ul class="space-y-1 mt-2 text-xs sm:text-sm">
                 <li>Email: info@computecnicos.com</li>
                 <li>Tel: +57 316 850 0131</li>
-                <li>Dirección: Calle 123 #45-67, Ciudad</li>
+                <li>Dirección: Paseo Bolívar Cra 17 #45-20, Cartagena</li>
             </ul>
         </div>
     </div>

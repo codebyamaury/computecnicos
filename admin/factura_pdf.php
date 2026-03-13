@@ -12,9 +12,9 @@ require_once __DIR__ . '/../app/Core/bootstrap.php';
 
 // Datos de la tienda (puedes personalizar estos datos)
 $tienda_nombre = "COMPUTÉCNICOS";
-$tienda_direccion = "Cra. 1 #2-3, Ciudad";
+$tienda_direccion = "Paseo Bolívar Cra 17 #45-20, Cartagena";
 $tienda_nit = "NIT 900000000-1";
-$tienda_tel = "Tel: 300 000 0000";
+$tienda_tel = "Tel: 316 850 0131";
 
 // Obtener datos del pedido
 $stmt = $pdo->prepare('SELECT p.*, u.nombre AS cliente, u.email, p.direccion_envio, p.fecha FROM pedidos p LEFT JOIN usuarios u ON p.id_usuario = u.id WHERE p.id = ?');

@@ -50,9 +50,9 @@ try {
 
     // Datos de la tienda (personalizables)
     $tienda_nombre = "COMPUTÉCNICOS";
-    $tienda_direccion = "Cra. 1 #2-3, Ciudad";
+    $tienda_direccion = "Paseo Bolívar Cra 17 #45-20, Cartagena";
     $tienda_nit = "NIT 900000000-1";
-    $tienda_tel = "Tel: 300 000 0000";
+    $tienda_tel = "Tel: 316 850 0131";
 
     // Calcular totales con casting seguro
     $subtotal = 0; $total_descuentos = 0;
