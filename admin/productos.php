@@ -42,7 +42,7 @@ $page_title       = 'Productos | Computécnicos';
 $admin_page       = 'productos';
 $admin_title      = 'Productos';
 $admin_breadcrumb = [['label' => 'Productos']];
-$admin_header_extra = '<a href="producto_nuevo.php" class="adm-btn adm-btn-success"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width:14px;height:14px"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg> Nuevo producto</a>';
+$admin_header_extra = '<button id="btn-abrir-nuevo-producto" class="adm-btn adm-btn-success"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width:14px;height:14px"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg> Nuevo producto</button>';
 
 include '_layout.php';
 ?>
@@ -220,7 +220,11 @@ include '_layout.php';
                     </select>
                 </div>
             </div>
-            <div><label class="adm-label">Imágenes *</label><input type="file" name="imagenes[]" accept="image/*" multiple required class="adm-input" style="padding:0.4rem"></div>
+            <div>
+                <label class="adm-label">Imágenes PNG *</label>
+                <input type="file" name="imagenes[]" accept="image/png" multiple required class="adm-input" style="padding:0.4rem">
+                <div style="font-size:0.7rem;color:#555;margin-top:0.35rem">⚠️ Solo se permiten imágenes en formato <strong style="color:#fff">PNG</strong>.</div>
+            </div>
             <div style="display:flex;align-items:center;gap:8px">
                 <input type="checkbox" name="oferta" id="oferta" value="1" style="accent-color:#e00000;width:15px;height:15px">
                 <label for="oferta" style="font-size:0.82rem;color:#888;cursor:pointer">¿Producto en oferta?</label>
