@@ -225,11 +225,58 @@ include '_layout.php';
                 <input type="file" name="imagenes[]" accept="image/png" multiple required class="adm-input" style="padding:0.4rem">
                 <div style="font-size:0.7rem;color:#555;margin-top:0.35rem">⚠️ Solo se permiten imágenes en formato <strong style="color:#fff">PNG</strong>.</div>
             </div>
-            <div style="display:flex;align-items:center;gap:8px">
-                <input type="checkbox" name="oferta" id="oferta" value="1" style="accent-color:#e00000;width:15px;height:15px">
-                <label for="oferta" style="font-size:0.82rem;color:#888;cursor:pointer">¿Producto en oferta?</label>
+            <!-- Separador visual -->
+            <div style="border-top:1px solid var(--adm-border);margin:1.5rem 0;padding-top:1.5rem">
+                <h3 style="color:#fff;font-size:0.95rem;font-weight:700;margin-bottom:1rem;display:flex;align-items:center;gap:8px">
+                    <span style="width:3px;height:16px;background:var(--adm-red);border-radius:2px;display:inline-block"></span>
+                    Visibilidad y Promociones
+                </h3>
+
+                <!-- Destacado -->
+                <div class="adm-form-group" style="display:flex;align-items:center;gap:0.75rem;padding:1rem;background:rgba(255,255,255,0.03);border-radius:0.75rem;border:1px solid var(--adm-border)">
+                    <label style="position:relative;display:inline-block;width:48px;height:26px;flex-shrink:0">
+                        <input type="checkbox" name="destacado" value="1" style="opacity:0;width:0;height:0" id="toggle-destacado-nuevo">
+                        <span style="position:absolute;cursor:pointer;top:0;left:0;right:0;bottom:0;background:rgba(255,255,255,0.08);border-radius:13px;transition:0.3s" id="slider-destacado-nuevo"></span>
+                    </label>
+                    <div style="flex:1">
+                        <div style="font-size:0.88rem;font-weight:600;color:#e7e7ea">Producto Destacado</div>
+                        <div style="font-size:0.72rem;color:#666;line-height:1.2;margin-top:2px">Se mostrará en la sección "Destacados" de la página principal.</div>
+                    </div>
+                </div>
+
+                <!-- Tiempo como Nuevo -->
+                <div class="adm-form-group" style="padding:1rem;background:rgba(255,255,255,0.03);border-radius:0.75rem;border:1px solid var(--adm-border)">
+                    <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.75rem">
+                        <span style="width:8px;height:8px;background:#3b82f6;border-radius:50%;display:inline-block"></span>
+                        <span style="font-size:0.88rem;font-weight:600;color:#e7e7ea">Badge "NUEVO"</span>
+                    </div>
+                    <label class="adm-label">Mostrar como nuevo hasta</label>
+                    <input type="date" name="nuevo_hasta" class="adm-input">
+                    <div style="font-size:0.7rem;color:#555;margin-top:0.35rem">Déjalo vacío para que no muestre la badge "NUEVO". El producto mostrará la badge hasta la fecha indicada.</div>
+                </div>
+
+                <!-- Oferta -->
+                <div class="adm-form-group" style="padding:1rem;background:rgba(255,255,255,0.03);border-radius:0.75rem;border:1px solid var(--adm-border)">
+                    <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.75rem">
+                        <span style="width:8px;height:8px;background:#ef4444;border-radius:50%;display:inline-block"></span>
+                        <span style="font-size:0.88rem;font-weight:600;color:#e7e7ea">Badge "OFERTA"</span>
+                    </div>
+                    <div style="display:flex;align-items:center;gap:0.75rem;margin-bottom:0.75rem">
+                        <label style="position:relative;display:inline-block;width:48px;height:26px;flex-shrink:0">
+                            <input type="checkbox" name="oferta" value="1" style="opacity:0;width:0;height:0" id="toggle-oferta-nuevo">
+                            <span style="position:absolute;cursor:pointer;top:0;left:0;right:0;bottom:0;background:rgba(255,255,255,0.08);border-radius:13px;transition:0.3s" id="slider-oferta-nuevo"></span>
+                        </label>
+                        <span style="font-size:0.85rem;color:#aaa">Activar oferta</span>
+                    </div>
+                    <label class="adm-label">Oferta válida hasta</label>
+                    <input type="date" name="oferta_hasta" class="adm-input">
+                    <div style="font-size:0.7rem;color:#555;margin-top:0.35rem">Si pones una fecha, la oferta se desactivará automáticamente al vencer. Déjalo vacío para oferta permanente (mientras esté activada).</div>
+                </div>
             </div>
-            <button type="submit" class="adm-btn adm-btn-primary" style="width:100%;justify-content:center">Guardar producto</button>
+            <button type="submit" class="adm-btn adm-btn-primary" style="width:100%;justify-content:center;padding:0.85rem;font-size:0.95rem;margin-top:0.5rem">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width:18px;height:18px"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                Guardar Cambios
+            </button>
         </form>
         <div id="modal-nuevo-producto-msg" style="display:none;margin-top:0.75rem;text-align:center;color:#ef4444;font-size:0.8rem"></div>
     </div>
@@ -325,4 +372,27 @@ document.getElementById('form-nuevo-producto').addEventListener('submit', async 
 </script>
 
 <?php include '_layout_end.php'; ?>
+<style>
+    /* Toggle switch styling override para nuevo modal interno */
+    #toggle-destacado-nuevo:checked + #slider-destacado-nuevo,
+    #toggle-oferta-nuevo:checked + #slider-oferta-nuevo {
+        background: var(--adm-red) !important;
+    }
+    #toggle-destacado-nuevo:checked + #slider-destacado-nuevo::before,
+    #toggle-oferta-nuevo:checked + #slider-oferta-nuevo::before {
+        transform: translateX(22px);
+    }
+    #slider-destacado-nuevo::before,
+    #slider-oferta-nuevo::before {
+        position: absolute;
+        content: "";
+        height: 20px;
+        width: 20px;
+        left: 3px;
+        bottom: 3px;
+        background-color: white;
+        border-radius: 50%;
+        transition: 0.3s;
+    }
+</style>
 <script>initPagination('#tabla-productos tbody','paginacion',10,'buscar-producto');</script>
