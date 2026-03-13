@@ -296,7 +296,7 @@ include 'includes/header.php';
                     formData.append('mensaje', mensaje.value.trim());
 
                     try {
-                        const res = await fetch('contacto_backend.php', {
+                        const res = await fetch('contacto_backend', {
                             method: 'POST',
                             body: formData
                         });
@@ -335,9 +335,9 @@ include 'includes/header.php';
             const mapContainer = document.getElementById('mapcn-container');
             if (!mapContainer || typeof maplibregl === 'undefined') return;
 
-            // Coordenadas de la ubicación (Paseo Bolívar, Cartagena)
-            const LNG = -75.5144;
-            const LAT = 10.4236;
+            // Coordenadas de la ubicación real de CompuTécnicos (Paseo Bolívar, Cartagena)
+            const LNG = -75.51047;
+            const LAT = 10.39332;
 
             // Estilo satelital con Google Satellite + etiquetas de calles
             const map = new maplibregl.Map({
