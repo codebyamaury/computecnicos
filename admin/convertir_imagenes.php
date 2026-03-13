@@ -10,6 +10,10 @@
  * 5. ELIMINA este archivo después de usarlo por seguridad
  */
 
+// Aumentar límites para procesamiento masivo de imágenes
+set_time_limit(300);
+ini_set('memory_limit', '512M');
+
 require_once __DIR__ . '/../app/Core/bootstrap.php';
 require_once __DIR__ . '/../app/Core/image_helper.php';
 
@@ -23,6 +27,7 @@ $resultados = [];
 $total_convertidas = 0;
 $total_errores = 0;
 $total_ya_png = 0;
+$archivos_temp = []; // Para limpiar al final
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['convertir'])) {
     $remove_bg = isset($_POST['remove_bg']) ? true : false;
@@ -30,29 +35,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['convertir'])) {
     // Obtener todas las imágenes de productos
     $productos = $pdo->query('SELECT id, nombre, imagen FROM productos WHERE imagen IS NOT NULL AND imagen != ""')->fetchAll();
     
+    // Registro de URLs ya procesadas para evitar duplicados
+    $urls_procesadas = [];
+    
     foreach ($productos as $prod) {
         $imagen_url = $prod['imagen'];
         
-        // Si ya es PNG, saltar
-        if (strtolower(pathinfo($imagen_url, PATHINFO_EXTENSION)) === 'png' && !$remove_bg) {
+        // Si ya es PNG local y no se pide remover fondo, saltar
+        $ext_url = strtolower(pathinfo(parse_url($imagen_url, PHP_URL_PATH) ?: $imagen_url, PATHINFO_EXTENSION));
+        if ($ext_url === 'png' && !$remove_bg && strpos($imagen_url, base_url()) !== false) {
             $total_ya_png++;
             $resultados[] = [
                 'producto' => $prod['nombre'],
                 'status' => 'skip',
-                'msg' => 'Ya es PNG'
+                'msg' => 'Ya es PNG local'
             ];
             continue;
         }
         
-        // Determinar la ruta física de la imagen
-        $ruta_fisica = resolve_image_path($imagen_url);
+        // Obtener la imagen (local o remota)
+        $ruta_fisica = resolve_image_path($imagen_url, $archivos_temp);
         
-        if (!$ruta_fisica || !file_exists($ruta_fisica)) {
+        if (!$ruta_fisica) {
             $total_errores++;
             $resultados[] = [
                 'producto' => $prod['nombre'],
                 'status' => 'error',
-                'msg' => 'Archivo no encontrado: ' . $imagen_url
+                'msg' => 'No se pudo obtener la imagen: ' . mb_substr($imagen_url, 0, 80) . '...'
             ];
             continue;
         }
@@ -72,6 +81,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['convertir'])) {
             $stmt2 = $pdo->prepare('UPDATE imagenes_producto SET url_imagen = ? WHERE id_producto = ? AND url_imagen = ?');
             $stmt2->execute([$nueva_url, $prod['id'], $imagen_url]);
             
+            $urls_procesadas[$imagen_url] = $nueva_url;
             $total_convertidas++;
             $resultados[] = [
                 'producto' => $prod['nombre'],
@@ -99,27 +109,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['convertir'])) {
     foreach ($imagenes_extra as $img) {
         $imagen_url = $img['url_imagen'];
         
-        // Si ya es PNG y no se pide remover fondo, saltar
-        if (strtolower(pathinfo($imagen_url, PATHINFO_EXTENSION)) === 'png' && !$remove_bg) {
-            continue; // Ya contada arriba
+        // Si ya fue procesada como imagen principal, actualizar directamente
+        if (isset($urls_procesadas[$imagen_url])) {
+            $stmt = $pdo->prepare('UPDATE imagenes_producto SET url_imagen = ? WHERE id = ?');
+            $stmt->execute([$urls_procesadas[$imagen_url], $img['id']]);
+            continue;
         }
         
-        // Verificar que no sea la misma imagen principal (ya convertida)
-        $prod_check = $pdo->prepare('SELECT imagen FROM productos WHERE id = ?');
-        $prod_check->execute([$img['id_producto']]);
-        $prod_data = $prod_check->fetch();
-        if ($prod_data && $prod_data['imagen'] === $imagen_url) {
-            continue; // Ya fue convertida como imagen principal
+        // Si ya es PNG local y no se pide remover fondo, saltar
+        $ext_url = strtolower(pathinfo(parse_url($imagen_url, PHP_URL_PATH) ?: $imagen_url, PATHINFO_EXTENSION));
+        if ($ext_url === 'png' && !$remove_bg && strpos($imagen_url, base_url()) !== false) {
+            continue;
         }
         
-        $ruta_fisica = resolve_image_path($imagen_url);
+        $ruta_fisica = resolve_image_path($imagen_url, $archivos_temp);
         
-        if (!$ruta_fisica || !file_exists($ruta_fisica)) {
+        if (!$ruta_fisica) {
             $total_errores++;
             $resultados[] = [
-                'producto' => $img['producto_nombre'] . ' (galería)',
+                'producto' => ($img['producto_nombre'] ?? 'Producto') . ' (galería)',
                 'status' => 'error',
-                'msg' => 'Archivo no encontrado: ' . $imagen_url
+                'msg' => 'No se pudo obtener: ' . mb_substr($imagen_url, 0, 80) . '...'
             ];
             continue;
         }
@@ -132,47 +142,130 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['convertir'])) {
             $stmt = $pdo->prepare('UPDATE imagenes_producto SET url_imagen = ? WHERE id = ?');
             $stmt->execute([$nueva_url, $img['id']]);
             
+            $urls_procesadas[$imagen_url] = $nueva_url;
             $total_convertidas++;
             $resultados[] = [
-                'producto' => $img['producto_nombre'] . ' (galería)',
+                'producto' => ($img['producto_nombre'] ?? 'Producto') . ' (galería)',
                 'status' => 'ok',
                 'msg' => 'Imagen de galería convertida'
             ];
         } else {
             $total_errores++;
             $resultados[] = [
-                'producto' => $img['producto_nombre'] . ' (galería)',
+                'producto' => ($img['producto_nombre'] ?? 'Producto') . ' (galería)',
                 'status' => 'error',
                 'msg' => $result['error']
             ];
         }
     }
+    
+    // Limpiar archivos temporales descargados
+    foreach ($archivos_temp as $tmp) {
+        if (file_exists($tmp)) @unlink($tmp);
+    }
 }
 
 /**
- * Resuelve la ruta física de una imagen a partir de su URL
+ * Resuelve la ruta física de una imagen a partir de su URL.
+ * Si la imagen es remota (http/https), la descarga a un archivo temporal.
+ * 
+ * @param string $url            URL o ruta de la imagen
+ * @param array  &$archivos_temp Array para trackear archivos temporales a limpiar
+ * @return string|null           Ruta física del archivo o null si falla
  */
-function resolve_image_path($url) {
+function resolve_image_path($url, &$archivos_temp = []) {
     $base = __DIR__ . '/../';
     
-    // Si es URL absoluta del sitio, extraer la ruta relativa
+    // Caso 1: URL remota (http/https) — descargar a temporal
     if (strpos($url, 'http') === 0) {
-        // Extraer path después del dominio
-        $parsed = parse_url($url);
-        $path = $parsed['path'] ?? '';
-        // Quitar slash inicial
-        $path = ltrim($path, '/');
-        $ruta = $base . $path;
-        if (file_exists($ruta)) return $ruta;
+        // Primero verificar si es una URL de nuestro propio sitio
+        $our_base = base_url();
+        if (strpos($url, $our_base) === 0) {
+            // Es una URL local del sitio — intentar resolver como archivo
+            $relative_path = str_replace($our_base, '', $url);
+            $relative_path = ltrim($relative_path, '/');
+            $local_path = $base . $relative_path;
+            if (file_exists($local_path)) return $local_path;
+        }
+        
+        // Es URL externa — descargar
+        $tmp_file = download_remote_image($url);
+        if ($tmp_file) {
+            $archivos_temp[] = $tmp_file;
+            return $tmp_file;
+        }
+        return null;
     }
     
-    // Si es ruta relativa directa
+    // Caso 2: Ruta relativa directa
     $ruta = $base . ltrim($url, '/');
     if (file_exists($ruta)) return $ruta;
     
-    // Si está en uploads/productos/
+    // Caso 3: Solo el nombre del archivo en uploads/productos/
     $ruta = $base . 'uploads/productos/' . basename($url);
     if (file_exists($ruta)) return $ruta;
+    
+    return null;
+}
+
+/**
+ * Descarga una imagen remota a un archivo temporal.
+ * Soporta redirecciones y establece un User-Agent válido.
+ * 
+ * @param string $url URL de la imagen
+ * @return string|null Ruta del archivo temporal o null si falla
+ */
+function download_remote_image($url) {
+    // Intentar con cURL primero (mejor para redirecciones y headers)
+    if (function_exists('curl_init')) {
+        $ch = curl_init($url);
+        $tmp_file = tempnam(sys_get_temp_dir(), 'img_conv_');
+        $fp = fopen($tmp_file, 'wb');
+        
+        curl_setopt_array($ch, [
+            CURLOPT_FILE => $fp,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_MAXREDIRS => 5,
+            CURLOPT_TIMEOUT => 30,
+            CURLOPT_CONNECTTIMEOUT => 10,
+            CURLOPT_SSL_VERIFYPEER => false,
+            CURLOPT_USERAGENT => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+            CURLOPT_HTTPHEADER => ['Accept: image/*'],
+        ]);
+        
+        $success = curl_exec($ch);
+        $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $error = curl_error($ch);
+        curl_close($ch);
+        fclose($fp);
+        
+        if ($success && $http_code === 200 && filesize($tmp_file) > 100) {
+            return $tmp_file;
+        }
+        
+        // Falló — limpiar
+        @unlink($tmp_file);
+    }
+    
+    // Fallback con file_get_contents
+    $context = stream_context_create([
+        'http' => [
+            'timeout' => 30,
+            'user_agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+            'header' => "Accept: image/*\r\n",
+        ],
+        'ssl' => [
+            'verify_peer' => false,
+            'verify_peer_name' => false,
+        ],
+    ]);
+    
+    $data = @file_get_contents($url, false, $context);
+    if ($data && strlen($data) > 100) {
+        $tmp_file = tempnam(sys_get_temp_dir(), 'img_conv_');
+        file_put_contents($tmp_file, $data);
+        return $tmp_file;
+    }
     
     return null;
 }
