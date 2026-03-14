@@ -98,150 +98,6 @@
     })();
 </script>
 
-<?php if (!empty($_SESSION['factura_error'])): ?>
-    <?php $factura_err = htmlspecialchars($_SESSION['factura_error']);
-    unset($_SESSION['factura_error']); ?>
-    <style>
-        #factura-toast {
-            position: fixed;
-            bottom: 1.5rem;
-            right: 1.5rem;
-            z-index: 9999;
-            display: flex;
-            align-items: flex-start;
-            gap: 12px;
-            background: #1e1e1e;
-            border: 1px solid rgba(239, 68, 68, .35);
-            border-left: 4px solid #ef4444;
-            border-radius: 12px;
-            padding: 1rem 1.1rem 1rem 1rem;
-            min-width: 280px;
-            max-width: 360px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, .55);
-            animation: toastIn .35s cubic-bezier(.21, 1.02, .73, 1) forwards;
-            overflow: hidden;
-        }
-
-        #factura-toast.hide {
-            animation: toastOut .3s ease forwards;
-        }
-
-        @keyframes toastIn {
-            from {
-                opacity: 0;
-                transform: translateY(20px) scale(.96);
-            }
-
-            to {
-                opacity: 1;
-                transform: none;
-            }
-        }
-
-        @keyframes toastOut {
-            to {
-                opacity: 0;
-                transform: translateY(16px) scale(.96);
-            }
-        }
-
-        #factura-toast .t-icon {
-            flex-shrink: 0;
-            width: 36px;
-            height: 36px;
-            background: rgba(239, 68, 68, .12);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        #factura-toast .t-icon svg {
-            width: 18px;
-            height: 18px;
-            stroke: #ef4444;
-        }
-
-        #factura-toast .t-body {
-            flex: 1;
-        }
-
-        #factura-toast .t-title {
-            font-weight: 700;
-            font-size: .85rem;
-            color: #fff;
-            margin-bottom: .2rem;
-        }
-
-        #factura-toast .t-msg {
-            font-size: .78rem;
-            color: #999;
-            line-height: 1.45;
-        }
-
-        #factura-toast .t-close {
-            flex-shrink: 0;
-            background: none;
-            border: none;
-            cursor: pointer;
-            color: #555;
-            font-size: 1.1rem;
-            line-height: 1;
-            padding: 0;
-            margin-top: 1px;
-            transition: color .15s;
-        }
-
-        #factura-toast .t-close:hover {
-            color: #ef4444;
-        }
-
-        #factura-toast .t-bar {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            height: 3px;
-            background: #ef4444;
-            border-radius: 0 0 0 12px;
-            animation: barShrink 5s linear forwards;
-        }
-
-        @keyframes barShrink {
-            from {
-                width: 100%;
-            }
-
-            to {
-                width: 0%;
-            }
-        }
-    </style>
-    <div id="factura-toast">
-        <div class="t-icon">
-            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                stroke-linejoin="round">
-                <path
-                    d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
-            </svg>
-        </div>
-        <div class="t-body">
-            <div class="t-title">Factura no disponible</div>
-            <div class="t-msg"><?= $factura_err ?></div>
-        </div>
-        <button class="t-close" onclick="closeToast()">&#x2715;</button>
-        <div class="t-bar"></div>
-    </div>
-    <script>
-        function closeToast() {
-            var t = document.getElementById('factura-toast');
-            if (!t) return;
-            t.classList.add('hide');
-            setTimeout(function () { t.remove(); }, 320);
-        }
-        setTimeout(closeToast, 5000);
-    </script>
-<?php endif; ?>
-
 <!-- Utilidad de paginación universal -->
 <script>
     function initPagination(containerSel, pagDivId, perPage, searchInputId) {
@@ -414,7 +270,7 @@
     .adm-toast-error   .at-bar { background:#ef4444; }
 </style>
 <script>
-function admToast(message, type, duration) {
+function admToast(message, type, duration, customTitle) {
     type = type || 'success';
     duration = duration || 4500;
     // Eliminar toasts anteriores
@@ -423,7 +279,7 @@ function admToast(message, type, duration) {
     var iconSvg = type === 'success'
         ? '<svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>'
         : '<svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg>';
-    var title = type === 'success' ? 'Acción completada' : 'Ocurrió un error';
+    var title = customTitle ? customTitle : (type === 'success' ? 'Acción completada' : 'Ocurrió un error');
 
     var toast = document.createElement('div');
     toast.className = 'adm-toast adm-toast-' + type;
@@ -506,7 +362,8 @@ document.addEventListener('DOMContentLoaded', function(){
     admToast(
         '<?= addslashes($_SESSION['admin_toast']['msg']) ?>',
         '<?= $_SESSION['admin_toast']['type'] ?? 'success' ?>',
-        <?= intval($_SESSION['admin_toast']['duration'] ?? 4500) ?>
+        <?= intval($_SESSION['admin_toast']['duration'] ?? 4500) ?>,
+        <?= !empty($_SESSION['admin_toast']['title']) ? "'" . addslashes($_SESSION['admin_toast']['title']) . "'" : 'null' ?>
     );
 });
 </script>

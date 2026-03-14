@@ -201,10 +201,18 @@ include '_layout.php';
                 </form>
 
                 <!-- Factura PDF -->
-                <a href="<?= base_url() ?>/factura_pdf.php?id=<?= $pedido['id'] ?>&download=1" target="_blank"
-                   class="adm-btn" style="background:rgba(255,255,255,0.05);font-size:0.75rem;padding:0.3rem 0.75rem">
-                   📄 PDF
-                </a>
+                <?php if (in_array($pedido['estado'], ['pagado', 'preparacion', 'enviado', 'entregado'])): ?>
+                    <a href="<?= base_url() ?>/factura_pdf.php?id=<?= $pedido['id'] ?>&download=1" target="_blank"
+                       class="adm-btn" style="background:rgba(255,255,255,0.05);font-size:0.75rem;padding:0.3rem 0.75rem">
+                       📄 PDF
+                    </a>
+                <?php else: ?>
+                    <button type="button" class="adm-btn" 
+                            style="background:rgba(255,255,255,0.02);font-size:0.75rem;padding:0.3rem 0.75rem;opacity:0.6;cursor:not-allowed;"
+                            onclick="admToast('La factura estará disponible una vez se confirme el pago.', 'error', 4500, 'Factura no disponible')">
+                       📄 PDF
+                    </button>
+                <?php endif; ?>
 
 
                 <!-- Editar pedido -->

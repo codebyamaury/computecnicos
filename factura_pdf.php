@@ -124,8 +124,12 @@ try {
     exit;
 } catch (Throwable $e) {
     log_event('Error factura_pdf: ' . $e->getMessage());
-    $_SESSION['factura_error'] = $e->getMessage();
-    $back = $_SERVER['HTTP_REFERER'] ?? '../pedidos.php';
+    $_SESSION['admin_toast'] = [
+        'msg' => $e->getMessage(),
+        'type' => 'error',
+        'title' => 'Factura no disponible'
+    ];
+    $back = $_SERVER['HTTP_REFERER'] ?? 'pedidos.php';
     header('Location: ' . $back);
     exit;
 }
