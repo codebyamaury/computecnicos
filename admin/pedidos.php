@@ -19,21 +19,9 @@ if (isset($_POST['cambiar_estado'], $_POST['id_pedido'], $_POST['nuevo_estado'])
     $stmt = $pdo->prepare('SELECT estado FROM pedidos WHERE id = ?');
     $stmt->execute([$id_pedido]);
     $anterior = $stmt->fetchColumn();
-    $allowed_transitions = [
-        'pendiente'  => ['pagado','cancelado'],
-        'pagado'     => ['preparacion','cancelado'],
-        'preparacion'=> ['enviado','cancelado'],
-        'enviado'    => ['entregado','cancelado'],
-        'entregado'  => [],
-        'cancelado'  => []
-    ];
-    if ($nuevo_estado !== $anterior) {
-        if (!isset($allowed_transitions[$anterior]) || !in_array($nuevo_estado, $allowed_transitions[$anterior])) {
-            $_SESSION['flash_error'] = "Transición no permitida de '$anterior' a '$nuevo_estado'.";
-            header('Location: pedidos.php');
-            exit;
-        }
-    }
+    // En panel admin permitimos cualquier transición para máxima flexibilidad (corrección de errores, devoluciones, etc).
+    // La lógica de inventario abajo se encargará siempre de cuadrar el stock según el grupo de estado.
+    $estados_reservados = ['pagado', 'preparacion', 'enviado', 'entregado'];
     $pdo->beginTransaction();
     try {
         $pdo->prepare('UPDATE pedidos SET estado = ? WHERE id = ?')->execute([$nuevo_estado, $id_pedido]);
@@ -42,16 +30,23 @@ if (isset($_POST['cambiar_estado'], $_POST['id_pedido'], $_POST['nuevo_estado'])
         $stmt->execute([$id_pedido]);
         $detalles_upd = $stmt->fetchAll();
         $id_usuario   = $_SESSION['usuario']['id'];
-        if (in_array($nuevo_estado, ['entregado','pagado']) && !in_array($anterior, ['entregado','pagado'])) {
-            foreach ($detalles_upd as $d) {
-                $pdo->prepare("INSERT INTO movimientos_inventario (id_producto, tipo, cantidad, motivo, id_usuario) VALUES (?, 'salida', ?, ?, ?)")->execute([$d['id_producto'], $d['cantidad'], 'Venta/Pedido #'.$id_pedido, $id_usuario]);
-                $pdo->prepare('UPDATE productos SET stock = stock - ? WHERE id = ?')->execute([$d['cantidad'], $d['id_producto']]);
-            }
-        }
-        if ($nuevo_estado === 'cancelado' && in_array($anterior, ['entregado','pagado'])) {
-            foreach ($detalles_upd as $d) {
-                $pdo->prepare("INSERT INTO movimientos_inventario (id_producto, tipo, cantidad, motivo, id_usuario) VALUES (?, 'entrada', ?, ?, ?)")->execute([$d['id_producto'], $d['cantidad'], 'Cancelación Pedido #'.$id_pedido, $id_usuario]);
-                $pdo->prepare('UPDATE productos SET stock = stock + ? WHERE id = ?')->execute([$d['cantidad'], $d['id_producto']]);
+        if ($nuevo_estado !== $anterior) {
+            if (in_array($nuevo_estado, $estados_reservados) && !in_array($anterior, $estados_reservados)) {
+                // Pasó de no-reservado a reservado -> Restar stock
+                foreach ($detalles_upd as $d) {
+                    $pdo->prepare("INSERT INTO movimientos_inventario (id_producto, tipo, cantidad, motivo, id_usuario) VALUES (?, 'salida', ?, ?, ?)")
+                        ->execute([$d['id_producto'], $d['cantidad'], 'Reserva Pedido #'.$id_pedido, $id_usuario]);
+                    $pdo->prepare('UPDATE productos SET stock = stock - ? WHERE id = ?')
+                        ->execute([$d['cantidad'], $d['id_producto']]);
+                }
+            } elseif (!in_array($nuevo_estado, $estados_reservados) && in_array($anterior, $estados_reservados)) {
+                // Pasó de reservado a no-reservado (ej. cancelado, o devuelto a pendiente) -> Devolver stock
+                foreach ($detalles_upd as $d) {
+                    $pdo->prepare("INSERT INTO movimientos_inventario (id_producto, tipo, cantidad, motivo, id_usuario) VALUES (?, 'entrada', ?, ?, ?)")
+                        ->execute([$d['id_producto'], $d['cantidad'], 'Liberación Pedido #'.$id_pedido, $id_usuario]);
+                    $pdo->prepare('UPDATE productos SET stock = stock + ? WHERE id = ?')
+                        ->execute([$d['cantidad'], $d['id_producto']]);
+                }
             }
         }
         $pdo->commit();

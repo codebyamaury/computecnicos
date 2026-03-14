@@ -151,8 +151,14 @@ class PaypalHelper
             $stmtDet->execute([$pedido_id]);
             $detalles = $stmtDet->fetchAll(PDO::FETCH_ASSOC);
             $stmtUpd = $this->pdo->prepare('UPDATE productos SET stock = GREATEST(0, stock - ?) WHERE id = ?');
+            $stmtMov = $this->pdo->prepare("INSERT INTO movimientos_inventario (id_producto, tipo, cantidad, motivo, id_usuario) VALUES (?, 'salida', ?, ?, ?)");
             foreach ($detalles as $d) {
                 $stmtUpd->execute([$d['cantidad'], $d['id_producto']]);
+                // id_usuario = 0 o nulo si no tenemos la sesion aquí conectada. O podemos coger el id_usuario del pedido.
+                $stmtUser = $this->pdo->prepare('SELECT id_usuario FROM pedidos WHERE id = ?');
+                $stmtUser->execute([$pedido_id]);
+                $cliente_id = $stmtUser->fetchColumn();
+                $stmtMov->execute([$d['id_producto'], $d['cantidad'], 'Pago PayPal Pedido #' . $pedido_id, $cliente_id]);
             }
         }
     }
