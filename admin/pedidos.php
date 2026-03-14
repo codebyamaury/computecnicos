@@ -192,12 +192,12 @@ include '_layout.php';
                 <form method="post" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
                     <input type="hidden" name="id_pedido" value="<?= $pedido['id'] ?>">
                     <label style="font-size:0.78rem;color:#777;font-weight:600">Estado:</label>
-                    <select name="nuevo_estado" class="adm-select" style="width:auto;padding:0.3rem 0.65rem;font-size:0.78rem">
+                    <input type="hidden" name="cambiar_estado" value="1">
+                    <select name="nuevo_estado" class="adm-select" style="width:auto;padding:0.3rem 0.65rem;font-size:0.78rem" onchange="this.form.submit()">
                         <?php foreach (['pendiente'=>'Pendiente','pagado'=>'Pagado','preparacion'=>'En preparación','enviado'=>'Enviado','entregado'=>'Entregado','cancelado'=>'Cancelado'] as $v=>$t): ?>
                         <option value="<?= $v ?>" <?= $pedido['estado']==$v ? 'selected':'' ?>><?= $t ?></option>
                         <?php endforeach; ?>
                     </select>
-                    <button type="submit" name="cambiar_estado" class="adm-btn adm-btn-blue" style="font-size:0.75rem;padding:0.3rem 0.75rem">Actualizar</button>
                 </form>
 
                 <!-- Factura PDF -->
