@@ -14,7 +14,10 @@ RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
 RewriteCond %{THE_REQUEST} ^[A-Z]{3,9}\ /([^/]+/)*index\.php\ HTTP/
 RewriteRule ^(([^/]+/)*)index\.php$ https://%{HTTP_HOST}/$1 [R=301,L]
 
-# Ocultar extensión .php para el resto de páginas (con o sin query string)
+# Ocultar extensión .php para el resto de páginas (solo GET, no POST)
+# Las peticiones POST a archivos .php (formularios, AJAX) no deben redirigirse
+# porque el redirect 301 convierte POST en GET y se pierden los datos
+RewriteCond %{REQUEST_METHOD} !POST
 RewriteCond %{THE_REQUEST} ^[A-Z]{3,9}\ /([^.]+)\.php[\?\ ] [NC]
 RewriteRule ^([^.]+)\.php$ https://%{HTTP_HOST}/$1 [R=301,L,QSA]
 
