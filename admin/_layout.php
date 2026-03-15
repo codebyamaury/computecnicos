@@ -77,10 +77,10 @@ $nav_items = [
     <!-- Particle Background -->
     <canvas class="admin-particles-canvas"></canvas>
 
-    <!-- OVERLAY -->
-    <div id="admin-overlay" class="admin-overlay"></div>
-
     <div class="admin-layout">
+        <!-- OVERLAY -->
+        <div id="admin-overlay" class="admin-overlay"></div>
+
         <!-- ═══ SIDEBAR ═══ -->
         <aside id="admin-sidebar" class="admin-sidebar drawer">
             <div class="sidebar-inner">
