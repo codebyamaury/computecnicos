@@ -22,7 +22,7 @@ if (isset($_SESSION['usuario']['id']) && isset($pdo)) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo isset($page_title) ? $page_title . ' | ' : ''; ?>Computecnicos</title>
-    <link rel="icon" type="image/svg+xml" href="<?= asset('img/favicon.svg') ?>">
+    <link rel="icon" type="image/svg+xml" href="<?= asset('images/favicon.svg') ?>">
     <meta name="color-scheme" content="dark">
     <meta name="theme-color" content="#050505">
     <!-- Bloqueo para Brave "Force Dark Mode" / DarkReader. Evita que el navegador invierta colores e inyecte fondos blancos temporales -->
