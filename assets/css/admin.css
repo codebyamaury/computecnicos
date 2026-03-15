@@ -332,7 +332,7 @@ body {
     gap: 0.625rem;
     padding: 0.65rem 0.875rem;
     border-radius: 0.625rem;
-    color: #666;
+    color: #aaa;
     text-decoration: none;
     font-size: 0.875rem;
     font-weight: 600;
@@ -356,7 +356,7 @@ body {
     width: 17px;
     height: 17px;
     flex-shrink: 0;
-    opacity: 0.8;
+    opacity: 0.9;
 }
 
 /* Sidebar section label */
@@ -365,7 +365,7 @@ body {
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.9px;
-    color: rgba(255, 255, 255, 0.2);
+    color: rgba(255, 255, 255, 0.35);
     padding: 0.75rem 0.875rem 0.25rem;
     display: block;
     transition: opacity 0.2s ease, height 0.25s ease, padding 0.25s ease;
