@@ -77,18 +77,16 @@ body {
   margin-bottom: 1.5rem;
   position: relative;
   display: inline-block;
-  background: linear-gradient(
-    90deg,
-    #cc0000 0%,
-    #ff1a1a 15%,
-    #ff4422 30%,
-    #ff6633 42%,
-    #ffffff 50%,
-    #ff6633 58%,
-    #ff4422 70%,
-    #ff1a1a 85%,
-    #cc0000 100%
-  );
+  background: linear-gradient(90deg,
+      #cc0000 0%,
+      #ff1a1a 15%,
+      #ff4422 30%,
+      #ff6633 42%,
+      #ffffff 50%,
+      #ff6633 58%,
+      #ff4422 70%,
+      #ff1a1a 85%,
+      #cc0000 100%);
   background-size: 200% 100%;
   -webkit-background-clip: text;
   background-clip: text;
@@ -103,8 +101,13 @@ body {
 
 /* Flujo de energía continuo */
 @keyframes energy-flow {
-  0% { background-position: 100% 50%; }
-  100% { background-position: -100% 50%; }
+  0% {
+    background-position: 100% 50%;
+  }
+
+  100% {
+    background-position: -100% 50%;
+  }
 }
 
 /* Línea inferior que se expande desde el centro */
@@ -123,11 +126,14 @@ body {
 }
 
 @keyframes line-expand {
-  0%, 100% {
+
+  0%,
+  100% {
     width: 30%;
     opacity: 0.3;
     box-shadow: none;
   }
+
   50% {
     width: 100%;
     opacity: 0.7;
@@ -144,7 +150,7 @@ body {
   border-left: 3px solid var(--neon-red);
   padding-left: 1rem;
   background: rgba(0, 0, 0, 0.5);
-  
+
   /* Mantener altura para evitar saltos de línea molestos */
   display: inline-block;
   min-height: 3em;
@@ -1189,12 +1195,10 @@ footer a:hover {
   left: -100%;
   width: 100%;
   height: 100%;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(255, 255, 255, 0.12),
-    transparent
-  );
+  background: linear-gradient(90deg,
+      transparent,
+      rgba(255, 255, 255, 0.12),
+      transparent);
   transition: left 0.5s ease;
   z-index: 1;
 }
@@ -1210,7 +1214,7 @@ footer a:hover {
   color: #1877F2;
   transform: translateY(-4px) scale(1.05);
   box-shadow: 0 8px 25px rgba(24, 119, 242, 0.3),
-              0 0 0 1px rgba(24, 119, 242, 0.2);
+    0 0 0 1px rgba(24, 119, 242, 0.2);
   padding-left: 0;
 }
 
@@ -1227,22 +1231,28 @@ footer a:hover {
 }
 
 @keyframes socialPulse-fb {
-  0%, 100% { box-shadow: 0 0 10px rgba(24, 119, 242, 0.15); }
-  50% { box-shadow: 0 0 25px rgba(24, 119, 242, 0.35); }
+
+  0%,
+  100% {
+    box-shadow: 0 0 10px rgba(24, 119, 242, 0.15);
+  }
+
+  50% {
+    box-shadow: 0 0 25px rgba(24, 119, 242, 0.35);
+  }
 }
 
 /* ── Instagram ── */
 .footer-social-ig:hover {
   background: linear-gradient(135deg,
-    rgba(253, 29, 29, 0.12),
-    rgba(131, 58, 180, 0.12),
-    rgba(252, 176, 69, 0.12)
-  );
+      rgba(253, 29, 29, 0.12),
+      rgba(131, 58, 180, 0.12),
+      rgba(252, 176, 69, 0.12));
   border-color: rgba(225, 48, 108, 0.4);
   color: #E1306C;
   transform: translateY(-4px) scale(1.05);
   box-shadow: 0 8px 25px rgba(225, 48, 108, 0.3),
-              0 0 0 1px rgba(225, 48, 108, 0.2);
+    0 0 0 1px rgba(225, 48, 108, 0.2);
   padding-left: 0;
 }
 
@@ -1254,17 +1264,23 @@ footer a:hover {
 .footer-social-ig:hover .footer-social-glow {
   opacity: 1;
   background: linear-gradient(135deg,
-    rgba(253, 29, 29, 0.1),
-    rgba(131, 58, 180, 0.1),
-    rgba(252, 176, 69, 0.1)
-  );
+      rgba(253, 29, 29, 0.1),
+      rgba(131, 58, 180, 0.1),
+      rgba(252, 176, 69, 0.1));
   box-shadow: 0 0 20px rgba(225, 48, 108, 0.25);
   animation: socialPulse-ig 2s ease-in-out infinite;
 }
 
 @keyframes socialPulse-ig {
-  0%, 100% { box-shadow: 0 0 10px rgba(225, 48, 108, 0.15); }
-  50% { box-shadow: 0 0 25px rgba(225, 48, 108, 0.35); }
+
+  0%,
+  100% {
+    box-shadow: 0 0 10px rgba(225, 48, 108, 0.15);
+  }
+
+  50% {
+    box-shadow: 0 0 25px rgba(225, 48, 108, 0.35);
+  }
 }
 
 /* Active/pressed state */
@@ -1809,60 +1825,9 @@ footer .text-center.text-gray-500 {
   .team-grid {
     gap: 0.75rem;
   }
+
   .team-img-wrapper {
     width: 80px;
     height: 80px;
   }
 }
-
-/* ========================================
-   SEPARADORES DE SECCIÓN CON DEGRADADO
-   ======================================== */
-
-/* Reemplaza el border-t gris duro con un degradado suave central */
-.section-divider-top {
-  position: relative;
-  margin-top: 2rem;
-}
-.section-divider-top::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 60%;
-  max-width: 800px;
-  height: 1px;
-  background: linear-gradient(90deg,
-    transparent 0%,
-    rgba(255, 0, 0, 0.25) 20%,
-    rgba(255, 0, 0, 0.45) 50%,
-    rgba(255, 0, 0, 0.25) 80%,
-    transparent 100%
-  );
-}
-
-/* ========================================
-   DEGRADADOS LATERALES DEL CARRUSEL
-   ======================================== */
-
-/* Fade de las tarjetas en los bordes laterales del carrusel */
-.carousel-destacados-wrap::before,
-.carousel-destacados-wrap::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  width: 60px;
-  z-index: 2;
-  pointer-events: none;
-}
-.carousel-destacados-wrap::before {
-  left: 0;
-  background: linear-gradient(90deg, var(--tech-black) 0%, transparent 100%);
-}
-.carousel-destacados-wrap::after {
-  right: 0;
-  background: linear-gradient(270deg, var(--tech-black) 0%, transparent 100%);
-}
-
