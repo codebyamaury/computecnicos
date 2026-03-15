@@ -112,10 +112,11 @@ include '_layout.php';
         <div class="adm-card">
             <div class="adm-card-title">
                 <span class="adm-card-title-text">Productos con stock bajo (≤ 5 unidades)</span>
-                <a href="#" onclick="abrirModalMovimiento(event)" class="adm-btn adm-btn-warning !text-[0.75rem] !px-[0.85rem] !py-[0.4rem]">+ Reponer stock</a>
+                <a href="#" onclick="abrirModalMovimiento(event)" class="adm-btn adm-btn-warning"
+                    style="font-size:0.75rem;padding:0.4rem 0.85rem">+ Reponer stock</a>
             </div>
             <?php if (!$productos_bajo): ?>
-                <div class="adm-alert adm-alert-success !text-center m-0">✓ No hay productos con stock
+                <div class="adm-alert adm-alert-success" style="text-align:center;margin:0">✓ No hay productos con stock
                     bajo</div>
             <?php else: ?>
                 <div class="adm-table-wrap">
@@ -141,7 +142,8 @@ include '_layout.php';
                                     <td><?= htmlspecialchars($p['categoria']) ?></td>
                                     <td><?= htmlspecialchars($p['marca']) ?></td>
                                     <td>
-                                        <button type="button" onclick="abrirModalEditarProducto(<?= $p['id'] ?>, event)" class="adm-btn adm-btn-warning !text-[0.72rem] !px-[0.75rem] !py-[0.35rem]">Editar</button>
+                                        <button type="button" onclick="abrirModalEditarProducto(<?= $p['id'] ?>, event)" class="adm-btn adm-btn-warning"
+                                            style="font-size:0.72rem;padding:0.35rem 0.75rem">Editar</button>
                                     </td>
                                 </tr>
                             <?php endforeach; ?>
@@ -157,34 +159,34 @@ include '_layout.php';
                 <span class="adm-card-title-text">Resumen Contable del Mes</span>
                 <a href="reporte_contable.php" class="adm-btn adm-btn-blue">Ver reporte completo</a>
             </div>
-            <div class="adm-kpi-grid !mb-0">
+            <div class="adm-kpi-grid" style="margin-bottom:0">
                 <div class="adm-kpi green">
                     <div class="adm-kpi-label">Compras del Mes</div>
-                    <div class="adm-kpi-value !text-2xl">
+                    <div class="adm-kpi-value" style="font-size:1.5rem">
                         $<?= number_format($compras_mes ?? 0, 0, ',', '.') ?></div>
                     <div class="adm-kpi-sub">Entradas de inventario</div>
                 </div>
                 <div class="adm-kpi blue">
                     <div class="adm-kpi-label">IVA Pagado</div>
-                    <div class="adm-kpi-value !text-2xl">
+                    <div class="adm-kpi-value" style="font-size:1.5rem">
                         $<?= number_format($iva_pagado ?? 0, 0, ',', '.') ?></div>
                     <div class="adm-kpi-sub">IVA en compras del mes</div>
                 </div>
                 <div class="adm-kpi yellow">
                     <div class="adm-kpi-label">Valor Inventario</div>
-                    <div class="adm-kpi-value !text-2xl">
+                    <div class="adm-kpi-value" style="font-size:1.5rem">
                         $<?= number_format($valor_inventario ?? 0, 0, ',', '.') ?></div>
                     <div class="adm-kpi-sub">Precio promedio de compra</div>
                 </div>
             </div>
-            <div class="mt-4 text-[0.75rem] text-[#444] leading-relaxed">
-                <p>• <strong class="text-[#666]">Reporte General:</strong> Todos los movimientos de inventario con
+            <div style="margin-top:1rem;font-size:0.75rem;color:#444;line-height:1.7">
+                <p>• <strong style="color:#666">Reporte General:</strong> Todos los movimientos de inventario con
                     información contable</p>
-                <p>• <strong class="text-[#666]">Reporte de Compras:</strong> Solo entradas con datos de proveedores,
+                <p>• <strong style="color:#666">Reporte de Compras:</strong> Solo entradas con datos de proveedores,
                     facturas e impuestos</p>
-                <p>• <strong class="text-[#666]">Inventario Valorizado:</strong> Stock actual valorizado al precio
+                <p>• <strong style="color:#666">Inventario Valorizado:</strong> Stock actual valorizado al precio
                     promedio de compra</p>
-                <p>• <strong class="text-[#666]">Exportación Excel:</strong> Reportes profesionales para contabilidad y
+                <p>• <strong style="color:#666">Exportación Excel:</strong> Reportes profesionales para contabilidad y
                     auditoría</p>
             </div>
         </div>

@@ -122,11 +122,11 @@ include 'includes/header.php';
                 </div>
 
                 <div class="contact-card !p-0 overflow-hidden h-full min-h-[250px] relative">
-                    <div id="mapcn-container" class="w-full h-full min-h-[300px]"></div>
+                    <div id="mapcn-container" style="width: 100%; height: 100%; min-height: 300px;"></div>
                     <!-- Branding badge estilo MapCN -->
-                    <div class="absolute top-3 left-3 z-10 bg-black/70 backdrop-blur-sm border border-red-600/30 rounded-md px-2.5 py-1 flex items-center gap-1.5 pointer-events-none">
+                    <div style="position: absolute; top: 12px; left: 12px; z-index: 10; background: rgba(0,0,0,0.7); backdrop-filter: blur(8px); border: 1px solid rgba(255,0,0,0.3); border-radius: 6px; padding: 4px 10px; display: flex; align-items: center; gap: 6px; pointer-events: none;">
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ff0000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-                        <span class="text-gray-300 text-[11px] font-semibold tracking-wider">MapCN</span>
+                        <span style="color: #ccc; font-size: 11px; font-weight: 600; letter-spacing: 0.5px;">MapCN</span>
                     </div>
                 </div>
 
@@ -425,10 +425,10 @@ include 'includes/header.php';
                 closeOnClick: false,
                 className: 'mapcn-popup'
             }).setHTML(`
-                <div class="p-2 py-1">
-                    <h4 class="m-0 mb-1.5 text-sm font-bold text-white">CompuTécnicos</h4>
-                    <p class="m-0 mb-1 text-[12px] text-gray-400">📍 Paseo Bolívar Cra 17 #45-20, Cartagena</p>
-                    <p class="m-0 text-[12px] text-gray-400">🕐 Lun - Vie, 9am - 6pm</p>
+                <div style="padding: 8px 4px;">
+                    <h4 style="margin: 0 0 6px; font-size: 14px; font-weight: 700; color: #fff;">CompuTécnicos</h4>
+                    <p style="margin: 0 0 4px; font-size: 12px; color: #aaa;">📍 Paseo Bolívar Cra 17 #45-20, Cartagena</p>
+                    <p style="margin: 0; font-size: 12px; color: #aaa;">🕐 Lun - Vie, 9am - 6pm</p>
                 </div>
             `);
 

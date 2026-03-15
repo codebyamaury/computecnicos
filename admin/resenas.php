@@ -87,95 +87,95 @@ include '_layout.php';
 <div class="admin-content-inner">
 
     <!-- Stats Cards -->
-    <div class="adm-kpi-grid !grid-cols-[repeat(auto-fit,minmax(180px,1fr))] !mb-6">
-        <div class="adm-card !p-5">
-            <div class="flex items-center gap-3">
-                <div class="w-[42px] h-[42px] bg-yellow-400/10 border border-yellow-400/20 rounded-[10px] flex items-center justify-center">
-                    <i data-lucide="star" class="w-5 h-5 text-[#facc15]"></i>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1rem;margin-bottom:1.5rem">
+        <div class="adm-card" style="padding:1.25rem">
+            <div style="display:flex;align-items:center;gap:0.75rem">
+                <div style="width:42px;height:42px;background:rgba(250,204,21,0.1);border:1px solid rgba(250,204,21,0.2);border-radius:10px;display:flex;align-items:center;justify-content:center">
+                    <i data-lucide="star" style="width:20px;height:20px;color:#facc15"></i>
                 </div>
                 <div>
-                    <div class="text-[1.75rem] font-extrabold text-white"><?= $totalResenas ?></div>
-                    <div class="text-[0.75rem] text-[#666]">Reseñas totales</div>
+                    <div style="font-size:1.75rem;font-weight:800;color:#fff"><?= $totalResenas ?></div>
+                    <div style="font-size:0.75rem;color:#666">Reseñas totales</div>
                 </div>
             </div>
         </div>
-        <div class="adm-card !p-5">
-            <div class="flex items-center gap-3">
-                <div class="w-[42px] h-[42px] bg-green-400/10 border border-green-400/20 rounded-[10px] flex items-center justify-center">
-                    <i data-lucide="trending-up" class="w-5 h-5 text-[#4ade80]"></i>
+        <div class="adm-card" style="padding:1.25rem">
+            <div style="display:flex;align-items:center;gap:0.75rem">
+                <div style="width:42px;height:42px;background:rgba(74,222,128,0.1);border:1px solid rgba(74,222,128,0.2);border-radius:10px;display:flex;align-items:center;justify-content:center">
+                    <i data-lucide="trending-up" style="width:20px;height:20px;color:#4ade80"></i>
                 </div>
                 <div>
-                    <div class="text-[1.75rem] font-extrabold text-white"><?= $promedioGlobal ?> <span class="text-[0.9rem] text-[#facc15]">★</span></div>
-                    <div class="text-[0.75rem] text-[#666]">Promedio global</div>
+                    <div style="font-size:1.75rem;font-weight:800;color:#fff"><?= $promedioGlobal ?> <span style="font-size:0.9rem;color:#facc15">★</span></div>
+                    <div style="font-size:0.75rem;color:#666">Promedio global</div>
                 </div>
             </div>
         </div>
-        <div class="adm-card !p-5">
-            <div class="flex items-center gap-3">
-                <div class="w-[42px] h-[42px] bg-red-400/10 border border-red-400/20 rounded-[10px] flex items-center justify-center">
-                    <i data-lucide="thumbs-up" class="w-5 h-5 text-[#ff6666]"></i>
+        <div class="adm-card" style="padding:1.25rem">
+            <div style="display:flex;align-items:center;gap:0.75rem">
+                <div style="width:42px;height:42px;background:rgba(255,0,0,0.1);border:1px solid rgba(255,0,0,0.2);border-radius:10px;display:flex;align-items:center;justify-content:center">
+                    <i data-lucide="thumbs-up" style="width:20px;height:20px;color:#ff6666"></i>
                 </div>
                 <div>
-                    <div class="text-[1.75rem] font-extrabold text-white"><?= $distribucion[5] + $distribucion[4] ?></div>
-                    <div class="text-[0.75rem] text-[#666]">Positivas (4-5★)</div>
+                    <div style="font-size:1.75rem;font-weight:800;color:#fff"><?= $distribucion[5] + $distribucion[4] ?></div>
+                    <div style="font-size:0.75rem;color:#666">Positivas (4-5★)</div>
                 </div>
             </div>
         </div>
-        <div class="adm-card !p-5">
-            <div class="flex items-center gap-3">
-                <div class="w-[42px] h-[42px] bg-red-500/10 border border-red-500/20 rounded-[10px] flex items-center justify-center">
-                    <i data-lucide="thumbs-down" class="w-5 h-5 text-[#ef4444]"></i>
+        <div class="adm-card" style="padding:1.25rem">
+            <div style="display:flex;align-items:center;gap:0.75rem">
+                <div style="width:42px;height:42px;background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.2);border-radius:10px;display:flex;align-items:center;justify-content:center">
+                    <i data-lucide="thumbs-down" style="width:20px;height:20px;color:#ef4444"></i>
                 </div>
                 <div>
-                    <div class="text-[1.75rem] font-extrabold text-white"><?= $distribucion[1] + $distribucion[2] ?></div>
-                    <div class="text-[0.75rem] text-[#666]">Negativas (1-2★)</div>
+                    <div style="font-size:1.75rem;font-weight:800;color:#fff"><?= $distribucion[1] + $distribucion[2] ?></div>
+                    <div style="font-size:0.75rem;color:#666">Negativas (1-2★)</div>
                 </div>
             </div>
         </div>
     </div>
 
     <!-- Filtros -->
-    <div class="adm-card !p-[1rem_1.25rem] !mb-6">
-        <form method="get" class="flex flex-wrap items-center gap-3">
-            <i data-lucide="filter" class="w-4 h-4 text-[#666]"></i>
-            <select name="producto" class="adm-select !w-auto !min-w-[180px] !p-[0.4rem_0.75rem] !text-[0.82rem]">
+    <div class="adm-card" style="padding:1rem 1.25rem;margin-bottom:1.5rem">
+        <form method="get" style="display:flex;flex-wrap:wrap;align-items:center;gap:0.75rem">
+            <i data-lucide="filter" style="width:16px;height:16px;color:#666"></i>
+            <select name="producto" class="adm-select" style="width:auto;min-width:180px;padding:0.4rem 0.75rem;font-size:0.82rem">
                 <option value="0">Todos los productos</option>
                 <?php foreach ($productosLista as $p): ?>
                     <option value="<?= $p['id'] ?>" <?= $filtroProducto == $p['id'] ? 'selected' : '' ?>><?= htmlspecialchars($p['nombre']) ?></option>
                 <?php endforeach; ?>
             </select>
-            <select name="estrellas" class="adm-select !w-auto !min-w-[120px] !p-[0.4rem_0.75rem] !text-[0.82rem]">
+            <select name="estrellas" class="adm-select" style="width:auto;min-width:120px;padding:0.4rem 0.75rem;font-size:0.82rem">
                 <option value="0">Todas las ★</option>
                 <?php for ($i = 5; $i >= 1; $i--): ?>
                     <option value="<?= $i ?>" <?= $filtroEstrellas == $i ? 'selected' : '' ?>><?= $i ?> estrella<?= $i > 1 ? 's' : '' ?></option>
                 <?php endfor; ?>
             </select>
-            <button type="submit" class="adm-btn adm-btn-primary !text-[0.78rem] !p-[0.4rem_1rem]">Filtrar</button>
+            <button type="submit" class="adm-btn adm-btn-primary" style="font-size:0.78rem;padding:0.4rem 1rem">Filtrar</button>
             <?php if ($filtroProducto || $filtroEstrellas): ?>
-                <a href="resenas.php" class="adm-btn !text-[0.78rem] !p-[0.4rem_1rem]">Limpiar</a>
+                <a href="resenas.php" class="adm-btn" style="font-size:0.78rem;padding:0.4rem 1rem">Limpiar</a>
             <?php endif; ?>
-            <div class="ml-auto flex items-center gap-2">
-                <input type="text" id="search-resenas" placeholder="Buscar..." class="adm-input !w-[180px] !p-[0.4rem_0.75rem] !text-[0.82rem]">
+            <div style="margin-left:auto;display:flex;align-items:center;gap:0.5rem">
+                <input type="text" id="search-resenas" placeholder="Buscar..." class="adm-input" style="width:180px;padding:0.4rem 0.75rem;font-size:0.82rem">
             </div>
         </form>
     </div>
 
     <!-- Tabla de Reseñas -->
-    <div class="adm-card !p-0 overflow-hidden">
-        <div class="adm-card-header">
-            <div class="adm-card-title !mb-0">
+    <div class="adm-card" style="padding:0;overflow:hidden">
+        <div style="padding:1.25rem 1.5rem;border-bottom:1px solid rgba(255,255,255,0.04)">
+            <div class="adm-card-title" style="margin-bottom:0">
                 <span class="adm-card-title-text">Listado de Reseñas</span>
                 <span class="adm-badge adm-badge-gray"><?= count($resenas) ?> resultado<?= count($resenas) !== 1 ? 's' : '' ?></span>
             </div>
         </div>
 
         <?php if (empty($resenas)): ?>
-            <div class="p-12 text-center text-[#555]">
-                <i data-lucide="message-circle" class="w-12 h-12 text-[#333] mb-4 mx-auto"></i>
-                <p class="text-[0.95rem] text-[#888]">No hay reseñas <?= ($filtroProducto || $filtroEstrellas) ? 'con estos filtros' : 'aún' ?>.</p>
+            <div style="padding:3rem;text-align:center;color:#555">
+                <i data-lucide="message-circle" style="width:48px;height:48px;color:#333;margin-bottom:1rem"></i>
+                <p style="font-size:0.95rem;color:#888">No hay reseñas <?= ($filtroProducto || $filtroEstrellas) ? 'con estos filtros' : 'aún' ?>.</p>
             </div>
         <?php else: ?>
-            <div class="adm-table-wrap !border-none !rounded-none">
+            <div class="adm-table-wrap" style="border:none;border-radius:0">
                 <table class="adm-table" id="tabla-resenas">
                     <thead>
                         <tr>
@@ -192,62 +192,62 @@ include '_layout.php';
                     <?php foreach ($resenas as $r): ?>
                         <tr>
                             <td>
-                                <div class="flex items-center gap-[0.6rem] min-w-[140px]">
+                                <div style="display:flex;align-items:center;gap:0.6rem;min-width:140px">
                                     <?php if (!empty($r['producto_imagen'])): ?>
                                         <img src="<?= htmlspecialchars($r['producto_imagen']) ?>" 
-                                             class="w-9 h-9 rounded-md object-contain bg-white border border-[#222] flex-shrink-0">
+                                             style="width:36px;height:36px;border-radius:6px;object-fit:contain;background:#fff;border:1px solid #222;flex-shrink:0">
                                     <?php endif; ?>
                                     <a href="../producto.php?id=<?= $r['id_producto'] ?>" target="_blank" 
-                                       class="text-white no-underline font-semibold text-[0.82rem] leading-tight line-clamp-2">
+                                       style="color:#fff;text-decoration:none;font-weight:600;font-size:0.82rem;line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">
                                         <?= htmlspecialchars($r['producto_nombre'] ?? 'Producto #' . $r['id_producto']) ?>
                                     </a>
                                 </div>
                             </td>
                             <td>
                                 <div>
-                                    <div class="font-semibold text-[0.82rem] text-white"><?= htmlspecialchars($r['usuario_nombre'] ?? 'Usuario') ?></div>
-                                    <div class="text-[0.72rem] text-[#555]"><?= htmlspecialchars($r['usuario_email'] ?? '') ?></div>
+                                    <div style="font-weight:600;font-size:0.82rem;color:#fff"><?= htmlspecialchars($r['usuario_nombre'] ?? 'Usuario') ?></div>
+                                    <div style="font-size:0.72rem;color:#555"><?= htmlspecialchars($r['usuario_email'] ?? '') ?></div>
                                 </div>
                             </td>
                             <td>
-                                <div class="flex items-center gap-[0.3rem]">
+                                <div style="display:flex;align-items:center;gap:0.3rem">
                                     <?php for ($i = 1; $i <= 5; $i++): ?>
-                                        <span class="text-[0.9rem] <?= $i <= $r['calificacion'] ? 'text-[#facc15]' : 'text-[#333]' ?>">★</span>
+                                        <span style="color:<?= $i <= $r['calificacion'] ? '#facc15' : '#333' ?>;font-size:0.9rem">★</span>
                                     <?php endfor; ?>
                                 </div>
                             </td>
-                            <td class="max-w-[280px]">
+                            <td style="max-width:280px">
                                 <?php if (!empty($r['titulo'])): ?>
-                                    <div class="font-bold text-[0.82rem] text-white mb-[0.2rem]"><?= htmlspecialchars($r['titulo']) ?></div>
+                                    <div style="font-weight:700;font-size:0.82rem;color:#fff;margin-bottom:0.2rem"><?= htmlspecialchars($r['titulo']) ?></div>
                                 <?php endif; ?>
-                                <div class="text-[0.78rem] text-[#999] line-clamp-3 leading-relaxed">
+                                <div style="font-size:0.78rem;color:#999;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;line-height:1.5">
                                     <?= htmlspecialchars($r['comentario'] ?? '') ?>
                                 </div>
                             </td>
                             <td>
                                 <?php if (!empty($r['imagenes'])): ?>
-                                    <div class="flex gap-1">
+                                    <div style="display:flex;gap:4px">
                                         <?php foreach ($r['imagenes'] as $img): ?>
                                             <img src="<?= base_url() . '/' . htmlspecialchars($img['url_imagen']) ?>" 
-                                                 class="w-9 h-9 rounded object-cover border border-[#333] cursor-pointer"
+                                                 style="width:36px;height:36px;border-radius:4px;object-fit:cover;border:1px solid #333;cursor:pointer"
                                                  onclick="window.open(this.src,'_blank')">
                                         <?php endforeach; ?>
                                     </div>
                                 <?php else: ?>
-                                    <span class="text-[#444] text-[0.75rem]">—</span>
+                                    <span style="color:#444;font-size:0.75rem">—</span>
                                 <?php endif; ?>
                             </td>
-                            <td class="text-[#555] text-[0.75rem] whitespace-nowrap">
+                            <td style="color:#555;font-size:0.75rem;white-space:nowrap">
                                 <?= date('d/m/Y', strtotime($r['fecha'])) ?><br>
-                                <span class="text-[#444]"><?= date('H:i', strtotime($r['fecha'])) ?></span>
+                                <span style="color:#444"><?= date('H:i', strtotime($r['fecha'])) ?></span>
                             </td>
                             <td>
-                                <div class="adm-flex-actions">
+                                <div style="display:flex;gap:6px;flex-wrap:wrap">
                                     <a href="../producto.php?id=<?= $r['id_producto'] ?>#reviews-section" target="_blank"
-                                       class="adm-btn adm-btn-blue !text-[0.72rem] !p-[0.3rem_0.7rem]">
+                                       class="adm-btn adm-btn-blue" style="font-size:0.72rem;padding:0.3rem 0.7rem">
                                         Ver
                                     </a>
-                                    <button type="button" class="adm-btn adm-btn-danger !text-[0.72rem] !p-[0.3rem_0.7rem]"
+                                    <button type="button" class="adm-btn adm-btn-danger" style="font-size:0.72rem;padding:0.3rem 0.7rem"
                                        onclick="confirmarEliminar('?eliminar=<?= $r['id'] ?>', '<?= htmlspecialchars(mb_substr($r['comentario'] ?? '', 0, 40), ENT_QUOTES) ?>...', 'reseña')">
                                         Eliminar
                                     </button>
@@ -261,7 +261,7 @@ include '_layout.php';
         <?php endif; ?>
     </div>
 
-    <div id="pag-resenas" class="adm-pagination-wrap"></div>
+    <div id="pag-resenas" style="display:flex;align-items:center;justify-content:center;gap:8px;margin-top:1rem;flex-wrap:wrap"></div>
 
 </div>
 </main>

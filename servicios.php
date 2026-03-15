@@ -21,7 +21,7 @@ include __DIR__ . '/includes/header.php';
             <!-- Servicio Técnico -->
             <div class="tech-card p-8 flex flex-col items-center text-center group animate-slide-up">
                 <div class="service-icon mb-6">
-                    <i data-lucide="wrench" class="w-10 h-10"></i>
+                    <i data-lucide="wrench" style="width:40px;height:40px"></i>
                 </div>
                 <h3 class="card-title text-2xl mb-4">Servicio Técnico</h3>
                 <p class="text-gray-400 mb-6">Diagnóstico y reparación de computadoras, laptops y dispositivos móviles.
@@ -42,7 +42,7 @@ include __DIR__ . '/includes/header.php';
             <div class="tech-card p-8 flex flex-col items-center text-center group animate-slide-up delay-100">
                 <div class="service-icon mb-6">
                     <!-- Icono: Computadora / Monitor -->
-                    <i data-lucide="monitor" class="w-10 h-10"></i>
+                    <i data-lucide="monitor" style="width:40px;height:40px"></i>
                 </div>
                 <h3 class="card-title text-2xl mb-4">Compra de Equipos</h3>
                 <p class="text-gray-400 mb-6">Compramos tus equipos usados al mejor precio del mercado. Evaluación
@@ -63,7 +63,7 @@ include __DIR__ . '/includes/header.php';
             <div class="tech-card p-8 flex flex-col items-center text-center group animate-slide-up delay-200">
                 <div class="service-icon mb-6">
                     <!-- Icono: Chat / Asesoría -->
-                    <i data-lucide="message-circle" class="w-10 h-10"></i>
+                    <i data-lucide="message-circle" style="width:40px;height:40px"></i>
                 </div>
                 <h3 class="card-title text-2xl mb-4">Asesoría IT</h3>
 
@@ -152,7 +152,7 @@ include __DIR__ . '/includes/header.php';
             </div>
 
             <!-- FAQ Item 2 -->
-            <div class="tech-card !p-0 animate-slide-up delay-100 !overflow-visible">
+            <div class="tech-card !p-0 animate-slide-up delay-100" style="overflow: visible !important;">
                 <button type="button"
                     class="flex items-center justify-between w-full p-6 text-left text-white font-bold hover:bg-[#1a1a1a] transition-colors relative z-50 cursor-pointer"
                     onclick="toggleServiceFaq('faq-2', this)">
@@ -167,7 +167,7 @@ include __DIR__ . '/includes/header.php';
             </div>
 
             <!-- FAQ Item 3 -->
-            <div class="tech-card !p-0 animate-slide-up delay-200 !overflow-visible">
+            <div class="tech-card !p-0 animate-slide-up delay-200" style="overflow: visible !important;">
                 <button type="button"
                     class="flex items-center justify-between w-full p-6 text-left text-white font-bold hover:bg-[#1a1a1a] transition-colors relative z-50 cursor-pointer"
                     onclick="toggleServiceFaq('faq-3', this)">
@@ -198,10 +198,10 @@ include __DIR__ . '/includes/header.php';
 
         if (content.classList.contains('hidden')) {
             content.classList.remove('hidden');
-            icon.classList.add('rotate-180');
+            icon.style.transform = 'rotate(180deg)';
         } else {
             content.classList.add('hidden');
-            icon.classList.remove('rotate-180');
+            icon.style.transform = 'rotate(0deg)';
         }
     }
 </script>

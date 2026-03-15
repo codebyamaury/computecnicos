@@ -256,17 +256,17 @@ include __DIR__ . '/includes/header.php';
         <?php if (!isset($_SESSION['usuario'])): ?>
             <!-- Requiere iniciar sesión -->
             <div class="cart-empty animate-slide-up delay-100">
-                <div class="cart-empty-icon text-red-500">
-                    <i data-lucide="lock" class="w-12 h-12"></i>
+                <div class="cart-empty-icon" style="color:#ff4444;">
+                    <i data-lucide="lock" style="width:48px;height:48px"></i>
                 </div>
                 <h2 class="cart-empty-title">Inicia sesión para ver tu carrito</h2>
                 <p class="cart-empty-text">Necesitas una cuenta para agregar productos y gestionar tu carrito de compras.</p>
                 <button type="button" onclick="if(typeof abrirModalLogin==='function'){abrirModalLogin();}else{window.location.href='index.php';}" class="cart-empty-btn">
-                    <i data-lucide="user" class="w-5 h-5"></i>
+                    <i data-lucide="user" style="width:20px;height:20px"></i>
                     Iniciar Sesión
                 </button>
-                <a href="productos.php" class="cart-empty-btn bg-transparent border border-white/15 text-gray-400 mt-3">
-                    <i data-lucide="shopping-bag" class="w-5 h-5"></i>
+                <a href="productos.php" class="cart-empty-btn" style="background:transparent;border:1px solid rgba(255,255,255,0.15);color:#ccc;margin-top:0.75rem;">
+                    <i data-lucide="shopping-bag" style="width:20px;height:20px"></i>
                     Explorar Productos
                 </a>
             </div>
@@ -274,12 +274,12 @@ include __DIR__ . '/includes/header.php';
             <!-- Carrito Vacío -->
             <div class="cart-empty animate-slide-up delay-100">
                 <div class="cart-empty-icon">
-                    <i data-lucide="shopping-cart" class="w-12 h-12"></i>
+                    <i data-lucide="shopping-cart" style="width:48px;height:48px"></i>
                 </div>
                 <h2 class="cart-empty-title">Tu carrito está vacío</h2>
                 <p class="cart-empty-text">¡Explora nuestra tienda y agrega productos increíbles a tu carrito!</p>
                 <a href="productos.php" class="cart-empty-btn">
-                    <i data-lucide="shopping-bag" class="w-5 h-5"></i>
+                    <i data-lucide="shopping-bag" style="width:20px;height:20px"></i>
                     Explorar Productos
                 </a>
             </div>
@@ -293,7 +293,7 @@ include __DIR__ . '/includes/header.php';
                 <div class="cart-items-container">
                     <div class="cart-items-header animate-slide-up">
                         <h2 class="cart-items-title">
-                            <i data-lucide="shopping-bag" class="w-5 h-5"></i>
+                            <i data-lucide="shopping-bag" style="width:20px;height:20px"></i>
                             Productos
                             <span class="cart-items-count">(<?php echo count($_SESSION['carrito']); ?> items)</span>
                         </h2>
@@ -371,7 +371,7 @@ include __DIR__ . '/includes/header.php';
                                             <button type="button" class="cart-remove-btn"
                                                 onclick="eliminarDelCarrito(<?php echo intval($item['id_producto']); ?>)"
                                                 title="Eliminar">
-                                                <i data-lucide="trash-2" class="w-[18px] h-[18px]"></i>
+                                                <i data-lucide="trash-2" style="width:18px;height:18px"></i>
                                             </button>
                                         </div>
                                     </div>
@@ -388,7 +388,7 @@ include __DIR__ . '/includes/header.php';
                 <div class="cart-summary-sidebar animate-slide-up delay-200">
                     <div class="cart-summary-card">
                         <div class="cart-summary-header">
-                            <i data-lucide="calculator" class="w-5 h-5"></i>
+                            <i data-lucide="calculator" style="width:20px;height:20px"></i>
                             <h2 class="cart-summary-title">Resumen de Compra</h2>
                         </div>
 
@@ -430,7 +430,7 @@ include __DIR__ . '/includes/header.php';
                                 <div class="cart-combo-discount">
                                     <div class="cart-combo-header">
                                         <span class="cart-combo-label">
-                                            <i data-lucide="tag" class="w-4 h-4"></i>
+                                            <i data-lucide="tag" style="width:16px;height:16px"></i>
                                             Descuento Combo
                                         </span>
                                         <span class="cart-combo-value">-
@@ -442,7 +442,7 @@ include __DIR__ . '/includes/header.php';
 
                             <!-- Garantía de entrega -->
                             <div class="cart-guarantee">
-                                <i data-lucide="shield-check" class="w-5 h-5"></i>
+                                <i data-lucide="shield-check" style="width:20px;height:20px"></i>
                                 <p class="cart-guarantee-text">
                                     Entrega garantizada: si se retrasa, recibes un cupón de
                                     $<?php echo number_format($lateDeliveryCouponCop, 0, ',', '.'); ?>.
@@ -462,17 +462,17 @@ include __DIR__ . '/includes/header.php';
                         <div class="cart-actions">
                             <?php if (isset($_SESSION['usuario'])): ?>
                                 <a href="checkout.php" class="cart-checkout-btn">
-                                    <i data-lucide="arrow-right" class="w-5 h-5"></i>
+                                    <i data-lucide="arrow-right" style="width:20px;height:20px"></i>
                                     Proceder al Pago
                                 </a>
                             <?php else: ?>
                                 <a href="index.php?login=1" class="cart-checkout-btn">
-                                    <i data-lucide="user" class="w-5 h-5"></i>
+                                    <i data-lucide="user" style="width:20px;height:20px"></i>
                                     Iniciar Sesión para Pagar
                                 </a>
                             <?php endif; ?>
                             <button type="button" class="cart-clear-btn" onclick="vaciarCarrito()">
-                                <i data-lucide="trash-2" class="w-[18px] h-[18px]"></i>
+                                <i data-lucide="trash-2" style="width:18px;height:18px"></i>
                                 Vaciar Carrito
                             </button>
                         </div>
@@ -483,7 +483,7 @@ include __DIR__ . '/includes/header.php';
                         <div class="cart-recommendations">
                             <div class="cart-recommendations-card">
                                 <div class="cart-recommendations-header">
-                                    <i data-lucide="zap" class="w-5 h-5"></i>
+                                    <i data-lucide="zap" style="width:20px;height:20px"></i>
                                     <h3 class="cart-recommendations-title">Completa tu compra</h3>
                                 </div>
                                 <div class="cart-recommendations-grid">
@@ -519,7 +519,7 @@ include __DIR__ . '/includes/header.php';
 <div id="cart-modal" class="cart-modal-overlay">
     <div class="cart-modal">
         <div class="cart-modal-header">
-            <i data-lucide="alert-triangle" class="w-6 h-6"></i>
+            <i data-lucide="alert-triangle" style="width:24px;height:24px"></i>
             <h3 class="cart-modal-title">Confirmar acción</h3>
         </div>
         <div class="cart-modal-body">
@@ -533,7 +533,7 @@ include __DIR__ . '/includes/header.php';
 </div>
 
 <!-- Toast notification container -->
-<div id="toast-container" class="fixed top-20 right-4 z-[900] flex flex-col gap-2"></div>
+<div id="toast-container" style="position:fixed;top:80px;right:16px;z-index:900;display:flex;flex-direction:column;gap:8px;"></div>
 
 <script>
     (function () {
@@ -548,38 +548,41 @@ include __DIR__ . '/includes/header.php';
             }
 
             const toast = document.createElement('div');
-            toast.className = 'translate-x-[120%] opacity-0 transition-all duration-300 ease-in-out';
+            toast.style.cssText = 'transform:translateX(120%);opacity:0;transition:all 0.3s ease-in-out;';
 
-            let icon, title, dotColor, barColor;
+            let icon, title, borderColor, dotColor, barColor;
             if (type === 'success') {
                 icon = '✓';
                 title = '¡Listo!';
+                borderColor = '#22c55e';
                 dotColor = '#22c55e';
                 barColor = 'linear-gradient(to right, #22c55e, #16a34a)';
             } else if (type === 'warning') {
                 icon = '⚠';
                 title = 'Atención';
+                borderColor = '#f59e0b';
                 dotColor = '#f59e0b';
                 barColor = 'linear-gradient(to right, #f59e0b, #d97706)';
             } else {
                 icon = '✕';
                 title = 'Error';
+                borderColor = '#ef4444';
                 dotColor = '#ef4444';
                 barColor = 'linear-gradient(to right, #ef4444, #dc2626)';
             }
 
             toast.innerHTML = `
-                <div class="relative max-w-[360px] p-3.5 px-4 rounded-2xl bg-neutral-900/95 text-gray-100 border border-neutral-800 backdrop-blur-xl shadow-[0_20px_60px_rgba(0,0,0,0.5)] overflow-hidden">
-                    <div class="flex items-start gap-2.5">
-                        <div class="shrink-0 w-7 h-7 rounded-full flex items-center justify-center text-[14px] font-bold border-2" style="color:${dotColor};border-color:${dotColor};">${icon}</div>
-                        <div class="flex-1">
-                            <div class="text-[13px] font-semibold tracking-wide" style="color:${dotColor};">${title}</div>
-                            <div class="text-[12px] mt-1 opacity-90 leading-snug">${message}</div>
+                <div style="position:relative;max-width:360px;padding:14px 16px;border-radius:16px;background:rgba(20,20,20,0.95);color:#f3f4f6;border:1px solid #333;backdrop-filter:blur(12px);box-shadow:0 20px 60px rgba(0,0,0,0.5);overflow:hidden;">
+                    <div style="display:flex;align-items:flex-start;gap:10px;">
+                        <div style="flex-shrink:0;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:bold;color:${dotColor};border:2px solid ${dotColor};">${icon}</div>
+                        <div style="flex:1;">
+                            <div style="font-size:13px;font-weight:600;letter-spacing:0.5px;color:${dotColor};">${title}</div>
+                            <div style="font-size:12px;margin-top:4px;opacity:0.9;line-height:1.4;">${message}</div>
                         </div>
-                        <button onclick="this.closest('.relative').parentElement.remove()" class="shrink-0 ml-1 text-gray-400 bg-transparent border-none cursor-pointer text-[18px] leading-none">&times;</button>
+                        <button onclick="this.closest('div[style]').parentElement.remove()" style="flex-shrink:0;margin-left:4px;color:#9ca3af;background:none;border:none;cursor:pointer;font-size:18px;line-height:1;">&times;</button>
                     </div>
-                    <div class="absolute inset-x-0 bottom-0 h-0.5 overflow-hidden rounded-b-2xl">
-                        <div class="toast-progress-bar h-full w-full" style="background:${barColor};transition:width ${duration}ms linear;"></div>
+                    <div style="position:absolute;left:0;right:0;bottom:0;height:3px;overflow:hidden;border-radius:0 0 16px 16px;">
+                        <div class="toast-progress-bar" style="height:3px;width:100%;background:${barColor};transition:width ${duration}ms linear;"></div>
                     </div>
                 </div>
             `;
@@ -587,7 +590,8 @@ include __DIR__ . '/includes/header.php';
             toastContainer.appendChild(toast);
 
             setTimeout(() => {
-                toast.classList.remove('translate-x-[120%]', 'opacity-0');
+                toast.style.transform = 'translateX(0)';
+                toast.style.opacity = '1';
             }, 50);
 
             const bar = toast.querySelector('.toast-progress-bar');
@@ -596,7 +600,8 @@ include __DIR__ . '/includes/header.php';
             }
 
             setTimeout(() => {
-                toast.classList.add('translate-x-[120%]', 'opacity-0');
+                toast.style.transform = 'translateX(120%)';
+                toast.style.opacity = '0';
                 setTimeout(() => { if (toast.parentNode) toast.remove(); }, 300);
             }, duration);
         }

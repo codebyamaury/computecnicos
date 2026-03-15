@@ -192,7 +192,7 @@ include 'includes/header.php';
 
 
             <!-- Carrito -->
-            <div id="cart-form-wrapper" class="<?= $stockEfectivo <= 0 ? 'hidden' : '' ?>">
+            <div id="cart-form-wrapper" style="<?php echo $stockEfectivo <= 0 ? 'display:none' : ''; ?>">
                 <!-- Quantity selector -->
                 <div class="prod-cart-form">
                     <span class="prod-qty-label">Cantidad:</span>
@@ -279,7 +279,7 @@ include 'includes/header.php';
                         Agregar Combo (-10%)
                     </button>
                 </div>
-                <div id="combo-msg" class="prod-combo-msg"></div>
+                <div id="combo-msg" style="text-align:center;font-size:0.85rem;margin-bottom:1.5rem"></div>
 
                 <div class="prod-combo-grid">
                     <?php foreach ($compatibles as $c): ?>
@@ -296,7 +296,7 @@ include 'includes/header.php';
                                 <span
                                     class="prod-combo-card-price">$<?php echo number_format($c['precio'], 0, ',', '.'); ?></span>
                             </div>
-                            <form method="POST" action="agregar_carrito.php" class="flex items-center">
+                            <form method="POST" action="agregar_carrito.php" style="display:flex;align-items:center">
                                 <input type="hidden" name="id_producto" value="<?php echo intval($c['id']); ?>">
                                 <input type="hidden" name="cantidad" value="1">
                                 <button type="submit" class="prod-combo-card-btn">+</button>
@@ -320,7 +320,7 @@ include 'includes/header.php';
         </div>
 
         <!-- Formulario de Reseña (solo si puede reseñar) -->
-        <div id="review-form-container" class="hidden">
+        <div id="review-form-container" style="display:none;">
             <div class="review-form-card">
                 <h3><i data-lucide="edit-3" class="w-5 h-5"></i> Escribe tu reseña</h3>
                 <p class="review-form-subtitle">Comparte tu experiencia con este producto</p>
@@ -356,7 +356,7 @@ include 'includes/header.php';
                         <div class="review-upload-area" id="upload-area">
                             <input type="file" name="imagenes[]" id="review-images" 
                                    accept="image/jpeg,image/png,image/webp" multiple 
-                                   class="hidden" max="3">
+                                   style="display:none" max="3">
                             <div class="upload-placeholder" id="upload-placeholder">
                                 <i data-lucide="camera" class="w-8 h-8"></i>
                                 <span>Haz clic o arrastra imágenes aquí</span>
@@ -371,21 +371,21 @@ include 'includes/header.php';
                         <i data-lucide="send" class="w-5 h-5"></i>
                         Publicar Reseña
                     </button>
-                    <div id="review-form-msg" class="review-form-msg"></div>
+                    <div id="review-form-msg" style="margin-top:0.75rem;text-align:center;font-size:0.85rem"></div>
                 </form>
             </div>
         </div>
 
         <!-- Mensaje si ya reseñó -->
-        <div id="review-already" class="hidden">
+        <div id="review-already" style="display:none;">
             <div class="review-already-card">
-                <i data-lucide="check-circle" class="w-6 h-6 text-green-400"></i>
+                <i data-lucide="check-circle" class="w-6 h-6" style="color:#4ade80"></i>
                 <span>Ya dejaste tu reseña para este producto. ¡Gracias!</span>
             </div>
         </div>
 
         <!-- Placeholder para no compradores (sin mensaje visible) -->
-        <div id="review-not-buyer" class="hidden"></div>
+        <div id="review-not-buyer" style="display:none;"></div>
 
         <!-- Lista de reseñas -->
         <div class="prod-reviews-grid" id="reviews-list">
@@ -393,8 +393,8 @@ include 'includes/header.php';
         </div>
 
         <!-- Sin reseñas -->
-        <div class="prod-no-reviews" id="no-reviews" class="hidden">
-            <div class="icon"><i data-lucide="message-circle" class="w-12 h-12 text-[#333]"></i></div>
+        <div class="prod-no-reviews" id="no-reviews" style="display:none">
+            <div class="icon"><i data-lucide="message-circle" class="w-12 h-12" style="color:#333"></i></div>
             <h3>Sin reseñas aún</h3>
             <p>Sé el primero en opinar sobre este producto.</p>
         </div>
@@ -649,7 +649,7 @@ include 'includes/header.php';
             currentIndex = index;
             lightboxImg.src = galeria[currentIndex];
             lightboxCounter.textContent = `${currentIndex + 1} / ${galeria.length}`;
-            document.body.classList.add('overflow-hidden');
+            document.body.style.overflow = 'hidden';
             lightbox.classList.add('open');
             updateLightboxThumbs();
         }
@@ -657,7 +657,7 @@ include 'includes/header.php';
         function closeLightbox() {
             if (!lightbox) return;
             lightbox.classList.remove('open');
-            document.body.classList.remove('overflow-hidden');
+            document.body.style.overflow = '';
         }
 
         function navigateLightbox(dir) {
@@ -801,10 +801,10 @@ document.addEventListener('DOMContentLoaded', function() {
     function renderStats(stats) {
         const el = document.getElementById('reviews-stats');
         if (!el || stats.total === 0) {
-            if (el) el.classList.add('hidden');
+            if (el) el.style.display = 'none';
             return;
         }
-        el.classList.remove('hidden');
+        el.style.display = '';
         
         const labels = ['Excelente', 'Muy bueno', 'Bueno', 'Regular', 'Malo'];
         let barsHtml = '';
@@ -844,10 +844,10 @@ document.addEventListener('DOMContentLoaded', function() {
         
         if (!resenas || resenas.length === 0) {
             listEl.innerHTML = '';
-            noReviews.classList.remove('hidden');
+            noReviews.style.display = '';
             return;
         }
-        noReviews.classList.add('hidden');
+        noReviews.style.display = 'none';
         
         let html = '';
         resenas.forEach(r => {
@@ -912,16 +912,16 @@ document.addEventListener('DOMContentLoaded', function() {
         const notBuyerEl = document.getElementById('review-not-buyer');
         
         if (!IS_LOGGED_IN) {
-            notBuyerEl.classList.remove('hidden');
+            notBuyerEl.style.display = '';
             return;
         }
         
         if (data.ya_reseno) {
-            alreadyEl.classList.remove('hidden');
+            alreadyEl.style.display = '';
         } else if (data.puede_resenar) {
-            formContainer.classList.remove('hidden');
+            formContainer.style.display = '';
         } else {
-            notBuyerEl.classList.remove('hidden');
+            notBuyerEl.style.display = '';
         }
     }
     
@@ -964,7 +964,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     s.classList.toggle('selected', i < val);
                 });
                 starsLabel.textContent = starLabels[val];
-                starsLabel.className = 'stars-label ' + (val >= 4 ? 'text-green-400' : val >= 3 ? 'text-yellow-400' : 'text-red-400');
+                starsLabel.style.color = val >= 4 ? '#4ade80' : val >= 3 ? '#facc15' : '#f87171';
             });
         });
         
@@ -1036,10 +1036,10 @@ document.addEventListener('DOMContentLoaded', function() {
         previewsEl.innerHTML = '';
         
         if (selectedFiles.length === 0) {
-            placeholder.classList.remove('hidden');
+            placeholder.style.display = '';
             return;
         }
-        placeholder.classList.add('hidden');
+        placeholder.style.display = 'none';
         
         selectedFiles.forEach((file, idx) => {
             const reader = new FileReader();
@@ -1079,12 +1079,12 @@ document.addEventListener('DOMContentLoaded', function() {
             // Validar calificación
             if (parseInt(calInput.value) < 1) {
                 msgEl.textContent = 'Por favor selecciona una calificación (1-5 estrellas)';
-                msgEl.className = 'review-form-msg text-red-400';
+                msgEl.style.color = '#f87171';
                 return;
             }
             
             submitBtn.disabled = true;
-            submitBtn.innerHTML = '<div class="spinner w-[18px] h-[18px] border-2 border-transparent border-t-current rounded-full animate-spin"></div> Enviando...';
+            submitBtn.innerHTML = '<div class="spinner" style="width:18px;height:18px;border:2px solid transparent;border-top-color:currentColor;border-radius:50%;animation:spin 0.8s linear infinite"></div> Enviando...';
             msgEl.textContent = '';
             
             const fd = new FormData(reviewForm);
@@ -1102,20 +1102,20 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 if (data.ok) {
                     msgEl.textContent = data.msg || '¡Reseña publicada!';
-                    msgEl.className = 'review-form-msg text-green-400';
+                    msgEl.style.color = '#4ade80';
                     // Recargar reseñas
                     setTimeout(() => {
-                        document.getElementById('review-form-container').classList.add('hidden');
-                        document.getElementById('review-already').classList.remove('hidden');
+                        document.getElementById('review-form-container').style.display = 'none';
+                        document.getElementById('review-already').style.display = '';
                         loadReviews();
                     }, 1000);
                 } else {
                     msgEl.textContent = data.msg || 'Error al publicar la reseña.';
-                    msgEl.className = 'review-form-msg text-red-400';
+                    msgEl.style.color = '#f87171';
                 }
             } catch(err) {
                 msgEl.textContent = 'Error de conexión. Intenta de nuevo.';
-                msgEl.className = 'review-form-msg text-red-400';
+                msgEl.style.color = '#f87171';
             } finally {
                 submitBtn.disabled = false;
                 submitBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg> Publicar Reseña';
@@ -1137,14 +1137,10 @@ document.addEventListener('DOMContentLoaded', function() {
 // ── Lightbox para imágenes de reseñas ──
 function openReviewImage(src) {
     const overlay = document.createElement('div');
-    overlay.className = 'fixed inset-0 z-[99999] bg-black/90 flex items-center justify-center cursor-pointer backdrop-blur-sm';
-    overlay.innerHTML = `<img src="${src}" class="max-w-[90vw] max-h-[85vh] object-contain rounded-lg shadow-2xl">
-        <button class="absolute top-5 right-5 w-12 h-12 rounded-full bg-white/10 border border-white/20 text-white text-2xl cursor-pointer flex items-center justify-center hover:bg-white/20 transition-colors">×</button>`;
-    overlay.addEventListener('click', () => {
-        overlay.remove();
-        document.body.classList.remove('overflow-hidden');
-    });
-    document.body.classList.add('overflow-hidden');
+    overlay.style.cssText = 'position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,0.92);display:flex;align-items:center;justify-content:center;cursor:pointer;backdrop-filter:blur(8px)';
+    overlay.innerHTML = `<img src="${src}" style="max-width:90vw;max-height:85vh;object-fit:contain;border-radius:0.5rem;box-shadow:0 0 40px rgba(0,0,0,0.5)">
+        <button style="position:absolute;top:20px;right:20px;width:48px;height:48px;border-radius:50%;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:#fff;font-size:1.5rem;cursor:pointer;display:flex;align-items:center;justify-content:center">×</button>`;
+    overlay.addEventListener('click', () => overlay.remove());
     document.body.appendChild(overlay);
 }
 </script>

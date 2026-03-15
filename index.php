@@ -52,7 +52,7 @@ include __DIR__ . '/includes/header.php';
             <div class="cat-pro-bg"></div>
             <div class="cat-pro-content">
                 <div class="cat-pro-icon">
-                    <i data-lucide="laptop" class="w-10 h-10"></i>
+                    <i data-lucide="laptop" style="width:40px;height:40px"></i>
                 </div>
                 <div class="cat-pro-info">
                     <h3>Laptops</h3>
@@ -68,7 +68,7 @@ include __DIR__ . '/includes/header.php';
             <div class="cat-pro-bg"></div>
             <div class="cat-pro-content">
                 <div class="cat-pro-icon">
-                    <i data-lucide="monitor" class="w-10 h-10"></i>
+                    <i data-lucide="monitor" style="width:40px;height:40px"></i>
                 </div>
                 <div class="cat-pro-info">
                     <h3>Computadoras</h3>
@@ -84,7 +84,7 @@ include __DIR__ . '/includes/header.php';
             <div class="cat-pro-bg"></div>
             <div class="cat-pro-content">
                 <div class="cat-pro-icon">
-                    <i data-lucide="cpu" class="w-10 h-10"></i>
+                    <i data-lucide="cpu" style="width:40px;height:40px"></i>
                 </div>
                 <div class="cat-pro-info">
                     <h3>Componentes</h3>
@@ -100,7 +100,7 @@ include __DIR__ . '/includes/header.php';
             <div class="cat-pro-bg"></div>
             <div class="cat-pro-content">
                 <div class="cat-pro-icon">
-                    <i data-lucide="headphones" class="w-10 h-10"></i>
+                    <i data-lucide="headphones" style="width:40px;height:40px"></i>
                 </div>
                 <div class="cat-pro-info">
                     <h3>Accesorios</h3>
@@ -117,9 +117,9 @@ include __DIR__ . '/includes/header.php';
     <h2 class="section-title">Productos Destacados</h2>
 
     <?php if (empty($productos_destacados)): ?>
-        <div class="text-center text-gray-400 mt-12">No hay productos destacados disponibles.</div>
+        <div class="text-center text-gray-400" style="margin-top:3rem">No hay productos destacados disponibles.</div>
     <?php else: ?>
-    <div class="carousel-destacados-wrap relative mt-12">
+    <div class="carousel-destacados-wrap" style="position:relative;margin-top:3rem">
         <div class="carousel-destacados" id="carousel-destacados">
             <?php foreach ($productos_destacados as $p):
                 $esNuevo = !empty($p['nuevo_hasta']) && strtotime($p['nuevo_hasta']) >= strtotime('today');

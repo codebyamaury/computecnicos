@@ -49,7 +49,7 @@ include '_layout.php';
 ?>
 
 <main class="admin-content">
-<div class="admin-content-inner !max-w-[860px]">
+<div class="admin-content-inner" style="max-width:860px">
 
     <?php if ($mensaje): ?>
     <div class="adm-alert adm-alert-<?= $mensaje_tipo === 'success' ? 'success' : 'error' ?>">
@@ -62,18 +62,18 @@ include '_layout.php';
         <div class="adm-card-title"><span class="adm-card-title-text">Nueva Categoría</span></div>
         <form method="post">
             <div class="adm-form-row">
-                <div class="adm-form-group !mb-0">
+                <div class="adm-form-group" style="margin-bottom:0">
                     <label class="adm-label">Nombre *</label>
                     <input type="text" name="nombre" class="adm-input" required placeholder="Ej: Laptops">
                 </div>
-                <div class="adm-form-group !mb-0">
+                <div class="adm-form-group" style="margin-bottom:0">
                     <label class="adm-label">Descripción</label>
                     <input type="text" name="descripcion" class="adm-input" placeholder="Descripción opcional">
                 </div>
             </div>
-            <div class="mt-4 text-right">
+            <div style="margin-top:1rem;text-align:right">
                 <button type="submit" name="nueva_categoria" class="adm-btn adm-btn-primary">
-                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" class="adm-btn-icon"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
                     Agregar Categoría
                 </button>
             </div>
@@ -81,31 +81,31 @@ include '_layout.php';
     </div>
 
     <!-- Tabla -->
-    <div class="adm-card !p-0 overflow-hidden">
-        <div class="adm-card-header">
-            <div class="adm-card-title !mb-0"><span class="adm-card-title-text">Categorías Registradas</span>
+    <div class="adm-card" style="padding:0;overflow:hidden">
+        <div style="padding:1.25rem 1.5rem;border-bottom:1px solid rgba(255,255,255,0.04)">
+            <div class="adm-card-title" style="margin-bottom:0"><span class="adm-card-title-text">Categorías Registradas</span>
                 <span class="adm-badge adm-badge-gray"><?= count($categorias) ?> total</span>
             </div>
         </div>
-        <div class="adm-table-wrap !border-none !rounded-none">
+        <div class="adm-table-wrap" style="border:none;border-radius:0">
             <table class="adm-table" id="tabla-categorias">
                 <thead><tr><th>#</th><th>Nombre</th><th>Descripción</th><th>Acciones</th></tr></thead>
                 <tbody>
                 <?php if (empty($categorias)): ?>
-                <tr><td colspan="4" class="text-center py-8 text-[#555]">No hay categorías registradas</td></tr>
+                <tr><td colspan="4" style="text-align:center;padding:2rem;color:#555">No hay categorías registradas</td></tr>
                 <?php else: ?>
                 <?php foreach ($categorias as $i => $cat): ?>
                 <tr>
-                    <td class="text-[#555] text-[0.72rem]"><?= $i+1 ?></td>
+                    <td style="color:#555;font-size:0.72rem"><?= $i+1 ?></td>
                     <td><strong><?= htmlspecialchars($cat['nombre']) ?></strong></td>
                     <td><?= htmlspecialchars($cat['descripcion'] ?: '—') ?></td>
                     <td>
-                        <div class="adm-flex-actions">
-                            <button class="adm-btn adm-btn-warning btn-editar-categoria !text-[0.72rem] !px-[0.7rem] !py-[0.3rem]"
+                        <div style="display:flex;gap:6px;flex-wrap:wrap">
+                            <button class="adm-btn adm-btn-warning btn-editar-categoria" style="font-size:0.72rem;padding:0.3rem 0.7rem"
                                 data-categoria='<?= json_encode(["id"=>$cat["id"],"nombre"=>$cat["nombre"],"descripcion"=>$cat["descripcion"]]) ?>'>
                                 Editar
                             </button>
-                            <button type="button" class="adm-btn adm-btn-danger !text-[0.72rem] !px-[0.7rem] !py-[0.3rem]"
+                            <button type="button" class="adm-btn adm-btn-danger" style="font-size:0.72rem;padding:0.3rem 0.7rem"
                                onclick="confirmarEliminar('?eliminar=<?= $cat['id'] ?>', '<?= htmlspecialchars($cat['nombre'], ENT_QUOTES) ?>', 'categoría')">
                                 Eliminar
                             </button>
@@ -119,7 +119,7 @@ include '_layout.php';
         </div>
     </div>
 
-    <div id="pag-categorias" class="adm-pagination-wrap"></div>
+    <div id="pag-categorias" style="display:flex;align-items:center;justify-content:center;gap:8px;margin-top:1rem;flex-wrap:wrap"></div>
 
 </div>
 </main>
@@ -130,7 +130,7 @@ include '_layout.php';
     <div class="adm-modal-box">
         <button class="adm-modal-close" onclick="cerrarModal()">&times;</button>
         <div class="adm-modal-title">Editar Categoría</div>
-        <form id="form-editar-categoria" method="post" class="flex flex-col gap-4">
+        <form id="form-editar-categoria" method="post" style="display:flex;flex-direction:column;gap:1rem">
             <input type="hidden" name="id" id="edit-id">
             <div>
                 <label class="adm-label">Nombre *</label>
@@ -140,9 +140,9 @@ include '_layout.php';
                 <label class="adm-label">Descripción</label>
                 <textarea name="descripcion" id="edit-descripcion" rows="3" class="adm-textarea"></textarea>
             </div>
-            <button type="submit" class="adm-btn adm-btn-primary w-full justify-center">Guardar cambios</button>
+            <button type="submit" class="adm-btn adm-btn-primary" style="width:100%;justify-content:center">Guardar cambios</button>
         </form>
-        <div id="modal-editar-msg" class="hidden mt-3 text-center text-[#ef4444] text-[0.8rem]"></div>
+        <div id="modal-editar-msg" style="display:none;margin-top:0.75rem;text-align:center;color:#ef4444;font-size:0.8rem"></div>
     </div>
 </div>
 
@@ -154,7 +154,7 @@ function abrirModal(cat) {
     document.getElementById('edit-id').value = cat.id;
     document.getElementById('edit-nombre').value = cat.nombre;
     document.getElementById('edit-descripcion').value = cat.descripcion || '';
-    document.getElementById('modal-editar-msg').classList.add('hidden');
+    document.getElementById('modal-editar-msg').style.display = 'none';
     document.body.style.overflow = 'hidden';
 }
 function cerrarModal() {
@@ -177,7 +177,7 @@ document.getElementById('form-editar-categoria').addEventListener('submit', asyn
     } else {
         const msg = document.getElementById('modal-editar-msg');
         msg.textContent = 'Error al editar. Revisa los datos.';
-        msg.classList.remove('hidden');
+        msg.style.display = 'block';
     }
 });
 </script>

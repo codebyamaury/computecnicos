@@ -94,7 +94,7 @@ $page_title       = 'Pedidos | Computécnicos';
 $admin_page       = 'pedidos';
 $admin_title      = 'Pedidos';
 $admin_breadcrumb = [['label' => 'Pedidos']];
-$admin_header_extra = '<button id="btn-nuevo-pedido" class="adm-btn adm-btn-success"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" class="w-3.5 h-3.5"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg> Nuevo pedido</button>';
+$admin_header_extra = '<button id="btn-nuevo-pedido" class="adm-btn adm-btn-success"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width:14px;height:14px"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg> Nuevo pedido</button>';
 
 include '_layout.php';
 ?>
@@ -114,14 +114,15 @@ include '_layout.php';
             $active = ($estado_filtro === $estado);
         ?>
         <a href="pedidos.php<?= $estado === 'todos' ? '' : ('?estado='.$estado) ?>"
-           class="adm-btn <?= $active ? 'adm-btn-primary' : 'bg-white/5 text-[#aaa] border border-white/10' ?>">
+           class="adm-btn <?= $active ? 'adm-btn-primary' : '' ?>"
+           style="<?= !$active ? '--btn-bg:rgba(255,255,255,0.04);--btn-color:#aaa;--btn-border:1px solid rgba(255,255,255,0.07)' : '' ?>">
             <?= $label ?>
         </a>
         <?php endforeach; ?>
     </div>
 
     <?php if (!$pedidos): ?>
-    <div class="adm-card text-center text-[#555] py-12">No hay pedidos registrados.</div>
+    <div class="adm-card" style="text-align:center;color:#555;padding:3rem">No hay pedidos registrados.</div>
     <?php else: ?>
     <div id="lista-pedidos" class="flex flex-col gap-[1.25rem]">
         <?php foreach ($pedidos as $pedido): ?>
@@ -147,8 +148,8 @@ include '_layout.php';
 
             <!-- Items del pedido -->
             <?php if (!empty($detalles[$pedido['id']])): ?>
-            <div class="adm-table-wrap !mb-[0.875rem]">
-                <table class="adm-table !text-[0.78rem]">
+            <div class="adm-table-wrap" style="margin-bottom:0.875rem">
+                <table class="adm-table" style="font-size:0.78rem">
                     <thead>
                         <tr><th>Producto</th><th>Cant.</th><th>Precio Unit.</th><th>Dcto.</th><th>IVA</th><th>Subtotal</th></tr>
                     </thead>
@@ -161,9 +162,9 @@ include '_layout.php';
                     ?>
                     <tr>
                         <td>
-                            <div class="flex items-center gap-2">
+                            <div style="display:flex;align-items:center;gap:8px">
                                 <?php if (!empty($det['imagen'])): ?>
-                                <img src="<?= htmlspecialchars($det['imagen']) ?>" alt="" class="w-9 h-7 object-cover rounded opacity-85">
+                                <img src="<?= htmlspecialchars($det['imagen']) ?>" alt="" style="width:36px;height:28px;object-fit:cover;border-radius:4px;opacity:.85">
                                 <?php endif; ?>
                                 <?= htmlspecialchars($det['nombre']) ?>
                             </div>
@@ -172,7 +173,7 @@ include '_layout.php';
                         <td>$<?= number_format($det['precio_unitario'], 0, ',', '.') ?></td>
                         <td><?= isset($det['descuento']) ? $det['descuento'] : 0 ?>%</td>
                         <td>$<?= number_format($iva, 0, ',', '.') ?></td>
-                        <td class="font-semibold">$<?= number_format($neto, 0, ',', '.') ?></td>
+                        <td style="font-weight:600">$<?= number_format($neto, 0, ',', '.') ?></td>
                     </tr>
                     <?php endforeach; ?>
                     </tbody>
@@ -187,7 +188,7 @@ include '_layout.php';
                     <input type="hidden" name="id_pedido" value="<?= $pedido['id'] ?>">
                     <label class="adm-pedido-status-label">Estado:</label>
                     <input type="hidden" name="cambiar_estado" value="1">
-                    <select name="nuevo_estado" class="adm-select w-auto py-[0.3rem] px-[0.65rem] !text-[0.78rem]" onchange="this.form.submit()">
+                    <select name="nuevo_estado" class="adm-select" style="width:auto;padding:0.3rem 0.65rem;font-size:0.78rem" onchange="this.form.submit()">
                         <?php foreach (['pendiente'=>'Pendiente','pagado'=>'Pagado','preparacion'=>'En preparación','enviado'=>'Enviado','entregado'=>'Entregado','cancelado'=>'Cancelado'] as $v=>$t): ?>
                         <option value="<?= $v ?>" <?= $pedido['estado']==$v ? 'selected':'' ?>><?= $t ?></option>
                         <?php endforeach; ?>
@@ -197,11 +198,12 @@ include '_layout.php';
                 <!-- Factura PDF -->
                 <?php if (in_array($pedido['estado'], ['pagado', 'preparacion', 'enviado', 'entregado'])): ?>
                     <a href="<?= base_url() ?>/factura_pdf.php?id=<?= $pedido['id'] ?>&download=1" target="_blank"
-                       class="adm-btn bg-white/5 !text-[0.75rem] py-[0.3rem] px-[0.75rem]">
+                       class="adm-btn" style="background:rgba(255,255,255,0.05);font-size:0.75rem;padding:0.3rem 0.75rem">
                        📄 PDF
                     </a>
                 <?php else: ?>
-                    <button type="button" class="adm-btn bg-white/5 !text-[0.75rem] py-[0.3rem] px-[0.75rem] opacity-60 cursor-not-allowed" 
+                    <button type="button" class="adm-btn" 
+                            style="background:rgba(255,255,255,0.02);font-size:0.75rem;padding:0.3rem 0.75rem;opacity:0.6;cursor:not-allowed;"
                             onclick="admToast('La factura estará disponible una vez se confirme el pago.', 'error', 4500, 'Factura no disponible')">
                        📄 PDF
                     </button>
@@ -210,7 +212,8 @@ include '_layout.php';
 
                 <!-- Editar pedido -->
                 <button type="button"
-                    class="adm-btn adm-btn-warning !text-[0.75rem] py-[0.3rem] px-[0.75rem] btn-editar-pedido"
+                    class="adm-btn adm-btn-warning btn-editar-pedido"
+                    style="font-size:0.75rem;padding:0.3rem 0.75rem"
                     data-pedido='<?= htmlspecialchars(json_encode([
                         "id"            => $pedido["id"],
                         "id_usuario"    => $pedido["id_usuario"],
@@ -222,14 +225,15 @@ include '_layout.php';
                     Editar
                 </button>
 
-                <button type="button" class="adm-btn adm-btn-danger !text-[0.75rem] py-[0.3rem] px-[0.75rem]"
+                <button type="button" class="adm-btn adm-btn-danger"
+                   style="font-size:0.75rem;padding:0.3rem 0.75rem"
                    onclick="abrirConfirmEliminar(<?= $pedido['id'] ?>)">Eliminar</button>
             </div>
         </div>
         <?php endforeach; ?>
     </div>
     <?php endif; ?>
-    <div id="pag-pedidos" class="flex items-center justify-center gap-2 mt-4 flex-wrap"></div>
+    <div id="pag-pedidos" style="display:flex;align-items:center;justify-content:center;gap:8px;margin-top:1rem;flex-wrap:wrap"></div>
 
 </div>
 </main>
@@ -237,17 +241,17 @@ include '_layout.php';
 <!-- Modal Confirmar Eliminación -->
 <div id="modal-del-bg" class="adm-modal-overlay"></div>
 <div id="modal-del" class="adm-modal hidden">
-    <div class="adm-modal-box !max-w-[380px] text-center">
-        <div class="w-14 h-14 bg-[#ef4444]/15 border-2 border-[#ef4444]/30 rounded-full flex items-center justify-center mx-auto mb-[1.1rem]">
-            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-[26px] h-[26px] stroke-[#ef4444]">
+    <div class="adm-modal-box" style="max-width:380px;text-align:center">
+        <div style="width:56px;height:56px;background:rgba(239,68,68,.12);border:2px solid rgba(239,68,68,.3);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 1.1rem">
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:26px;height:26px;stroke:#ef4444">
                 <path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
             </svg>
         </div>
-        <div class="adm-modal-title !mb-2 !text-[1.15rem]">¿Eliminar pedido?</div>
-        <p id="modal-del-msg" class="text-[#888] text-[0.82rem] leading-relaxed mb-[1.4rem]">Esta acción no se puede deshacer.</p>
-        <div class="flex gap-[10px]">
-            <button type="button" onclick="cerrarConfirmEliminar()" class="adm-btn flex-1 justify-center">Cancelar</button>
-            <a id="modal-del-href" href="#" class="adm-btn adm-btn-danger flex-1 justify-center">Sí, eliminar</a>
+        <div class="adm-modal-title" style="margin-bottom:.4rem;font-size:1.15rem">¿Eliminar pedido?</div>
+        <p id="modal-del-msg" style="color:#888;font-size:.82rem;line-height:1.5;margin-bottom:1.4rem">Esta acción no se puede deshacer.</p>
+        <div style="display:flex;gap:10px">
+            <button type="button" onclick="cerrarConfirmEliminar()" class="adm-btn" style="flex:1;justify-content:center">Cancelar</button>
+            <a id="modal-del-href" href="#" class="adm-btn adm-btn-danger" style="flex:1;justify-content:center">Sí, eliminar</a>
         </div>
     </div>
 </div>
@@ -255,13 +259,13 @@ include '_layout.php';
 <!-- Modal Editar Pedido -->
 <div id="modal-editar-bg" class="adm-modal-overlay"></div>
 <div id="modal-editar-pedido" class="adm-modal hidden">
-    <div class="adm-modal-box !max-w-[700px]">
+    <div class="adm-modal-box" style="max-width:700px">
         <button class="adm-modal-close" onclick="cerrarEditar()">&times;</button>
         <div class="adm-modal-title">Editar Pedido</div>
-        <form id="form-editar-pedido" class="flex flex-col gap-4">
+        <form id="form-editar-pedido" style="display:flex;flex-direction:column;gap:1rem">
             <input type="hidden" name="id" id="edit-id">
-            <div class="adm-form-row !mb-0">
-                <div class="flex-[2]">
+            <div class="adm-form-row" style="margin-bottom:0">
+                <div style="flex:2">
                     <label class="adm-label">Cliente *</label>
                     <select name="id_usuario" id="edit-id-usuario" class="adm-select" required>
                         <option value="">Selecciona un cliente</option>
@@ -270,12 +274,12 @@ include '_layout.php';
                         <?php endforeach; ?>
                     </select>
                 </div>
-                <div class="flex-[2]">
+                <div style="flex:2">
                     <label class="adm-label">Dirección de envío *</label>
                     <input type="text" name="direccion_envio" id="edit-direccion-envio" class="adm-input" required>
                 </div>
             </div>
-            <div class="adm-form-row !mb-0">
+            <div class="adm-form-row" style="margin-bottom:0">
                 <div>
                     <label class="adm-label">Estado</label>
                     <select name="estado" id="edit-estado" class="adm-select">
@@ -297,8 +301,8 @@ include '_layout.php';
             <!-- Agregar productos -->
             <div>
                 <label class="adm-label">Productos</label>
-                <div class="flex gap-2 mb-2">
-                    <select id="edit-producto-sel" class="adm-select flex-1">
+                <div style="display:flex;gap:8px;margin-bottom:0.5rem">
+                    <select id="edit-producto-sel" class="adm-select" style="flex:1">
                         <option value="">Selecciona producto</option>
                         <?php foreach ($pdo->query('SELECT id, nombre, precio, stock FROM productos ORDER BY nombre') as $p): ?>
                         <option value="<?= $p['id'] ?>" data-precio="<?= $p['precio'] ?>" data-stock="<?= $p['stock'] ?>"><?= htmlspecialchars($p['nombre']) ?> (Stock: <?= $p['stock'] ?>)</option>
@@ -307,30 +311,30 @@ include '_layout.php';
                     <button type="button" onclick="agregarProductoEditar()" class="adm-btn adm-btn-blue">+ Ítem</button>
                 </div>
                 <div class="adm-table-wrap">
-                    <table class="adm-table !text-[0.78rem]">
+                    <table class="adm-table" style="font-size:0.78rem">
                         <thead><tr><th>Producto</th><th>Und</th><th>Cant.</th><th>Precio</th><th></th></tr></thead>
                         <tbody id="edit-productos-tabla"></tbody>
                     </table>
                 </div>
             </div>
-            <div class="flex justify-end gap-[10px] mt-2">
+            <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:0.5rem">
                 <button type="button" onclick="cerrarEditar()" class="adm-btn">Cancelar</button>
                 <button type="submit" class="adm-btn adm-btn-warning">Guardar cambios</button>
             </div>
         </form>
-        <div id="modal-editar-msg" class="hidden mt-2 text-center text-[#ef4444] text-[0.8rem]"></div>
+        <div id="modal-editar-msg" style="display:none;margin-top:0.5rem;text-align:center;color:#ef4444;font-size:0.8rem"></div>
     </div>
 </div>
 
 <!-- Modal Nuevo Pedido -->
 <div id="modal-nuevo-bg" class="adm-modal-overlay"></div>
 <div id="modal-nuevo-pedido" class="adm-modal hidden">
-    <div class="adm-modal-box !max-w-[700px]">
+    <div class="adm-modal-box" style="max-width:700px">
         <button class="adm-modal-close" onclick="cerrarNuevo()">&times;</button>
         <div class="adm-modal-title">Nuevo Pedido</div>
-        <form id="form-nuevo-pedido" class="flex flex-col gap-4">
-            <div class="adm-form-row !mb-0">
-                <div class="flex-[2]">
+        <form id="form-nuevo-pedido" style="display:flex;flex-direction:column;gap:1rem">
+            <div class="adm-form-row" style="margin-bottom:0">
+                <div style="flex:2">
                     <label class="adm-label">Cliente *</label>
                     <select name="id_usuario" id="nuevo-id-usuario" class="adm-select" required>
                         <option value="">Selecciona un cliente</option>
@@ -339,7 +343,7 @@ include '_layout.php';
                         <?php endforeach; ?>
                     </select>
                 </div>
-                <div class="flex-[2]">
+                <div style="flex:2">
                     <label class="adm-label">Dirección de envío *</label>
                     <input type="text" name="direccion_envio" id="nuevo-direccion-envio" class="adm-input" required>
                 </div>
@@ -347,9 +351,9 @@ include '_layout.php';
             <!-- Items -->
             <div>
                 <label class="adm-label">Items</label>
-                <div class="flex gap-2 mb-2">
-                    <input type="text" id="nuevo-producto-search" placeholder="Buscar..." class="adm-input flex-1" autocomplete="off">
-                    <select id="nuevo-producto-sel" class="adm-select flex-[2]">
+                <div style="display:flex;gap:8px;margin-bottom:0.5rem">
+                    <input type="text" id="nuevo-producto-search" placeholder="Buscar..." class="adm-input" style="flex:1" autocomplete="off">
+                    <select id="nuevo-producto-sel" class="adm-select" style="flex:2">
                         <option value="">Selecciona producto</option>
                         <?php foreach ($pdo->query('SELECT id, nombre, precio, stock FROM productos ORDER BY nombre') as $p): ?>
                         <option value="<?= $p['id'] ?>" data-precio="<?= $p['precio'] ?>" data-stock="<?= $p['stock'] ?>"><?= htmlspecialchars($p['nombre']) ?> (Stock: <?= $p['stock'] ?>)</option>
@@ -358,33 +362,33 @@ include '_layout.php';
                     <button type="button" onclick="agregarProductoNuevo()" class="adm-btn adm-btn-blue">+ Ítem</button>
                 </div>
                 <div class="adm-table-wrap">
-                    <table class="adm-table !text-[0.78rem]">
+                    <table class="adm-table" style="font-size:0.78rem">
                         <thead><tr><th>Producto</th><th>Und</th><th>Cant.</th><th>Precio</th><th>Dcto%</th><th>Stock</th><th></th></tr></thead>
                         <tbody id="nuevo-productos-tabla"></tbody>
                     </table>
                 </div>
             </div>
             <!-- Totales -->
-            <div class="adm-form-row !gap-2 !mb-0">
-                <div><label class="adm-label">Subtotal</label><input type="text" id="nuevo-subtotal" readonly class="adm-input cursor-default opacity-60"></div>
-                <div><label class="adm-label">Descuentos</label><input type="text" id="nuevo-descuentos" readonly class="adm-input cursor-default opacity-60"></div>
-                <div><label class="adm-label">IVA (19%)</label><input type="text" id="nuevo-iva" readonly class="adm-input cursor-default opacity-60"></div>
-                <div><label class="adm-label">Total Neto</label><input type="text" id="nuevo-total" readonly class="adm-input cursor-default font-bold"></div>
+            <div class="adm-form-row" style="gap:8px;margin-bottom:0">
+                <div><label class="adm-label">Subtotal</label><input type="text" id="nuevo-subtotal" readonly class="adm-input" style="cursor:default;opacity:.6"></div>
+                <div><label class="adm-label">Descuentos</label><input type="text" id="nuevo-descuentos" readonly class="adm-input" style="cursor:default;opacity:.6"></div>
+                <div><label class="adm-label">IVA (19%)</label><input type="text" id="nuevo-iva" readonly class="adm-input" style="cursor:default;opacity:.6"></div>
+                <div><label class="adm-label">Total Neto</label><input type="text" id="nuevo-total" readonly class="adm-input" style="cursor:default;font-weight:700"></div>
             </div>
             <!-- Método de pago -->
             <div>
                 <label class="adm-label">Método de Pago *</label>
-                <div class="flex gap-6 mt-1">
-                    <label class="flex items-center gap-1.5 text-[0.85rem] cursor-pointer"><input type="radio" name="metodo_pago" value="efectivo" class="accent-[#ef4444]"> Efectivo</label>
-                    <label class="flex items-center gap-1.5 text-[0.85rem] cursor-pointer"><input type="radio" name="metodo_pago" value="datfono" class="accent-[#ef4444]"> Datáfono</label>
+                <div style="display:flex;gap:1.5rem;margin-top:0.25rem">
+                    <label style="display:flex;align-items:center;gap:6px;font-size:0.85rem;cursor:pointer"><input type="radio" name="metodo_pago" value="efectivo" style="accent-color:#ef4444"> Efectivo</label>
+                    <label style="display:flex;align-items:center;gap:6px;font-size:0.85rem;cursor:pointer"><input type="radio" name="metodo_pago" value="datfono" style="accent-color:#ef4444"> Datáfono</label>
                 </div>
             </div>
-            <div class="flex justify-end gap-[10px] mt-2">
+            <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:0.5rem">
                 <button type="button" onclick="cerrarNuevo()" class="adm-btn">Cancelar</button>
                 <button type="submit" class="adm-btn adm-btn-primary">Guardar Factura</button>
             </div>
         </form>
-        <div id="modal-nuevo-msg" class="hidden mt-2 text-center text-[#ef4444] text-[0.8rem]"></div>
+        <div id="modal-nuevo-msg" style="display:none;margin-top:0.5rem;text-align:center;color:#ef4444;font-size:0.8rem"></div>
     </div>
 </div>
 
@@ -406,9 +410,9 @@ function abrirEditar(pedido) {
         var row = document.createElement('tr');
         row.innerHTML = `<td><input type="hidden" name="productos[]" value="${d.id_producto}">${d.nombre}</td>
             <td>Und</td>
-            <td><input type="number" name="cantidades[]" min="1" value="${d.cantidad}" class="adm-input w-[60px] !p-1"></td>
-            <td><input type="number" name="precios[]" min="0" step="0.01" value="${d.precio_unitario}" class="adm-input w-[90px] !p-1"></td>
-            <td><button type="button" onclick="this.closest('tr').remove()" class="adm-btn adm-btn-danger !text-[0.7rem] !p-1 px-2">✕</button></td>`;
+            <td><input type="number" name="cantidades[]" min="1" value="${d.cantidad}" class="adm-input" style="width:60px;padding:0.25rem 0.4rem"></td>
+            <td><input type="number" name="precios[]" min="0" step="0.01" value="${d.precio_unitario}" class="adm-input" style="width:90px;padding:0.25rem 0.4rem"></td>
+            <td><button type="button" onclick="this.closest('tr').remove()" class="adm-btn adm-btn-danger" style="font-size:0.7rem;padding:0.2rem 0.5rem">✕</button></td>`;
         tbody.appendChild(row);
     });
     document.body.style.overflow = 'hidden';
@@ -452,9 +456,9 @@ function agregarProductoEditar() {
     var row  = document.createElement('tr');
     row.innerHTML = `<td><input type="hidden" name="productos[]" value="${sel.value}">${opt.text.split(' (Stock')[0]}</td>
         <td>Und</td>
-        <td><input type="number" name="cantidades[]" min="1" value="1" class="adm-input w-[60px] !p-1"></td>
-        <td><input type="number" name="precios[]" min="0" step="0.01" value="${opt.getAttribute('data-precio')}" class="adm-input w-[90px] !p-1"></td>
-        <td><button type="button" onclick="this.closest('tr').remove()" class="adm-btn adm-btn-danger !text-[0.7rem] !p-1 px-2">✕</button></td>`;
+        <td><input type="number" name="cantidades[]" min="1" value="1" class="adm-input" style="width:60px;padding:0.25rem 0.4rem"></td>
+        <td><input type="number" name="precios[]" min="0" step="0.01" value="${opt.getAttribute('data-precio')}" class="adm-input" style="width:90px;padding:0.25rem 0.4rem"></td>
+        <td><button type="button" onclick="this.closest('tr').remove()" class="adm-btn adm-btn-danger" style="font-size:0.7rem;padding:0.2rem 0.5rem">✕</button></td>`;
     document.getElementById('edit-productos-tabla').appendChild(row);
 }
 function agregarProductoNuevo() {
@@ -465,11 +469,11 @@ function agregarProductoNuevo() {
     var row   = document.createElement('tr');
     row.innerHTML = `<td><input type="hidden" name="productos[]" value="${sel.value}">${opt.text.split(' (Stock')[0]}</td>
         <td>Und</td>
-        <td><input type="number" name="cantidades[]" min="1" value="1" class="adm-input w-[60px] !p-1" onchange="calcularTotalesNuevo()"></td>
-        <td><input type="number" name="precios[]" min="0" step="0.01" value="${opt.getAttribute('data-precio')}" class="adm-input w-[90px] !p-1" onchange="calcularTotalesNuevo()"></td>
-        <td><input type="number" name="descuentos[]" min="0" max="100" value="0" class="adm-input w-[55px] !p-1" onchange="calcularTotalesNuevo()"></td>
-        <td class="stock-cell ${stock <= 2 ? 'text-[#ef4444] font-bold' : ''}">${stock}</td>
-        <td><button type="button" onclick="this.closest('tr').remove(); calcularTotalesNuevo();" class="adm-btn adm-btn-danger !text-[0.7rem] !p-1 px-2">✕</button></td>`;
+        <td><input type="number" name="cantidades[]" min="1" value="1" class="adm-input" style="width:60px;padding:0.25rem 0.4rem" onchange="calcularTotalesNuevo()"></td>
+        <td><input type="number" name="precios[]" min="0" step="0.01" value="${opt.getAttribute('data-precio')}" class="adm-input" style="width:90px;padding:0.25rem 0.4rem" onchange="calcularTotalesNuevo()"></td>
+        <td><input type="number" name="descuentos[]" min="0" max="100" value="0" class="adm-input" style="width:55px;padding:0.25rem 0.4rem" onchange="calcularTotalesNuevo()"></td>
+        <td class="stock-cell" style="${stock <= 2 ? 'color:#ef4444;font-weight:700' : ''}">${stock}</td>
+        <td><button type="button" onclick="this.closest('tr').remove(); calcularTotalesNuevo();" class="adm-btn adm-btn-danger" style="font-size:0.7rem;padding:0.2rem 0.5rem">✕</button></td>`;
     document.getElementById('nuevo-productos-tabla').appendChild(row);
     calcularTotalesNuevo();
 }
@@ -507,7 +511,7 @@ document.getElementById('form-nuevo-pedido').addEventListener('submit', async fu
     if (text.includes('Location: pedidos.php') || text.includes('registrado')) { window.location.href = window.location.pathname + '?exito=1'; }
     else {
         var m = document.getElementById('modal-nuevo-msg');
-        m.textContent = 'Error al registrar pedido. Revisa los datos.'; m.classList.remove('hidden');
+        m.textContent = 'Error al registrar pedido. Revisa los datos.'; m.style.display='block';
     }
 });
 /* Submit editar */
@@ -519,7 +523,7 @@ document.getElementById('form-editar-pedido').addEventListener('submit', async f
     if (text.includes('Location: pedidos.php') || text.includes('actualizado')) { window.location.href = window.location.pathname + '?editado=1'; }
     else {
         var m = document.getElementById('modal-editar-msg');
-        m.textContent = 'Error al editar pedido.'; m.classList.remove('hidden');
+        m.textContent = 'Error al editar pedido.'; m.style.display='block';
     }
 });
 /* Overlay click */

@@ -122,7 +122,7 @@ include __DIR__ . '/includes/header.php';
             <div class="search-hero-container animate-slide-up delay-200">
                 <form method="GET" action="productos.php" class="search-hero-form">
                     <div class="search-input-wrapper">
-                        <i data-lucide="search" class="search-icon w-5 h-5"></i>
+                        <i data-lucide="search" class="search-icon" style="width:20px;height:20px"></i>
                         <input type="text" name="busqueda" placeholder="Buscar productos..." 
                                value="<?php echo htmlspecialchars($filtro_busqueda); ?>" 
                                class="search-hero-input"
@@ -148,7 +148,7 @@ include __DIR__ . '/includes/header.php';
                         <i data-lucide="sliders-horizontal" class="w-5 h-5"></i>
                         Filtros
                     </h3>
-                    <div class="flex items-center gap-2">
+                    <div style="display:flex;align-items:center;gap:0.5rem;">
                         <a href="productos.php" class="clear-filters-btn">Limpiar</a>
                         <button type="button" id="mobile-filter-close" class="mobile-filter-close-btn" aria-label="Cerrar filtros">
                             <i data-lucide="x" class="w-5 h-5"></i>
@@ -318,7 +318,7 @@ include __DIR__ . '/includes/header.php';
 
                     <!-- Paginación -->
                     <?php if ($total_paginas > 1): ?>
-                    <div class="pagination-container animate-slide-up mt-12">
+                    <div class="pagination-container animate-slide-up" style="margin-top: 3rem;">
                         <div class="tech-pagination">
                             <?php 
                             // Construir URL base para los links preservando filtros
@@ -395,12 +395,8 @@ document.addEventListener('DOMContentLoaded', function() {
             const category = (card.querySelector('.product-category')?.textContent || '').toLowerCase();
             const brand    = (card.querySelector('.product-brand')?.textContent    || '').toLowerCase();
             const match = !q || name.includes(q) || category.includes(q) || brand.includes(q);
-            if (match) {
-                card.classList.remove('hidden');
-                visible++;
-            } else {
-                card.classList.add('hidden');
-            }
+            card.style.display = match ? '' : 'none';
+            if (match) visible++;
         });
         if (countNumber) countNumber.textContent = visible;
         if (productsGrid) {
@@ -413,12 +409,12 @@ document.addEventListener('DOMContentLoaded', function() {
                     noResultsMsg.innerHTML = '<div class="no-products-icon"><svg class="w-16 h-16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg></div><h3>No se encontraron productos</h3><p>Intenta con otro término de búsqueda.</p>';
                     productsGrid.parentNode.insertBefore(noResultsMsg, productsGrid.nextSibling);
                 }
-                noResultsMsg.classList.remove('hidden');
-                productsGrid.classList.add('hidden');
+                noResultsMsg.style.display = '';
+                productsGrid.style.display = 'none';
             } else {
                 const noResultsMsg = document.getElementById('realtime-no-results');
-                if (noResultsMsg) noResultsMsg.classList.add('hidden');
-                productsGrid.classList.remove('hidden');
+                if (noResultsMsg) noResultsMsg.style.display = 'none';
+                productsGrid.style.display = '';
             }
         }
     }
@@ -466,23 +462,24 @@ document.addEventListener('DOMContentLoaded', function() {
         if (!bd) {
             bd = document.createElement('div');
             bd.id = 'filter-backdrop';
+            bd.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;width:100vw;height:100vh;background:rgba(0,0,0,0.75);z-index:9990;cursor:pointer;';
             document.body.appendChild(bd);
-            bd.addEventListener('click', function (e) {
+            bd.addEventListener('click', function(e) {
                 e.preventDefault();
                 e.stopPropagation();
                 cerrarFiltros();
             });
+        } else {
+            bd.style.display = 'block';
         }
-        bd.classList.add('show');
 
         // 3. Mover sidebar a document.body (escapa de todo stacking context)
         document.body.appendChild(sidebar);
 
-        // 4. Aplicar clase para estilos de sidebar móvil
-        sidebar.classList.add('filters-sidebar-active');
+        // 4. Forzar estilos inline (ignorar cualquier CSS de padre)
+        sidebar.style.cssText = 'position:fixed !important;top:0 !important;left:0 !important;width:300px;max-width:85vw;height:100vh !important;z-index:9995 !important;overflow-y:auto;background:rgba(14,14,14,0.98);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-right:1px solid rgba(255,0,0,0.15);transition:none;';
 
-        document.body.classList.add('overflow-hidden');
-        document.body.style.overflow = 'hidden'; // Fallback por si acaso, pero prefiero clase
+        document.body.style.overflow = 'hidden';
 
         // 5. Re-renderizar iconos de Lucide dentro del sidebar
         if (typeof lucide !== 'undefined') {
@@ -503,14 +500,13 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
 
-        // 2. Resetear estilos retirando la clase móvil
-        sidebar.classList.remove('filters-sidebar-active');
+        // 2. Resetear estilos inline (volver al CSS normal del archivo)
+        sidebar.style.cssText = '';
 
         // 3. Ocultar backdrop
         var bd = document.getElementById('filter-backdrop');
-        if (bd) bd.classList.remove('show');
+        if (bd) bd.style.display = 'none';
 
-        document.body.classList.remove('overflow-hidden');
         document.body.style.overflow = '';
     }
 

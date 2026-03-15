@@ -60,7 +60,7 @@ $labels = [
                 <h2 class="pedidos-empty-title">No tienes pedidos aún</h2>
                 <p class="pedidos-empty-text">Cuando realices tu primera compra, aparecerá aquí.</p>
                 <a href="productos.php" class="pedidos-empty-btn">
-                    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" class="w-4.5 h-4.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 100 4 2 2 0 000-4z"/></svg>
+                    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="width:18px;height:18px"><path stroke-linecap="round" stroke-linejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 100 4 2 2 0 000-4z"/></svg>
                     Explorar productos
                 </a>
             </div>
@@ -182,7 +182,7 @@ $labels = [
 
                             <div class="status-meta">
                                 <button type="button" class="pill" onclick="toggleDetails('<?= $pedido['id'] ?>')">
-                                    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" class="w-3 h-3 inline align-middle mr-0.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="width:12px;height:12px;display:inline;vertical-align:middle;margin-right:2px"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                                     Ver historial
                                 </button>
                             </div>
@@ -195,12 +195,12 @@ $labels = [
                                         <strong><?= $labels[$h['estado']] ?? ucfirst($h['estado']) ?></strong> —
                                         <?= date('d/m/Y H:i', strtotime($h['fecha'])) ?>
                                         <?php if ($h['comentario']): ?>
-                                            <span class="text-gray-500 ml-1">(<?= htmlspecialchars($h['comentario'] ?? '') ?>)</span>
+                                            <span style="color:#666;margin-left:4px">(<?= htmlspecialchars($h['comentario'] ?? '') ?>)</span>
                                         <?php endif; ?>
                                     </div>
                                     <?php endforeach; ?>
                                 <?php else: ?>
-                                    <div class="text-gray-400">Sin eventos registrados.</div>
+                                    <div style="color:#555">Sin eventos registrados.</div>
                                 <?php endif; ?>
                             </div>
                         </div>
@@ -220,7 +220,7 @@ $labels = [
                         <!-- Cancelado -->
                         <?php if ($pedido['estado'] === 'cancelado'): ?>
                         <div class="order-cancelled-notice">
-                            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" class="w-4.5 h-4.5 shrink-0"><path stroke-linecap="round" stroke-linejoin="round" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"/></svg>
+                            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="width:18px;height:18px;flex-shrink:0"><path stroke-linecap="round" stroke-linejoin="round" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"/></svg>
                             Este pedido fue cancelado.
                         </div>
                         <?php endif; ?>

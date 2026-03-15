@@ -16,7 +16,7 @@ if (isset($_SESSION['usuario']['id']) && isset($pdo)) {
 }
 ?>
 <!DOCTYPE html>
-<html lang="es" class="!bg-[#050505]">
+<html lang="es" style="background-color: #050505 !important;">
 
 <head>
     <meta charset="UTF-8">
@@ -63,7 +63,7 @@ if (isset($_SESSION['usuario']['id']) && isset($pdo)) {
     <script>document.addEventListener('DOMContentLoaded', function(){ AOS.init({ duration: 800, once: true }); });</script>
 </head>
 
-<body class="min-h-screen flex flex-col !bg-[#050505] !text-white">
+<body class="min-h-screen flex flex-col" style="background-color: #050505 !important; color: #ffffff !important;">
     <header class="py-4 px-4 flex justify-between items-center relative z-50">
         <!-- Logo y Menú Hamburger a la izquierda -->
         <div class="flex items-center gap-2">
@@ -182,7 +182,7 @@ if (isset($_SESSION['usuario']['id']) && isset($pdo)) {
 
     <?php if (isset($_SESSION['usuario'])): ?>
     <!-- Notificación de productos pendientes de reseña -->
-    <div id="review-notification-banner" class="hidden">
+    <div id="review-notification-banner" style="display:none">
         <div class="review-notif-inner">
             <div class="review-notif-icon">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
@@ -217,7 +217,7 @@ if (isset($_SESSION['usuario']['id']) && isset($pdo)) {
                 
                 // Mostrar después de 2 segundos
                 setTimeout(() => {
-                    banner.classList.remove('hidden');
+                    banner.style.display = '';
                     if (typeof lucide !== 'undefined') lucide.createIcons();
                 }, 2000);
                 
@@ -230,9 +230,9 @@ if (isset($_SESSION['usuario']['id']) && isset($pdo)) {
 
         function closeBanner() {
             const banner = document.getElementById('review-notification-banner');
-            if (!banner || banner.classList.contains('hidden')) return;
+            if (!banner || banner.style.display === 'none') return;
             banner.classList.add('hiding');
-            setTimeout(() => { banner.classList.add('hidden'); }, 350);
+            setTimeout(() => { banner.style.display = 'none'; }, 350);
             sessionStorage.setItem('review_notif_dismissed', '1');
         }
 
@@ -282,7 +282,7 @@ if (isset($_SESSION['usuario']['id']) && isset($pdo)) {
             <div class="mobile-menu-divider"></div>
             <p class="mobile-menu-status">
                 <span class="mobile-menu-dot"></span>
-                SYSTEM STATUS: <span class="text-red-500">ONLINE</span>
+                SYSTEM STATUS: <span style="color: #ff0000;">ONLINE</span>
             </p>
         </div>
     </div>

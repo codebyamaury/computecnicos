@@ -166,49 +166,41 @@ $page_title = 'Restablecer Contraseña';
                         const labels = ['Muy débil', 'Débil', 'Buena', 'Muy segura'];
                         
                         bars.forEach((bar, i) => {
-                            bar.className = 'pw-strength-bar';
-                            if (i < score) {
-                                const cls = score === 1 ? 'bg-red-500' : score === 2 ? 'bg-orange-500' : score === 3 ? 'bg-yellow-400' : 'bg-green-500';
-                                bar.classList.add(cls);
-                            } else {
-                                bar.classList.add('bg-[#222]');
-                            }
+                            bar.style.background = i < score ? colors[Math.min(score-1, 3)] : '#222';
                         });
                         
                         const text = document.getElementById('pw-strength-text');
                         if (pw.length > 0) {
                             text.textContent = labels[Math.min(score-1, 3)] || 'Muy débil';
-                            const textCls = score === 1 ? 'text-red-500' : score === 2 ? 'text-orange-500' : score === 3 ? 'text-yellow-400' : 'text-green-500';
-                            text.className = 'pw-strength-text ' + textCls;
+                            text.style.color = colors[Math.min(score-1, 3)] || '#555';
                         } else {
                             text.textContent = '';
-                            text.className = 'pw-strength-text';
                         }
                     });
                 </script>
 
             <?php elseif ($success): ?>
-                <div class="text-center py-4">
-                    <div class="w-16 h-16 bg-green-500/10 border-2 border-green-500/30 rounded-full flex items-center justify-center mx-auto mb-4">
+                <div style="text-align:center;padding:1rem 0">
+                    <div style="width:64px;height:64px;background:rgba(74,222,128,0.1);border:2px solid rgba(74,222,128,0.3);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 1rem">
                         <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#4ade80" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
                     </div>
                     <div class="reset-title">¡Listo!</div>
-                    <p class="text-gray-400 text-[0.85rem] my-2 mb-6">Tu contraseña ha sido actualizada correctamente.</p>
-                    <a href="index.php?login=1" class="reset-btn inline-flex no-underline max-w-[280px] mx-auto">
+                    <p style="color:#888;font-size:0.85rem;margin:0.5rem 0 1.5rem">Tu contraseña ha sido actualizada correctamente.</p>
+                    <a href="index.php?login=1" class="reset-btn" style="display:inline-flex;text-decoration:none;max-width:280px;margin:0 auto">
                         Iniciar Sesión
                     </a>
                 </div>
 
             <?php else: ?>
                 <!-- Token inválido/expirado -->
-                <div class="text-center py-4">
-                    <div class="w-16 h-16 bg-red-500/10 border-2 border-red-500/30 rounded-full flex items-center justify-center mx-auto mb-4">
+                <div style="text-align:center;padding:1rem 0">
+                    <div style="width:64px;height:64px;background:rgba(239,68,68,0.1);border:2px solid rgba(239,68,68,0.3);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 1rem">
                         <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
                     </div>
                     <div class="reset-title">Enlace Inválido</div>
-                    <p class="text-gray-400 text-[0.85rem] my-2">El enlace ha expirado o ya fue utilizado.</p>
+                    <p style="color:#888;font-size:0.85rem;margin:0.5rem 0">El enlace ha expirado o ya fue utilizado.</p>
                 </div>
-<?php endif; ?>
+            <?php endif; ?>
 
             <div class="reset-link">
                 <a href="index.php">← Volver al inicio</a>

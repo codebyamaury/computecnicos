@@ -284,44 +284,44 @@ include '_layout.php';
     <div class="admin-content-inner">
         
         <!-- Advertencia -->
-        <div class="bg-[#facc15]/10 border border-[#facc15]/20 rounded-xl p-5 mb-6 flex items-start gap-3">
-            <i data-lucide="alert-triangle" class="w-6 h-6 text-[#facc15] shrink-0 mt-0.5"></i>
+        <div style="background:rgba(250,204,21,0.08);border:1px solid rgba(250,204,21,0.2);border-radius:0.75rem;padding:1.25rem;margin-bottom:1.5rem;display:flex;align-items:flex-start;gap:0.75rem">
+            <i data-lucide="alert-triangle" style="width:24px;height:24px;color:#facc15;flex-shrink:0;margin-top:2px"></i>
             <div>
-                <div class="font-bold text-[#facc15] text-[0.95rem] mb-1.5">⚠️ Herramienta de Conversión Masiva</div>
-                <div class="text-[0.82rem] text-[#999] leading-relaxed">
-                    Esta herramienta convierte todas las imágenes de productos existentes a formato <strong class="text-white">PNG</strong>.
-                    <br>• Las imágenes originales <strong class="text-white">NO se eliminan</strong>, se crean copias nuevas en PNG.
+                <div style="font-weight:700;color:#facc15;font-size:0.95rem;margin-bottom:0.35rem">⚠️ Herramienta de Conversión Masiva</div>
+                <div style="font-size:0.82rem;color:#999;line-height:1.6">
+                    Esta herramienta convierte todas las imágenes de productos existentes a formato <strong style="color:#fff">PNG</strong>.
+                    <br>• Las imágenes originales <strong style="color:#fff">NO se eliminan</strong>, se crean copias nuevas en PNG.
                     <br>• La base de datos se actualizará con las nuevas rutas.
-                    <br>• <strong class="text-[#ef4444]">Elimina este archivo después de usarlo</strong> por seguridad.
+                    <br>• <strong style="color:#ef4444">Elimina este archivo después de usarlo</strong> por seguridad.
                 </div>
             </div>
         </div>
 
         <?php if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['convertir'])): ?>
         <!-- Resultados -->
-        <div class="grid grid-cols-[repeat(auto-fit,minmax(160px,1fr))] gap-4 mb-6">
-            <div class="adm-card !p-5 text-center">
-                <div class="text-[2rem] font-extrabold text-[#4ade80]"><?= $total_convertidas ?></div>
-                <div class="text-[0.75rem] text-[#666]">Convertidas</div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:1rem;margin-bottom:1.5rem">
+            <div class="adm-card" style="padding:1.25rem;text-align:center">
+                <div style="font-size:2rem;font-weight:800;color:#4ade80"><?= $total_convertidas ?></div>
+                <div style="font-size:0.75rem;color:#666">Convertidas</div>
             </div>
-            <div class="adm-card !p-5 text-center">
-                <div class="text-[2rem] font-extrabold text-[#facc15]"><?= $total_ya_png ?></div>
-                <div class="text-[0.75rem] text-[#666]">Ya eran PNG</div>
+            <div class="adm-card" style="padding:1.25rem;text-align:center">
+                <div style="font-size:2rem;font-weight:800;color:#facc15"><?= $total_ya_png ?></div>
+                <div style="font-size:0.75rem;color:#666">Ya eran PNG</div>
             </div>
-            <div class="adm-card !p-5 text-center">
-                <div class="text-[2rem] font-extrabold text-[#ef4444]"><?= $total_errores ?></div>
-                <div class="text-[0.75rem] text-[#666]">Errores</div>
+            <div class="adm-card" style="padding:1.25rem;text-align:center">
+                <div style="font-size:2rem;font-weight:800;color:#ef4444"><?= $total_errores ?></div>
+                <div style="font-size:0.75rem;color:#666">Errores</div>
             </div>
         </div>
 
         <!-- Tabla de resultados -->
-        <div class="adm-card !p-0 overflow-hidden">
-            <div class="py-4 px-5 border-b border-white/5">
-                <div class="adm-card-title !mb-0">
+        <div class="adm-card" style="padding:0;overflow:hidden">
+            <div style="padding:1rem 1.25rem;border-bottom:1px solid rgba(255,255,255,0.04)">
+                <div class="adm-card-title" style="margin-bottom:0">
                     <span class="adm-card-title-text">Resultados de Conversión</span>
                 </div>
             </div>
-            <div class="adm-table-wrap !border-none !rounded-none">
+            <div class="adm-table-wrap" style="border:none;border-radius:0">
                 <table class="adm-table">
                     <thead>
                         <tr>
@@ -333,7 +333,7 @@ include '_layout.php';
                     <tbody>
                     <?php foreach ($resultados as $r): ?>
                         <tr>
-                            <td class="font-semibold text-[0.82rem] text-white"><?= htmlspecialchars($r['producto']) ?></td>
+                            <td style="font-weight:600;font-size:0.82rem;color:#fff"><?= htmlspecialchars($r['producto']) ?></td>
                             <td>
                                 <?php if ($r['status'] === 'ok'): ?>
                                     <span class="adm-badge adm-badge-green">✓ OK</span>
@@ -343,7 +343,7 @@ include '_layout.php';
                                     <span class="adm-badge adm-badge-red">✗ Error</span>
                                 <?php endif; ?>
                             </td>
-                            <td class="text-[0.78rem] text-[#888]"><?= htmlspecialchars($r['msg']) ?></td>
+                            <td style="font-size:0.78rem;color:#888"><?= htmlspecialchars($r['msg']) ?></td>
                         </tr>
                     <?php endforeach; ?>
                     </tbody>
@@ -353,24 +353,24 @@ include '_layout.php';
         <?php endif; ?>
 
         <!-- Formulario -->
-        <div class="adm-card !p-6 mt-6">
+        <div class="adm-card" style="padding:1.5rem;margin-top:1.5rem">
             <form method="post">
                 <input type="hidden" name="convertir" value="1">
                 
-                <div class="flex items-center gap-3 p-4 bg-white/[0.03] rounded-xl border border-white/[0.06] mb-5">
-                    <label class="relative inline-block w-12 h-[26px] shrink-0">
-                        <input type="checkbox" name="remove_bg" value="1" class="opacity-0 w-0 h-0" id="toggle-removebg-conv">
+                <div style="display:flex;align-items:center;gap:0.75rem;padding:1rem;background:rgba(255,255,255,0.03);border-radius:0.75rem;border:1px solid rgba(255,255,255,0.06);margin-bottom:1.25rem">
+                    <label style="position:relative;display:inline-block;width:48px;height:26px;flex-shrink:0">
+                        <input type="checkbox" name="remove_bg" value="1" style="opacity:0;width:0;height:0" id="toggle-removebg-conv">
                         <span class="adm-toggle-slider"></span>
                     </label>
                     <div>
-                        <div class="text-[0.88rem] font-semibold text-[#e7e7ea]">🎨 Remover fondo automáticamente</div>
-                        <div class="text-[0.72rem] text-[#666]">Detecta y elimina el fondo de las imágenes. Funciona mejor con fondos sólidos (blanco, gris).</div>
+                        <div style="font-size:0.88rem;font-weight:600;color:#e7e7ea">🎨 Remover fondo automáticamente</div>
+                        <div style="font-size:0.72rem;color:#666">Detecta y elimina el fondo de las imágenes. Funciona mejor con fondos sólidos (blanco, gris).</div>
                     </div>
                 </div>
 
-                <button type="submit" class="adm-btn adm-btn-primary w-full justify-center !p-[0.85rem] !text-[0.95rem]"
+                <button type="submit" class="adm-btn adm-btn-primary" style="width:100%;justify-content:center;padding:0.85rem;font-size:0.95rem"
                         onclick="return confirm('¿Estás seguro de convertir TODAS las imágenes de productos a PNG? Este proceso puede tardar varios minutos.')">
-                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" class="w-[18px] h-[18px]"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width:18px;height:18px"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
                     Iniciar Conversión a PNG
                 </button>
             </form>

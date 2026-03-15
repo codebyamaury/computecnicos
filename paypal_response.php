@@ -52,7 +52,7 @@ include 'includes/header.php';
                 <div class="paypal-details">
                     <div class="paypal-detail-row">
                         <span class="paypal-detail-label">Estado</span>
-                        <span class="paypal-detail-value text-green-500">✓ Pagado</span>
+                        <span class="paypal-detail-value" style="color:#22c55e;">✓ Pagado</span>
                     </div>
                     <div class="paypal-detail-row">
                         <span class="paypal-detail-label">Método</span>
@@ -87,7 +87,7 @@ include 'includes/header.php';
                 <div class="paypal-details">
                     <div class="paypal-detail-row">
                         <span class="paypal-detail-label">Estado</span>
-                        <span class="paypal-detail-value text-yellow-500">⚠ Pendiente</span>
+                        <span class="paypal-detail-value" style="color:#eab308;">⚠ Pendiente</span>
                     </div>
                     <div class="paypal-detail-row">
                         <span class="paypal-detail-label">Motivo</span>

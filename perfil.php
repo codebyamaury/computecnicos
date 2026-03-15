@@ -99,7 +99,7 @@ include 'includes/header.php';
     <!-- Cabecera del perfil -->
     <div class="perfil-header">
         <!-- Canvas de partículas -->
-        <canvas id="perfil-particles" class="absolute inset-0 w-full h-full pointer-events-none z-0"></canvas>
+        <canvas id="perfil-particles" class="absolute inset-0 w-full h-full pointer-events-none" style="z-index:0;"></canvas>
         <div class="perfil-header-inner animate-slide-up">
             <!-- Avatar con anillo animado -->
             <div class="perfil-avatar-wrapper">
@@ -221,7 +221,7 @@ include 'includes/header.php';
                     </div>
                 </div>
                 <div class="perfil-card-body">
-                    <p class="text-sm text-gray-400">Próximamente podrás gestionar tus preferencias de privacidad.</p>
+                    <p class="text-sm" style="color:#666;">Próximamente podrás gestionar tus preferencias de privacidad.</p>
                 </div>
                 <div class="perfil-card-footer">
                     <span class="perfil-card-action disabled">No disponible</span>
@@ -342,11 +342,11 @@ include 'includes/header.php';
 // ── Helpers de modal ─────────────────────────────────────────────────────
 function abrirModal(id) {
     document.getElementById(id).classList.remove('hidden');
-    document.body.classList.add('overflow-hidden');
+    document.body.style.overflow = 'hidden';
 }
 function cerrarModal(id) {
     document.getElementById(id).classList.add('hidden');
-    document.body.classList.remove('overflow-hidden');
+    document.body.style.overflow = '';
     // Limpiar mensajes al cerrar
     const msg = document.getElementById('msg-' + id.replace('modal-', ''));
     if (msg) { msg.className = 'perfil-msg hidden'; msg.textContent = ''; }
@@ -434,7 +434,7 @@ enviarFormAjax('form-personal', 'btn-personal', 'msg-personal', function(data) {
     }
     if (data.foto) {
         const avatarContainer = document.getElementById('avatar-container');
-        avatarContainer.innerHTML = `<img src="${data.foto}" alt="Foto de perfil" id="avatar-img" class="w-full h-full object-cover">`;
+        avatarContainer.innerHTML = `<img src="${data.foto}" alt="Foto de perfil" id="avatar-img" style="width:100%;height:100%;object-fit:cover;">`;
     }
 });
 

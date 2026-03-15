@@ -163,65 +163,67 @@ include '_layout.php';
                 <!-- Imagene Principal y Galería -->
                 <div class="adm-form-group">
                     <label class="adm-label">Imagen principal (Solo PNG) *</label>
-                    <input type="file" name="imagen" accept="image/png" class="adm-input !p-2" required>
-                    <div class="adm-form-help">⚠️ Solo se permiten imágenes en formato <strong>PNG</strong>. Ésta será la portada del producto.</div>
+                    <input type="file" name="imagen" accept="image/png" class="adm-input" required style="padding:0.5rem">
+                    <div style="font-size:0.7rem;color:#555;margin-top:0.35rem">⚠️ Solo se permiten imágenes en formato <strong style="color:#fff">PNG</strong>. Ésta será la portada del producto.</div>
                 </div>
 
                 <div class="adm-form-group">
                     <label class="adm-label">Agregar nuevas imágenes a la galería (Solo PNG, Opcional)</label>
-                    <input type="file" name="imagenes[]" accept="image/png" class="adm-input !p-2" multiple>
-                    <div class="adm-form-help">Puedes seleccionar varias imágenes para la galería del producto.</div>
+                    <input type="file" name="imagenes[]" accept="image/png" class="adm-input" multiple style="padding:0.5rem">
+                    <div style="font-size:0.7rem;color:#555;margin-top:0.35rem">Puedes seleccionar varias imágenes para la galería del producto.</div>
                 </div>
 
-                <div class="adm-form-section">
-                    <h3 class="adm-form-section-title">Visibilidad y Promociones</h3>
+                <!-- Separador visual -->
+                <div style="border-top:1px solid var(--adm-border);margin:1.5rem 0;padding-top:1.5rem">
+                    <h3 style="color:#fff;font-size:0.95rem;font-weight:700;margin-bottom:1rem;display:flex;align-items:center;gap:8px">
+                        <span style="width:3px;height:16px;background:var(--adm-red);border-radius:2px;display:inline-block"></span>
+                        Visibilidad y Promociones
+                    </h3>
 
                     <!-- Destacado -->
-                    <div class="adm-form-group-box">
-                        <div class="adm-toggle-wrap">
-                            <label class="relative inline-block w-12 h-[26px] shrink-0">
-                                <input type="checkbox" name="destacado" value="1" class="opacity-0 w-0 h-0" id="toggle-destacado">
-                                <span class="adm-toggle-slider"></span>
-                            </label>
-                            <div class="adm-toggle-info">
-                                <div class="adm-toggle-title">Producto Destacado</div>
-                                <div class="adm-toggle-desc">Se mostrará en la sección "Productos Destacados" de la página principal</div>
-                            </div>
+                    <div class="adm-form-group" style="display:flex;align-items:center;gap:0.75rem;padding:1rem;background:rgba(255,255,255,0.03);border-radius:0.75rem;border:1px solid var(--adm-border)">
+                        <label style="position:relative;display:inline-block;width:48px;height:26px;flex-shrink:0">
+                            <input type="checkbox" name="destacado" value="1" style="opacity:0;width:0;height:0" id="toggle-destacado">
+                            <span class="adm-toggle-slider"></span>
+                        </label>
+                        <div>
+                            <div style="font-size:0.88rem;font-weight:600;color:#e7e7ea">Producto Destacado</div>
+                            <div style="font-size:0.72rem;color:#666">Se mostrará en la sección "Productos Destacados" de la página principal</div>
                         </div>
                     </div>
 
                     <!-- Tiempo como Nuevo -->
-                    <div class="adm-form-group-box">
-                        <div class="flex items-center gap-2 mb-3">
-                            <span class="w-2 h-2 bg-[#3b82f6] rounded-full inline-block"></span>
-                            <span class="text-[0.88rem] font-semibold text-[#e7e7ea]">Badge "NUEVO"</span>
+                    <div class="adm-form-group" style="padding:1rem;background:rgba(255,255,255,0.03);border-radius:0.75rem;border:1px solid var(--adm-border)">
+                        <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.75rem">
+                            <span style="width:8px;height:8px;background:#3b82f6;border-radius:50%;display:inline-block"></span>
+                            <span style="font-size:0.88rem;font-weight:600;color:#e7e7ea">Badge "NUEVO"</span>
                         </div>
                         <label class="adm-label">Mostrar como nuevo hasta</label>
                         <input type="date" name="nuevo_hasta" class="adm-input" min="<?= date('Y-m-d') ?>">
-                        <div class="adm-form-help">Déjalo vacío para que no muestre la badge "NUEVO". El producto mostrará la badge hasta la fecha indicada.</div>
+                        <div style="font-size:0.7rem;color:#555;margin-top:0.35rem">Déjalo vacío para que no muestre la badge "NUEVO". El producto mostrará la badge hasta la fecha indicada.</div>
                     </div>
 
                     <!-- Oferta -->
-                    <div class="adm-form-group-box">
-                        <div class="flex items-center gap-2 mb-3">
-                            <span class="w-2 h-2 bg-[#ef4444] rounded-full inline-block"></span>
-                            <span class="text-[0.88rem] font-semibold text-[#e7e7ea]">Badge "OFERTA"</span>
+                    <div class="adm-form-group" style="padding:1rem;background:rgba(255,255,255,0.03);border-radius:0.75rem;border:1px solid var(--adm-border)">
+                        <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.75rem">
+                            <span style="width:8px;height:8px;background:#ef4444;border-radius:50%;display:inline-block"></span>
+                            <span style="font-size:0.88rem;font-weight:600;color:#e7e7ea">Badge "OFERTA"</span>
                         </div>
-                        <div class="flex items-center gap-3 mb-3">
-                            <label class="relative inline-block w-12 h-[26px] shrink-0">
-                                <input type="checkbox" name="oferta" value="1" class="opacity-0 w-0 h-0" id="toggle-oferta">
+                        <div style="display:flex;align-items:center;gap:0.75rem;margin-bottom:0.75rem">
+                            <label style="position:relative;display:inline-block;width:48px;height:26px;flex-shrink:0">
+                                <input type="checkbox" name="oferta" value="1" style="opacity:0;width:0;height:0" id="toggle-oferta">
                                 <span class="adm-toggle-slider"></span>
                             </label>
-                            <span class="text-[0.85rem] text-[#aaa]">Activar oferta</span>
+                            <span style="font-size:0.85rem;color:#aaa">Activar oferta</span>
                         </div>
                         <label class="adm-label">Oferta válida hasta</label>
                         <input type="date" name="oferta_hasta" class="adm-input" min="<?= date('Y-m-d') ?>">
-                        <div class="adm-form-help">Si pones una fecha, la oferta se desactivará automáticamente al vencer. Déjalo vacío para oferta permanente (mientras esté activada).</div>
+                        <div style="font-size:0.7rem;color:#555;margin-top:0.35rem">Si pones una fecha, la oferta se desactivará automáticamente al vencer. Déjalo vacío para oferta permanente (mientras esté activada).</div>
                     </div>
                 </div>
 
-                <button type="submit" class="adm-btn adm-btn-primary w-full justify-center !p-[0.85rem] !text-[0.95rem] mt-2">
-                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" class="adm-btn-icon"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                <button type="submit" class="adm-btn adm-btn-primary" style="width:100%;justify-content:center;padding:0.85rem;font-size:0.95rem;margin-top:0.5rem">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width:18px;height:18px"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
                     Guardar Producto
                 </button>
             </form>
