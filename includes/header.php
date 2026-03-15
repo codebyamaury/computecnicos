@@ -23,6 +23,17 @@ if (isset($_SESSION['usuario']['id']) && isset($pdo)) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo isset($page_title) ? $page_title . ' | ' : ''; ?>Computecnicos</title>
     <link rel="icon" type="image/svg+xml" href="<?= asset('img/favicon.svg') ?>">
+    <meta name="color-scheme" content="dark">
+    <meta name="theme-color" content="#111111">
+    <style>
+        html, body {
+            background-color: #111111 !important;
+            color: #ffffff !important;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+        }
+    </style>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
