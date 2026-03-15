@@ -3,44 +3,6 @@
 // Este archivo se incluye en footer.php para estar disponible en todas las páginas
 ?>
 
-<!-- Estilos para el registro multi-paso -->
-<style>
-  .reg-step { display: none; width: 100%; }
-  .reg-step.reg-step-active { display: block; animation: regStepIn 0.35s ease-out; }
-  @keyframes regStepIn {
-    from { opacity: 0; transform: translateX(30px); }
-    to { opacity: 1; transform: translateX(0); }
-  }
-  .reg-progress-bar { display: flex; gap: 6px; margin-bottom: 16px; }
-  .reg-progress-dot {
-    flex: 1; height: 4px; border-radius: 2px;
-    background: #333; transition: background 0.3s;
-  }
-  .reg-progress-dot.reg-dot-done { background: var(--neon-red, #ff0000); }
-  .reg-progress-dot.reg-dot-current { background: var(--neon-red, #ff0000); box-shadow: 0 0 8px rgba(255,0,0,0.4); }
-  .reg-step-title {
-    color: #ccc; font-size: 0.85rem; font-weight: 600;
-    text-align: center; margin-bottom: 12px;
-  }
-  .reg-back-btn {
-    background: #333; color: #ccc; border: 1px solid #555;
-    padding: 10px 0; border-radius: 0; cursor: pointer;
-    font-weight: 600; font-size: 0.9rem; transition: background 0.2s;
-    clip-path: polygon(8px 0, 100% 0, 100% 100%, 0 100%, 0 8px);
-  }
-  .reg-back-btn:hover { background: #444; }
-  .reg-next-btn {
-    background: var(--neon-red, #ff0000); color: #000; border: none;
-    padding: 10px 0; border-radius: 0; cursor: pointer;
-    font-weight: 800; font-size: 0.95rem; letter-spacing: 1px;
-    transition: background 0.2s, box-shadow 0.2s;
-    text-transform: uppercase;
-    clip-path: polygon(8px 0, 100% 0, 100% 100%, 0 100%, 0 8px);
-  }
-  .reg-next-btn:hover { background: #fff; color: #000; box-shadow: 0 0 20px var(--neon-red, #ff0000); }
-  .reg-next-btn:disabled { background: #555; cursor: not-allowed; box-shadow: none; }
-</style>
-
 <!-- Modal Login/Registro -->
 <div id="modal-login" class="fixed inset-0 bg-black/70 z-[9999] flex items-center justify-center hidden">
   <div class="absolute inset-0" onclick="cerrarModalLogin()"></div>

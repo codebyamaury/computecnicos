@@ -36,25 +36,6 @@ include '_layout.php';
 ?>
 
 <main class="admin-content">
-    <style>
-        .admin-content::before {
-            content: '';
-            position: fixed;
-            top: 0;
-            left: var(--adm-sidebar-w, 220px);
-            right: 0;
-            bottom: 0;
-            background:
-                radial-gradient(ellipse 60% 40% at 50% 0%, rgba(224, 0, 0, 0.045) 0%, transparent 60%);
-            pointer-events: none;
-            z-index: 0;
-        }
-
-        .admin-content>* {
-            position: relative;
-            z-index: 1;
-        }
-    </style>
     <div class="admin-content-inner">
 
         <!-- ── KPI Cards ── -->

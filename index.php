@@ -163,39 +163,6 @@ include __DIR__ . '/includes/header.php';
     <?php endif; ?>
 </section>
 
-<style>
-/* Carrusel Productos Destacados */
-.carousel-destacados-wrap {
-    position: relative;
-    overflow: visible;
-}
-.carousel-destacados {
-    display: flex;
-    gap: 1.25rem;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    padding: 0.5rem 0 1.5rem;
-    scrollbar-width: none;
-}
-.carousel-destacados::-webkit-scrollbar { display: none; }
-.carousel-dest-card {
-    flex: 0 0 calc(25% - 0.94rem);
-    min-width: 260px;
-}
-
-/* Responsive */
-@media (max-width: 1200px) {
-    .carousel-dest-card { flex: 0 0 calc(33.333% - 0.84rem); }
-}
-@media (max-width: 900px) {
-    .carousel-dest-card { flex: 0 0 calc(50% - 0.625rem); }
-    .carousel-dest-prev { left: 6px; }
-    .carousel-dest-next { right: 6px; }
-}
-@media (max-width: 600px) {
-    .carousel-dest-card { flex: 0 0 85%; min-width: 240px; }
-}
-</style>
 
 <script>
 (function(){
