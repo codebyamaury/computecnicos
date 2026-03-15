@@ -3,7 +3,7 @@
 // Crea la tabla de facturas, arma el payload y registra la factura con proveedor (o simulado)
 
 function fe_config() {
-    $cfg_path = __DIR__ . '/../config/factura_config.php';
+    $cfg_path = __DIR__ . '/../../config/factura_config.php';
     if (file_exists($cfg_path)) {
         return include $cfg_path;
     }
