@@ -25,6 +25,21 @@ if (isset($_SESSION['usuario']['id']) && isset($pdo)) {
     <link rel="icon" type="image/svg+xml" href="<?= asset('img/favicon.svg') ?>">
     <meta name="color-scheme" content="dark">
     <meta name="theme-color" content="#111111">
+    <!-- Bloqueo para Brave "Force Dark Mode" / DarkReader. Evita que el navegador invierta colores e inyecte fondos blancos temporales -->
+    <meta name="darkreader-lock">
+    
+    <!-- CSS CRÍTICO INLINE: Se coloca aquí profesionalmente y NO en el main.css para que el navegador pinte la pantalla negra en el ms cero, ANTES de hacer la petición de red (Network Event) y evitar el destello blanco FOUC en monitores de 1920x1080 o más -->
+    <style>
+        html { background-color: #111111 !important; }
+        body {
+            background-color: #111111 !important;
+            color: #ffffff !important;
+            margin: 0 !important;
+            min-height: 100vh !important;
+            display: flex !important;
+            flex-direction: column !important;
+        }
+    </style>
 
     <!-- 1. Cargar fuentes pre-connect -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
