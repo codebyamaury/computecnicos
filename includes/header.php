@@ -16,7 +16,7 @@ if (isset($_SESSION['usuario']['id']) && isset($pdo)) {
 }
 ?>
 <!DOCTYPE html>
-<html lang="es" style="background-color: #111; color: #fff;">
+<html lang="es">
 
 <head>
     <meta charset="UTF-8">
@@ -25,15 +25,6 @@ if (isset($_SESSION['usuario']['id']) && isset($pdo)) {
     <link rel="icon" type="image/svg+xml" href="<?= asset('img/favicon.svg') ?>">
     <meta name="color-scheme" content="dark">
     <meta name="theme-color" content="#111111">
-    <style>
-        html, body {
-            background-color: #111111 !important;
-            color: #ffffff !important;
-            margin: 0;
-            padding: 0;
-            min-height: 100vh;
-        }
-    </style>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -54,7 +45,7 @@ if (isset($_SESSION['usuario']['id']) && isset($pdo)) {
     <script>document.addEventListener('DOMContentLoaded', function(){ AOS.init({ duration: 800, once: true }); });</script>
 </head>
 
-<body class="min-h-screen flex flex-col" style="background-color: #111; color: #fff;">
+<body class="min-h-screen flex flex-col">
     <header class="py-4 px-4 flex justify-between items-center relative z-50">
         <!-- Logo y Menú Hamburger a la izquierda -->
         <div class="flex items-center gap-2">

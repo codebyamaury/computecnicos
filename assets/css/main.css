@@ -50,8 +50,15 @@
 }
 
 /* Estilos base */
+html, body {
+    background-color: var(--bg-dark) !important;
+    color: var(--text-white) !important;
+    min-height: 100vh;
+    margin: 0;
+    padding: 0;
+}
+
 body {
-    background: var(--bg-dark);
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
