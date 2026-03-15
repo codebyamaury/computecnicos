@@ -1,5 +1,9 @@
 <?php
-require_once __DIR__ . '/app/Core/bootstrap.php';
+require_once __DIR__ . '/../app/Core/bootstrap.php';
+if (!isset($_SESSION['usuario']) || $_SESSION['usuario']['rol'] !== 'admin') {
+    header('Location: ../index.php');
+    exit;
+}
 // Sesión manejada por bootstrap (DB handler)
 
 $assets = asset_versions([
