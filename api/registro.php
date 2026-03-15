@@ -69,6 +69,10 @@ try {
         'rol' => $usuario['rol'],
         'foto' => $usuario['foto']
     ];
+    
+    // Crear token persistente para mantener sesión activa (30 días)
+    $rememberMe->createToken($usuario['id']);
+    
     respuesta(true, 'Registro exitoso. Redirigiendo...');
 } catch (Exception $e) {
     respuesta(false, 'Error al registrar usuario: ' . $e->getMessage());
