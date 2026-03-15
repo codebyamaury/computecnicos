@@ -16,7 +16,7 @@ if (isset($_SESSION['usuario']['id']) && isset($pdo)) {
 }
 ?>
 <!DOCTYPE html>
-<html lang="es" style="background-color: #111111 !important;">
+<html lang="es" style="background-color: #050505 !important;">
 
 <head>
     <meta charset="UTF-8">
@@ -24,15 +24,15 @@ if (isset($_SESSION['usuario']['id']) && isset($pdo)) {
     <title><?php echo isset($page_title) ? $page_title . ' | ' : ''; ?>Computecnicos</title>
     <link rel="icon" type="image/svg+xml" href="<?= asset('img/favicon.svg') ?>">
     <meta name="color-scheme" content="dark">
-    <meta name="theme-color" content="#111111">
+    <meta name="theme-color" content="#050505">
     <!-- Bloqueo para Brave "Force Dark Mode" / DarkReader. Evita que el navegador invierta colores e inyecte fondos blancos temporales -->
     <meta name="darkreader-lock">
     
     <!-- CSS CRÍTICO INLINE: Se coloca aquí profesionalmente y NO en el main.css para que el navegador pinte la pantalla negra en el ms cero, ANTES de hacer la petición de red (Network Event) y evitar el destello blanco FOUC en monitores de 1920x1080 o más -->
     <style>
-        html { background-color: #111111 !important; }
+        html { background-color: #050505 !important; }
         body {
-            background-color: #111111 !important;
+            background-color: #050505 !important;
             color: #ffffff !important;
             margin: 0 !important;
             min-height: 100vh !important;
@@ -63,7 +63,7 @@ if (isset($_SESSION['usuario']['id']) && isset($pdo)) {
     <script>document.addEventListener('DOMContentLoaded', function(){ AOS.init({ duration: 800, once: true }); });</script>
 </head>
 
-<body class="min-h-screen flex flex-col" style="background-color: #111111 !important; color: #ffffff !important;">
+<body class="min-h-screen flex flex-col" style="background-color: #050505 !important; color: #ffffff !important;">
     <header class="py-4 px-4 flex justify-between items-center relative z-50">
         <!-- Logo y Menú Hamburger a la izquierda -->
         <div class="flex items-center gap-2">
