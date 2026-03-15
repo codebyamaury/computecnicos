@@ -25,18 +25,21 @@ if (isset($_SESSION['usuario']['id']) && isset($pdo)) {
     <link rel="icon" type="image/svg+xml" href="<?= asset('img/favicon.svg') ?>">
     <meta name="color-scheme" content="dark">
     <meta name="theme-color" content="#111111">
-    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- 1. Cargar fuentes pre-connect -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Orbitron:wght@400;500;700;900&display=swap"
-        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Orbitron:wght@400;500;700;900&display=swap" rel="stylesheet">
+
+    <!-- 2. Cargar CSS base propio primero (previene flash blanco o FOUC inmediatamente) -->
     <link rel="stylesheet" href="<?= base_url() ?>/assets/css/main.css?v=<?= filemtime(__DIR__ . '/../assets/css/main.css') ?>">
-    <?php if (isset($extra_css))
-        echo $extra_css; ?>
     <link rel="stylesheet" href="<?= base_url() ?>/assets/css/theme.css?v=<?= filemtime(__DIR__ . '/../assets/css/theme.css') ?>">
     <link rel="stylesheet" href="<?= base_url() ?>/assets/css/responsive.css?v=<?= filemtime(__DIR__ . '/../assets/css/responsive.css') ?>">
     <link rel="stylesheet" href="<?= base_url() ?>/assets/css/large-screens.css?v=<?= filemtime(__DIR__ . '/../assets/css/large-screens.css') ?>">
+    <?php if (isset($extra_css)) echo $extra_css; ?>
+
+    <!-- 3. Cargar Scripts -> Tailwind, Lucide, AOS -->
+    <script src="https://cdn.tailwindcss.com"></script>
     <script src="<?= asset('js/cart.js') ?>"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <!-- AOS (Animate On Scroll) -->
