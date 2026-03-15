@@ -328,7 +328,7 @@ document.addEventListener('DOMContentLoaded', function() {
       formData.append('direccion', direccion);
       formData.append('telefono', telefono);
 
-      var res = await fetch('registro.php', { method: 'POST', body: formData });
+      var res = await fetch('api/registro.php', { method: 'POST', body: formData });
       var data = await res.json();
 
       if (data.ok) {

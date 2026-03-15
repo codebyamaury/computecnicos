@@ -99,7 +99,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 formData.set('foto', fotoInput.files[0]);
             }
             try {
-                const res = await fetch('registro.php', {
+                const res = await fetch('api/registro.php', {
                     method: 'POST',
                     body: formData,
                     credentials: 'same-origin'
@@ -162,7 +162,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 formData.set('foto', fotoInput.files[0]);
             }
             try {
-                const res = await fetch('registro.php', {
+                const res = await fetch('api/registro.php', {
                     method: 'POST',
                     body: formData,
                     credentials: 'same-origin'

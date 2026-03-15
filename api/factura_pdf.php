@@ -1,8 +1,8 @@
 <?php
 // Sesión manejada por bootstrap (DB handler)
-require_once __DIR__ . '/app/Core/bootstrap.php';
+require_once __DIR__ . '/../app/Core/bootstrap.php';
 
-require_once __DIR__ . '/vendor/autoload.php'; // dompdf
+require_once __DIR__ . '/../vendor/autoload.php'; // dompdf
 use Dompdf\Dompdf;
 use Dompdf\Options;
 

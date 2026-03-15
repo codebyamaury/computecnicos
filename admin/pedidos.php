@@ -198,7 +198,7 @@ include '_layout.php';
 
                 <!-- Factura PDF -->
                 <?php if (in_array($pedido['estado'], ['pagado', 'preparacion', 'enviado', 'entregado'])): ?>
-                    <a href="<?= base_url() ?>/factura_pdf.php?id=<?= $pedido['id'] ?>&download=1" target="_blank"
+                    <a href="<?= base_url() ?>/api/factura_pdf.php?id=<?= $pedido['id'] ?>&download=1" target="_blank"
                        class="adm-btn" style="background:rgba(255,255,255,0.05);font-size:0.75rem;padding:0.3rem 0.75rem">
                        📄 PDF
                     </a>

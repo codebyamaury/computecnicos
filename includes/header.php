@@ -163,7 +163,7 @@ if (isset($_SESSION['usuario']['id']) && isset($pdo)) {
                             </a>
                         <?php endif; ?>
                         <div class="border-t border-[#333] mt-2 pt-2">
-                            <a href="logout.php" class="block px-4 py-2 hover:bg-[#181818] transition text-white">
+                            <a href="api/logout.php" class="block px-4 py-2 hover:bg-[#181818] transition text-white">
                                 <i data-lucide="log-out" class="w-4 h-4 inline mr-2"></i>
                                 Cerrar sesión
                             </a>

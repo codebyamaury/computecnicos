@@ -77,7 +77,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <div class="mt-8 border-t border-[#333] pt-4 px-2">
             <div class="text-xs text-gray-400 mb-1">Usuario:</div>
             <div class="font-semibold text-sm text-white mb-2"><?php echo htmlspecialchars($_SESSION['usuario']['nombre']); ?> (<?php echo htmlspecialchars($_SESSION['usuario']['rol']); ?>)</div>
-            <a href="../logout.php" class="block text-red-500 hover:underline text-xs">Cerrar sesión</a>
+            <a href="../api/logout.php" class="block text-red-500 hover:underline text-xs">Cerrar sesión</a>
         </div>
     </aside>
     

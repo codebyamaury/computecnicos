@@ -109,7 +109,7 @@ $nav_items = [
                 <div class="admin-user">
                     <div class="admin-user-name"><?= htmlspecialchars($usuario['nombre']) ?></div>
                     <div class="admin-user-role"><?= htmlspecialchars($usuario['rol']) ?></div>
-                    <a href="../logout.php" class="admin-logout">
+                    <a href="../api/logout.php" class="admin-logout">
                         <i data-lucide="log-out" style="width:12px;height:12px"></i>
                         Cerrar sesión
                     </a>
