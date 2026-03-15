@@ -16,7 +16,7 @@ if (isset($_SESSION['usuario']['id']) && isset($pdo)) {
 }
 ?>
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" style="background-color: #111111 !important;">
 
 <head>
     <meta charset="UTF-8">
@@ -63,7 +63,39 @@ if (isset($_SESSION['usuario']['id']) && isset($pdo)) {
     <script>document.addEventListener('DOMContentLoaded', function(){ AOS.init({ duration: 800, once: true }); });</script>
 </head>
 
-<body class="min-h-screen flex flex-col">
+<body class="min-h-screen flex flex-col" style="background-color: #111111 !important; color: #ffffff !important;">
+    <!-- Anti-FOUC Overlay (Tipo SPA Transition) -->
+    <div id="anti-fouc-overlay" style="position:fixed; inset:0; background-color:#111111; z-index:9999999; pointer-events:none; transition: opacity 0.3s ease;"></div>
+    <script>
+        // Ocultar cortina con transición suave al cargar la estructura de la página
+        document.addEventListener('DOMContentLoaded', function() {
+            var overlay = document.getElementById('anti-fouc-overlay');
+            if(overlay) {
+                overlay.style.opacity = '0';
+                setTimeout(function() { overlay.style.display = 'none'; }, 300);
+            }
+        });
+        // Mostrar cortina oscura AL INSTANTE antes de destruir la página y viajar a otra (bloquea destello blanco del navegador)
+        window.addEventListener('beforeunload', function() {
+            var overlay = document.getElementById('anti-fouc-overlay');
+            if(overlay) {
+                overlay.style.transition = 'none';
+                overlay.style.display = 'block';
+                overlay.style.opacity = '1';
+            }
+        });
+        // Asegurar comportamiento correcto si se usa el botón de atrás/adelante del navegador (BFCache)
+        window.addEventListener('pageshow', function(e) {
+            if (e.persisted) {
+                var overlay = document.getElementById('anti-fouc-overlay');
+                if(overlay) {
+                    overlay.style.transition = 'opacity 0.3s ease';
+                    overlay.style.opacity = '0';
+                    setTimeout(function() { overlay.style.display = 'none'; }, 300);
+                }
+            }
+        });
+    </script>
     <header class="py-4 px-4 flex justify-between items-center relative z-50">
         <!-- Logo y Menú Hamburger a la izquierda -->
         <div class="flex items-center gap-2">
