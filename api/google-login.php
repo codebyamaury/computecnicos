@@ -1,11 +1,11 @@
 <?php
-require_once __DIR__ . '/vendor/autoload.php';
-require_once __DIR__ . '/app/Core/bootstrap.php';
+require_once __DIR__ . '/../vendor/autoload.php';
+require_once __DIR__ . '/../app/Core/bootstrap.php';
 
 $client = new Google_Client();
 $client->setClientId($_ENV['GOOGLE_CLIENT_ID'] ?? 'TU_CLIENT_ID'); // Reemplaza por tu Client ID o usa env
 $client->setClientSecret($_ENV['GOOGLE_CLIENT_SECRET'] ?? 'TU_CLIENT_SECRET'); // Reemplaza por tu Client Secret o usa env
-$client->setRedirectUri(base_url() . '/google-callback');
+$client->setRedirectUri(base_url() . '/api/google-callback');
 $client->addScope('email');
 $client->addScope('profile');
 

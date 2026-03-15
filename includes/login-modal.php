@@ -45,7 +45,7 @@
         <span class="sep-circle">o</span>
         <span></span>
       </div>
-      <a href="google-login.php" class="glass-google-btn">
+      <a href="api/google-login.php" class="glass-google-btn">
         <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/google/google-original.svg" alt="Google" class="w-5 h-5">
         Iniciar sesión con Google
       </a>
@@ -158,7 +158,7 @@
         <span class="mx-3 text-gray-400 font-bold text-base">o</span>
         <span class="flex-1 h-px bg-[#333]"></span>
       </div>
-      <a href="google-login.php" class="google-btn-compact mt-1">
+      <a href="api/google-login.php" class="google-btn-compact mt-1">
         <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/google/google-original.svg" alt="Google" class="google-icon-compact">
         <span class="google-btn-compact-text">Continuar con Google</span>
       </a>
@@ -370,7 +370,7 @@ document.addEventListener('DOMContentLoaded', function() {
       var formData = new FormData();
       formData.append('email', emailInput.value.trim());
       formData.append('password', passInput.value);
-      var res = await fetch('login_backend.php', { method: 'POST', body: formData });
+      var res = await fetch('api/login_backend.php', { method: 'POST', body: formData });
       var data = await res.json();
       if (data.ok) {
         cerrarModalLogin();

@@ -1,6 +1,6 @@
 <?php
-require_once __DIR__ . '/vendor/autoload.php';
-require_once __DIR__ . '/app/Core/bootstrap.php';
+require_once __DIR__ . '/../vendor/autoload.php';
+require_once __DIR__ . '/../app/Core/bootstrap.php';
 // Sesión manejada por bootstrap (DB handler)
 $client = new Google_Client();
 $client->setClientId($_ENV['GOOGLE_CLIENT_ID'] ?? 'TU_CLIENT_ID'); // Reemplaza por tu Client ID o usa env

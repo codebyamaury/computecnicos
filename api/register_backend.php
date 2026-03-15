@@ -1,7 +1,7 @@
 <?php
 // Sesión manejada por bootstrap (DB handler)
 header('Content-Type: application/json');
-require_once __DIR__ . '/app/Core/bootstrap.php';
+require_once __DIR__ . '/../app/Core/bootstrap.php';
 
 function respuesta($ok, $msg)
 {

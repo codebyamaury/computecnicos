@@ -498,7 +498,7 @@ include __DIR__ . '/includes/header.php';
                                                 <span
                                                     class="cart-rec-price">$<?php echo number_format($r['precio'], 0, ',', '.'); ?></span>
                                             </div>
-                                            <form method="POST" action="agregar_carrito.php">
+                                            <form method="POST" action="api/agregar_carrito.php">
                                                 <input type="hidden" name="id_producto" value="<?php echo intval($r['id']); ?>">
                                                 <input type="hidden" name="cantidad" value="1">
                                                 <button type="submit" class="cart-rec-add">Agregar</button>

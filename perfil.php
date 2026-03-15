@@ -327,7 +327,7 @@ include 'includes/header.php';
             <button class="perfil-modal-close" onclick="cerrarModal('modal-eliminar-cuenta')">&times;</button>
             <h2 class="perfil-modal-title">Eliminar cuenta</h2>
             <p class="perfil-modal-desc">¿Estás seguro? Esta acción es irreversible. Ingresa tu contraseña para confirmar:</p>
-            <form method="post" action="eliminar_cuenta.php">
+            <form method="post" action="api/eliminar_cuenta.php">
                 <input type="password" name="password" class="perfil-input" placeholder="Contraseña" required>
                 <button type="submit" class="perfil-btn danger w-full">Eliminar definitivamente</button>
             </form>

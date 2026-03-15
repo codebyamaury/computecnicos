@@ -1,6 +1,6 @@
 <?php
 // Sesión manejada por bootstrap (DB handler)
-require_once __DIR__ . '/app/Core/bootstrap.php';
+require_once __DIR__ . '/../app/Core/bootstrap.php';
 
 // Utilidad: detectar si la petición espera JSON (fetch/AJAX)
 function expects_json()

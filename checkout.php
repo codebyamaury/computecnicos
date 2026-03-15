@@ -363,7 +363,7 @@ $step_confirm = 'pending';
             <script>
                 paypal.Buttons({
                     createOrder: function (data, actions) {
-                        return fetch('paypal_create_order.php', {
+                        return fetch('api/paypal_create_order.php', {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({ pedido_id: <?php echo (int) $id_pedido; ?> })
@@ -379,7 +379,7 @@ $step_confirm = 'pending';
                             });
                     },
                     onApprove: function (data, actions) {
-                        return fetch('paypal_capture_order.php', {
+                        return fetch('api/paypal_capture_order.php', {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({ orderID: data.orderID, pedido_id: <?php echo (int) $id_pedido; ?> })
@@ -522,7 +522,7 @@ forms.forEach(form => {
 
 window.addEventListener('beforeunload', function () {
     if (!isSubmitting) {
-        navigator.sendBeacon('limpiar_compra_directa.php');
+        navigator.sendBeacon('api/limpiar_compra_directa.php');
     }
 });
 </script>

@@ -263,7 +263,7 @@ include __DIR__ . '/includes/header.php';
             formData.append('id_producto', idProducto);
             formData.append('cantidad', 1);
 
-            const res = await fetch('agregar_carrito.php', {
+            const res = await fetch('api/agregar_carrito.php', {
                 method: 'POST',
                 headers: {
                     'X-Requested-With': 'XMLHttpRequest',

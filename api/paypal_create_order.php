@@ -1,7 +1,7 @@
 <?php
 // Sesión manejada por bootstrap (DB handler)
-require_once __DIR__ . '/app/Core/bootstrap.php';
-require_once __DIR__ . '/includes/PaypalHelper.php';
+require_once __DIR__ . '/../app/Core/bootstrap.php';
+require_once __DIR__ . '/../includes/PaypalHelper.php';
 
 header('Content-Type: application/json');
 try {

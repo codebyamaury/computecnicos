@@ -1,6 +1,6 @@
 <?php
 header('Content-Type: application/json');
-require_once __DIR__ . '/app/Core/bootstrap.php';
+require_once __DIR__ . '/../app/Core/bootstrap.php';
 
 function respuesta($ok, $msg) {
     echo json_encode(['ok' => $ok, 'msg' => $msg]);

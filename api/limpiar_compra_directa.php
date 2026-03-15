@@ -1,6 +1,6 @@
 <?php
 // Limpiar la sesión de compra directa cuando el usuario sale del checkout sin completar
-require_once __DIR__ . '/app/Core/bootstrap.php';
+require_once __DIR__ . '/../app/Core/bootstrap.php';
 
 if (isset($_SESSION['compra_directa'])) {
     unset($_SESSION['compra_directa']);

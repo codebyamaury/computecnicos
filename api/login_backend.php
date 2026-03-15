@@ -1,6 +1,6 @@
 <?php
 // No session_start here, as bootstrap.php handles it safely
-require_once __DIR__ . '/app/Core/bootstrap.php';
+require_once __DIR__ . '/../app/Core/bootstrap.php';
 header('Content-Type: application/json');
 
 // Regenerate session ID for security

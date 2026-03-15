@@ -206,7 +206,7 @@ include 'includes/header.php';
 
                 <!-- Action Buttons -->
                 <div class="prod-action-buttons">
-                    <form method="POST" action="agregar_carrito.php" class="prod-action-form">
+                    <form method="POST" action="api/agregar_carrito.php" class="prod-action-form">
                         <input type="hidden" name="id_producto" value="<?php echo intval($producto['id']); ?>">
                         <input type="hidden" name="cantidad" id="qty-hidden-cart" value="1">
                         <button type="submit" class="prod-add-btn">
@@ -296,7 +296,7 @@ include 'includes/header.php';
                                 <span
                                     class="prod-combo-card-price">$<?php echo number_format($c['precio'], 0, ',', '.'); ?></span>
                             </div>
-                            <form method="POST" action="agregar_carrito.php" style="display:flex;align-items:center">
+                            <form method="POST" action="api/agregar_carrito.php" style="display:flex;align-items:center">
                                 <input type="hidden" name="id_producto" value="<?php echo intval($c['id']); ?>">
                                 <input type="hidden" name="cantidad" value="1">
                                 <button type="submit" class="prod-combo-card-btn">+</button>
@@ -497,7 +497,7 @@ include 'includes/header.php';
     document.addEventListener('DOMContentLoaded', function () {
         const isLoggedIn = <?php echo isset($_SESSION['usuario']) ? 'true' : 'false'; ?>;
         
-        document.querySelectorAll('form[action="agregar_carrito.php"]').forEach(form => {
+        document.querySelectorAll('form[action="api/agregar_carrito.php"]').forEach(form => {
             form.addEventListener('submit', async function (e) {
                 e.preventDefault();
                 e.stopPropagation();
@@ -521,7 +521,7 @@ include 'includes/header.php';
                 try {
                     const fd = new FormData(form);
                     fd.delete('redirect'); // Remove redirect from POST data
-                    const res = await fetch('agregar_carrito.php', {
+                    const res = await fetch('api/agregar_carrito.php', {
                         method: 'POST',
                         headers: {
                             'X-Requested-With': 'XMLHttpRequest',
@@ -742,7 +742,7 @@ include 'includes/header.php';
                 const fd = new FormData();
                 fd.append('id_producto', id);
                 fd.append('cantidad', 1);
-                const res = await fetch('agregar_carrito.php', {
+                const res = await fetch('api/agregar_carrito.php', {
                     method: 'POST',
                     headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' },
                     body: fd
