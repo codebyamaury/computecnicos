@@ -90,11 +90,11 @@ include '_layout.php';
                 <span class="adm-badge adm-badge-gray"><?= count($usuarios) ?> total</span>
             </div>
         </div>
-        <div class="adm-table-wrap" style="border:none;border-radius:0">
-            <table class="adm-table" id="tabla-usuarios">
+        <div class="adm-table-wrap" style="border:none;border-radius:0;overflow-x:auto;min-width:0;">
+            <table class="adm-table" id="tabla-usuarios" style="min-width:800px;">
                 <thead>
                     <tr>
-                        <th>Nombre</th><th>Email</th><th>Teléfono</th><th>Rol</th><th>Registro</th><th>Acciones</th>
+                        <th style="min-width:180px;">Nombre</th><th style="min-width:180px;">Email</th><th style="min-width:120px;">Teléfono</th><th style="min-width:100px;">Rol</th><th style="min-width:100px;">Registro</th><th style="min-width:140px;">Acciones</th>
                     </tr>
                 </thead>
                 <tbody>

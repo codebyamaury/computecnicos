@@ -19,11 +19,13 @@
         /* ── Mobile drawer (hamburger) ── */
         function openDrawer() {
             sidebar.classList.add('open');
+            overlay.classList.add('show');
             sidebar.classList.remove('closed');
         }
 
         function closeDrawer() {
             sidebar.classList.remove('open');
+            overlay.classList.remove('show');
             sidebar.classList.add('closed');
         }
 
@@ -82,12 +84,10 @@
             });
         });
 
-        /* Close drawer on mobile when clicking the main content area */
-        if (mainContent) {
-            mainContent.addEventListener('click', function (e) {
-                if (window.innerWidth < 1024 && sidebar.classList.contains('open')) {
-                    /* Don't close if clicking the hamburger button itself */
-                    if (btnHamburger && (btnHamburger === e.target || btnHamburger.contains(e.target))) return;
+        /* Close drawer when clicking overlay */
+        if (overlay) {
+            overlay.addEventListener('click', function (e) {
+                if (window.innerWidth < 1024) {
                     closeDrawer();
                 }
             });
@@ -521,6 +521,132 @@ document.addEventListener('DOMContentLoaded', function(){
         }
         draw();
     })();
+</script>
+<!-- Tour Guiado con Driver.js -->
+<script src="https://cdn.jsdelivr.net/npm/driver.js@1.0.1/dist/driver.js.iife.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        if (!window.driver) return;
+        const driver = window.driver.js.driver;
+        const pageName = '<?= $admin_page ?? "" ?>';
+        
+        // Configuracion por default
+        const driverOptions = {
+            showProgress: true,
+            animate: true,
+            allowClose: true,
+            nextBtnText: 'Siguiente &rarr;',
+            prevBtnText: '&larr; Anterior',
+            doneBtnText: '¡Entendido!',
+            progressText: 'Paso {{current}} de {{total}}',
+        };
+
+        let driverObj = null;
+
+        // Configuracion del Tour para Dashboard
+        if (pageName === 'dashboard' && !localStorage.getItem('tour_dashboard_visto_v1')) {
+            driverObj = driver({
+                ...driverOptions,
+                steps: [
+                    {
+                        element: '.admin-logo',
+                        popover: {
+                            title: '¡Bienvenido al Panel!',
+                            description: 'Tu centro de operaciones para gestionar Computécnicos. Aquí comienza todo.',
+                            side: 'bottom', align: 'start'
+                        }
+                    },
+                    {
+                        element: '.adm-kpi-grid',
+                        popover: {
+                            title: 'KPIs en Tiempo Real',
+                            description: 'Un vistazo rápido al rendimiento mensual: ventas, pedidos e indicadores clave del inventario.',
+                            side: 'bottom', align: 'start'
+                        }
+                    },
+                    {
+                        element: '.adm-chart-grid',
+                        popover: {
+                            title: 'Métricas Detalladas',
+                            description: 'Gráficas interactivas que te ayudarán a tomar mejores decisiones comerciales, como los días de más ventas o los productos estrella.',
+                            side: 'top', align: 'center'
+                        }
+                    },
+                    {
+                        element: '.admin-header-actions',
+                        popover: {
+                            title: 'Acciones Rápidas',
+                            description: 'Desde aquí puedes ir a la tienda principal o generar reportes importantes en cualquier momento.',
+                            side: 'bottom', align: 'end'
+                        }
+                    },
+                    {
+                        element: '.admin-sidebar .admin-nav',
+                        popover: {
+                            title: 'Navegación Principal',
+                            description: 'Accede a administrar productos, categorías, inventario y los pedidos de los clientes. ¡Explora a tu ritmo!',
+                            side: 'right', align: 'center'
+                        }
+                    }
+                ],
+                onDestroyStarted: () => {
+                    localStorage.setItem('tour_dashboard_visto_v1', 'true');
+                    if (driverObj.hasNextStep()) { driverObj.destroy(); }
+                }
+            });
+        }
+        // Configuracion del Tour para Productos
+        else if (pageName === 'productos' && !localStorage.getItem('tour_productos_visto_v1')) {
+            driverObj = driver({
+                ...driverOptions,
+                steps: [
+                    {
+                        element: '.admin-page-title',
+                        popover: {
+                            title: 'Catálogo de Productos',
+                            description: 'Aquí puedes gestionar visualmente todos los productos que ofreces en la tienda.',
+                            side: 'bottom', align: 'start'
+                        }
+                    },
+                    {
+                        element: '#btn-abrir-nuevo-producto',
+                        popover: {
+                            title: 'Agregar Nuevo',
+                            description: 'Usa este botón para registrar un nuevo producto, configurando su precio, stock y badges especiales.',
+                            side: 'left', align: 'center'
+                        }
+                    },
+                    {
+                        element: '#buscar-producto',
+                        popover: {
+                            title: 'Búsqueda Instantánea',
+                            description: 'Encuentra al momento el producto que necesitas sin tener que recargar la página.',
+                            side: 'bottom', align: 'end'
+                        }
+                    },
+                    {
+                        element: '#tabla-productos',
+                        popover: {
+                            title: 'Tabla Interactiva',
+                            description: 'Revisa el precio, stock y estado de cada producto. Usa los botones de Editar o Eliminar según requieras.',
+                            side: 'top', align: 'center'
+                        }
+                    }
+                ],
+                onDestroyStarted: () => {
+                    localStorage.setItem('tour_productos_visto_v1', 'true');
+                    if (driverObj.hasNextStep()) { driverObj.destroy(); }
+                }
+            });
+        }
+        
+        if (driverObj) {
+            // Retraso para que la pagina (DOM, graficas) cargue por completo antes del tour
+            setTimeout(() => {
+                driverObj.drive();
+            }, 800);
+        }
+    });
 </script>
 </body>
 
