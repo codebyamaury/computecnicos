@@ -5,6 +5,7 @@
         <button class="adm-modal-close" onclick="cerrarModalMovimiento()">&times;</button>
         <div class="adm-modal-title">Nuevo Movimiento</div>
         <form id="form-nuevo-movimiento" method="post" enctype="multipart/form-data" style="display:flex;flex-direction:column;gap:0.875rem">
+                    <?= csrf_field() ?>
             <div>
                 <label class="adm-label">Producto *</label>
                 <select name="id_producto" class="adm-select" required>

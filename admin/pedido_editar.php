@@ -230,6 +230,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
         <?php endif; ?>
         <form method="post" class="space-y-6 bg-[#232323] p-8 rounded-lg shadow">
+                    <?= csrf_field() ?>
             <div>
                 <label class="block mb-1 font-semibold">Cliente *</label>
                 <select name="id_usuario" class="w-full bg-[#181818] border border-[#333] rounded px-3 py-2 text-white" required>

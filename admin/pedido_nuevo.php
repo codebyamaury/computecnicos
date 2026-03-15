@@ -214,6 +214,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <!-- Content -->
         <main class="flex-1 px-8 py-10 bg-[#181818]">
             <form method="post" class="max-w-5xl mx-auto bg-[#232323] p-8 rounded-xl border border-[#333] shadow space-y-8">
+                    <?= csrf_field() ?>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                     <div>
                         <label class="block mb-1 font-semibold">Cliente *</label>

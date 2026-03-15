@@ -119,6 +119,7 @@ include '_layout.php';
                             </select>
                         <?php else: ?>
                         <form method="post" style="display:inline-flex;align-items:center;gap:6px">
+                    <?= csrf_field() ?>
                             <input type="hidden" name="id_usuario" value="<?= $u['id'] ?>">
                             <input type="hidden" name="cambiar_rol" value="1">
                             <select name="nuevo_rol" class="adm-select" style="padding:0.3rem 0.6rem;font-size:0.72rem;width:auto" onchange="this.form.submit()">
@@ -166,6 +167,7 @@ include '_layout.php';
         <button class="adm-modal-close" onclick="cerrarEditar()">&times;</button>
         <div class="adm-modal-title">Editar Usuario</div>
         <form id="form-editar-usuario" style="display:flex;flex-direction:column;gap:0.875rem">
+                    <?= csrf_field() ?>
             <input type="hidden" name="id" id="edit-id">
             <div><label class="adm-label">Nombre *</label><input type="text" name="nombre" id="edit-nombre" class="adm-input" required></div>
             <div><label class="adm-label">Email *</label><input type="email" name="email" id="edit-email" class="adm-input" required></div>
@@ -198,6 +200,7 @@ include '_layout.php';
         <button class="adm-modal-close" onclick="cerrarNuevo()">&times;</button>
         <div class="adm-modal-title">Nuevo Usuario</div>
         <form id="form-nuevo-usuario" style="display:flex;flex-direction:column;gap:0.875rem">
+                    <?= csrf_field() ?>
             <div><label class="adm-label">Nombre *</label><input type="text" name="nombre" class="adm-input" required></div>
             <div><label class="adm-label">Email *</label><input type="email" name="email" class="adm-input" required></div>
             <div class="adm-form-row" style="margin-bottom:0">

@@ -138,6 +138,7 @@ include '_layout.php';
 
         <div class="adm-form">
             <form method="post" enctype="multipart/form-data">
+                    <?= csrf_field() ?>
                 <!-- Nombre -->
                 <div class="adm-form-group">
                     <label class="adm-label">Nombre del producto *</label>

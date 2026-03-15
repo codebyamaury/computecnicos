@@ -67,6 +67,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <div class="mb-4 p-3 rounded text-white <?php echo strpos($mensaje, 'correctamente') !== false ? 'bg-green-600' : 'bg-red-600'; ?>"> <?php echo $mensaje; ?> </div>
         <?php endif; ?>
         <form method="post" class="space-y-5 bg-[#232323] p-6 rounded-xl border border-[#333] shadow-lg">
+                    <?= csrf_field() ?>
             <div>
                 <label class="block mb-1">Nombre *</label>
                 <input type="text" name="nombre" class="w-full bg-[#181818] border border-[#333] rounded-lg px-3 py-2 text-white focus:border-red-600 outline-none" value="<?php echo htmlspecialchars($categoria['nombre']); ?>" required>

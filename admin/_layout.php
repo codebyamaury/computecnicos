@@ -70,6 +70,7 @@ $nav_items = [
     <?= $admin_head_scripts ?>
 
 
+    <meta name="csrf-token" content="<?= csrf_token() ?>">
 </head>
 
 <body>

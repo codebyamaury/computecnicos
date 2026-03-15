@@ -184,7 +184,15 @@
         tipo = tipo || 'elemento';
         document.getElementById('confirm-del-title').textContent = '¿Eliminar ' + tipo + '?';
         document.getElementById('confirm-del-msg').textContent = '«' + nombre + '» será eliminado permanentemente. Esta acción no se puede deshacer.';
-        document.getElementById('confirm-del-href').href = href;
+        
+        // Agregar CSRF Token a la URL de eliminación
+        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+        let finalHref = href;
+        if(csrfToken) {
+            finalHref += (finalHref.includes('?') ? '&' : '?') + 'csrf_token=' + csrfToken;
+        }
+        
+        document.getElementById('confirm-del-href').href = finalHref;
         document.getElementById('modal-confirm-del-bg').classList.add('show');
         document.getElementById('modal-confirm-del').classList.remove('hidden');
         document.getElementById('modal-confirm-del').classList.add('show');

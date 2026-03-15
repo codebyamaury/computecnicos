@@ -148,6 +148,7 @@ include '_layout.php';
         <button class="adm-modal-close" onclick="cerrarNuevo()">&times;</button>
         <div class="adm-modal-title">Nuevo Producto</div>
         <form id="form-nuevo-producto" method="post" enctype="multipart/form-data" style="display:flex;flex-direction:column;gap:0.875rem">
+                    <?= csrf_field() ?>
             <div><label class="adm-label">Nombre *</label><input type="text" name="nombre" class="adm-input" required></div>
             <div><label class="adm-label">Descripción</label><textarea name="descripcion" rows="2" class="adm-textarea"></textarea></div>
             <div class="adm-form-row" style="margin-bottom:0">

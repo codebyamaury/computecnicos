@@ -117,7 +117,12 @@ function cerrarDelMov() {
 async function confirmarEliminarMov() {
     var id = document.getElementById('del-mov-href').dataset.id;
     cerrarDelMov();
-    const res = await fetch('eliminar_movimiento.php', { method: 'POST', headers: {'Content-Type':'application/x-www-form-urlencoded'}, body: 'id=' + id });
+    const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+    const res = await fetch('eliminar_movimiento.php', { 
+        method: 'POST', 
+        headers: {'Content-Type':'application/x-www-form-urlencoded'}, 
+        body: 'id=' + id + '&csrf_token=' + csrfToken 
+    });
     const text = await res.text();
     if (text === 'success') { window.location.href = window.location.pathname + '?exito=1'; }
     else {

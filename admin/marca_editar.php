@@ -118,6 +118,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <div class="bg-[#232323] rounded-xl border border-[#333] p-6">
                     <h2 class="text-xl font-bold mb-4">Información de la Marca</h2>
                     <form method="post" class="space-y-4">
+                    <?= csrf_field() ?>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
                                 <label class="block mb-1 font-semibold">Nombre *</label>

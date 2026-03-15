@@ -136,6 +136,7 @@ include '_layout.php';
         <div style="font-weight:700;margin-bottom:.5rem;color:#ef4444">Ejecutar Limpieza</div>
         <p style="font-size:.8rem;color:#666;margin-bottom:1rem">Esta acción eliminará permanentemente los archivos de soporte no referenciados. No se puede deshacer.</p>
         <form id="form-limpiar" method="post" style="display:inline">
+                    <?= csrf_field() ?>
             <input type="hidden" name="limpiar" value="1">
         </form>
         <button type="button" class="adm-btn adm-btn-danger" onclick="abrirConfirmLimpieza()">🗑️ Ejecutar Limpieza de Soportes</button>

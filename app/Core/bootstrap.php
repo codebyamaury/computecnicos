@@ -105,6 +105,13 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
+// ─── CSRF Protection ───
+require_once BASE_PATH . '/app/Core/csrf_helper.php';
+// Interceptar peticiones POST de la ruta /admin/ automáticamente
+if (session_status() === PHP_SESSION_ACTIVE) {
+    auto_protect_admin_csrf();
+}
+
 // ─── Remember Me ───
 require_once BASE_PATH . '/app/Core/RememberMe.php';
 $rememberMe = new RememberMe($pdo);

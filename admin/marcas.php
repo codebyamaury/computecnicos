@@ -53,6 +53,7 @@ include '_layout.php';
     <div class="adm-card">
         <div class="adm-card-title"><span class="adm-card-title-text">Nueva Marca</span></div>
         <form method="post">
+                    <?= csrf_field() ?>
             <div class="adm-form-row">
                 <div class="adm-form-group" style="margin-bottom:0">
                     <label class="adm-label">Nombre *</label>
@@ -124,6 +125,7 @@ include '_layout.php';
         <button class="adm-modal-close" onclick="cerrarModal()">&times;</button>
         <div class="adm-modal-title">Editar Marca</div>
         <form id="form-editar-marca" style="display:flex;flex-direction:column;gap:1rem">
+                    <?= csrf_field() ?>
             <input type="hidden" name="id" id="edit-id">
             <div>
                 <label class="adm-label">Nombre *</label>

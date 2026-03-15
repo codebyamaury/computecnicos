@@ -185,6 +185,7 @@ include '_layout.php';
             <div class="adm-pedido-actions">
                 <!-- Cambiar estado -->
                 <form method="post" class="adm-pedido-status-form">
+                    <?= csrf_field() ?>
                     <input type="hidden" name="id_pedido" value="<?= $pedido['id'] ?>">
                     <label class="adm-pedido-status-label">Estado:</label>
                     <input type="hidden" name="cambiar_estado" value="1">
@@ -263,6 +264,7 @@ include '_layout.php';
         <button class="adm-modal-close" onclick="cerrarEditar()">&times;</button>
         <div class="adm-modal-title">Editar Pedido</div>
         <form id="form-editar-pedido" style="display:flex;flex-direction:column;gap:1rem">
+                    <?= csrf_field() ?>
             <input type="hidden" name="id" id="edit-id">
             <div class="adm-form-row" style="margin-bottom:0">
                 <div style="flex:2">
@@ -333,6 +335,7 @@ include '_layout.php';
         <button class="adm-modal-close" onclick="cerrarNuevo()">&times;</button>
         <div class="adm-modal-title">Nuevo Pedido</div>
         <form id="form-nuevo-pedido" style="display:flex;flex-direction:column;gap:1rem">
+                    <?= csrf_field() ?>
             <div class="adm-form-row" style="margin-bottom:0">
                 <div style="flex:2">
                     <label class="adm-label">Cliente *</label>

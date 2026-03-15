@@ -76,6 +76,7 @@ include '_layout.php';
         <button class="adm-modal-close" onclick="cerrarNuevo()">&times;</button>
         <div class="adm-modal-title">Nuevo Proveedor</div>
         <form id="form-proveedor" style="display:flex;flex-direction:column;gap:0.875rem">
+                    <?= csrf_field() ?>
             <div><label class="adm-label">Nombre *</label><input type="text" name="nombre" class="adm-input" required></div>
             <div><label class="adm-label">Email</label><input type="email" name="email" class="adm-input"></div>
             <div class="adm-form-row" style="margin-bottom:0">
@@ -96,6 +97,7 @@ include '_layout.php';
         <button class="adm-modal-close" onclick="cerrarEditar()">&times;</button>
         <div class="adm-modal-title">Editar Proveedor</div>
         <form id="form-editar-proveedor" style="display:flex;flex-direction:column;gap:0.875rem">
+                    <?= csrf_field() ?>
             <input type="hidden" name="id" id="edit-id">
             <div><label class="adm-label">Nombre *</label><input type="text" name="nombre" id="edit-nombre" class="adm-input" required></div>
             <div><label class="adm-label">Email</label><input type="email" name="email" id="edit-email" class="adm-input"></div>
