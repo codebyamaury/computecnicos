@@ -77,27 +77,8 @@
         if (btnHamburger) btnHamburger.addEventListener('click', toggleDrawer);
         if (btnCollapse) btnCollapse.addEventListener('click', toggleCollapse);
 
-        /* Close drawer on mobile when clicking a nav link */
-        sidebar.querySelectorAll('.admin-nav-link').forEach(function (link) {
-            link.addEventListener('click', function (e) {
-                if (window.innerWidth < 1024) {
-                    // Let the browser navigate naturally — don't close drawer
-                    // because the CSS transition can prevent the <a> navigation.
-                    // The page will reload anyway.
-                    var href = link.getAttribute('href');
-                    if (href && href !== '#') {
-                        // Navigate after a tiny delay to ensure click registers
-                        e.preventDefault();
-                        closeDrawer();
-                        setTimeout(function() {
-                            window.location.href = href;
-                        }, 120);
-                    } else {
-                        closeDrawer();
-                    }
-                }
-            });
-        });
+        /* On mobile, nav links just navigate normally (page reloads).
+           No need to close the drawer — the new page will load fresh. */
 
         /* Close drawer when clicking overlay */
         if (overlay) {
