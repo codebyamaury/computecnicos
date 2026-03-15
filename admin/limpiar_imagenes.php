@@ -98,7 +98,6 @@ if ($doRun && !empty($orphans)) {
     <title>Limpiar imágenes huérfanas | Admin</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="<?= asset('css/admin.css') ?>">
-    <style>.container{max-width:1000px}</style>
 </head>
 <body class="bg-[#181818] text-white min-h-screen">
     <header class="bg-[#232323] border-b border-[#333] py-4 px-8 flex items-center justify-between">
@@ -108,7 +107,7 @@ if ($doRun && !empty($orphans)) {
             <a href="productos.php" class="text-gray-300 hover:text-red-500">Productos</a>
         </nav>
     </header>
-    <main class="container mx-auto px-4 py-8">
+    <main class="max-w-[1000px] mx-auto px-4 py-8">
         <section class="bg-[#232323] border border-[#333] rounded-xl p-6 mb-8">
             <h2 class="text-lg font-bold mb-4">Resumen</h2>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">

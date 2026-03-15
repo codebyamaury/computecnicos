@@ -86,7 +86,7 @@ $nav_items = [
             <div class="sidebar-inner">
                 <a href="dashboard.php" class="admin-logo">
                     <span class="admin-logo-power-wrap">
-                        <i data-lucide="power" class="admin-logo-icon" style="width:32px;height:32px"></i>
+                        <i data-lucide="power" class="admin-logo-icon adm-icon-logo"></i>
                     </span>
                 </a>
 
@@ -97,7 +97,7 @@ $nav_items = [
                             <li class="admin-nav-item">
                                 <a href="<?= $item['href'] ?>"
                                     class="admin-nav-link <?= $admin_page === $item['key'] ? 'active' : '' ?>">
-                                    <i data-lucide="<?= $item['icon'] ?>" style="width:20px;height:20px"></i>
+                                    <i data-lucide="<?= $item['icon'] ?>" class="adm-nav-icon"></i>
                                     <span class="nav-link-text"><?= $item['label'] ?></span>
                                 </a>
                             </li>
@@ -109,7 +109,7 @@ $nav_items = [
                     <div class="admin-user-name"><?= htmlspecialchars($usuario['nombre']) ?></div>
                     <div class="admin-user-role"><?= htmlspecialchars($usuario['rol']) ?></div>
                     <a href="../logout.php" class="admin-logout">
-                        <i data-lucide="log-out" style="width:12px;height:12px"></i>
+                        <i data-lucide="log-out" class="adm-user-icon"></i>
                         Cerrar sesión
                     </a>
                 </div>
@@ -129,7 +129,7 @@ $nav_items = [
             <header class="admin-header">
                 <div class="admin-header-left">
                     <button id="btn-sidebar-toggle" class="admin-hamburger">
-                        <i data-lucide="menu" style="width:24px;height:24px"></i>
+                        <i data-lucide="menu" class="adm-menu-icon"></i>
                     </button>
                     <div>
                         <div class="admin-page-title"><?= htmlspecialchars($admin_title) ?></div>
@@ -137,7 +137,7 @@ $nav_items = [
                 </div>
                 <div class="admin-header-actions">
                     <a href="../index.php" class="adm-btn adm-btn-primary">
-                        <i data-lucide="store" style="width:18px;height:18px"></i>
+                        <i data-lucide="store" class="adm-store-icon"></i>
                         Ir a la Tienda
                     </a>
                     <?php if (isset($admin_header_extra))

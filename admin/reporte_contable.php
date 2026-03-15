@@ -74,7 +74,7 @@ include '_layout.php';
     <!-- Filtros -->
     <div class="adm-card">
         <form method="get">
-            <div class="adm-form-row" style="flex-wrap:wrap;align-items:flex-end">
+            <div class="adm-card-header-flex !items-end !p-0 !border-none">
                 <div>
                     <label class="adm-label">Fecha Inicio</label>
                     <input type="date" name="fecha_inicio" value="<?= $fecha_inicio ?>" class="adm-input">
@@ -91,7 +91,7 @@ include '_layout.php';
                         <option value="inventario" <?= $tipo_reporte==='inventario' ? 'selected':'' ?>>Inventario Valorizado</option>
                     </select>
                 </div>
-                <div style="display:flex;gap:8px;align-items:flex-end">
+                <div class="flex gap-2 items-end">
                     <button type="submit" class="adm-btn adm-btn-blue">Filtrar</button>
                     <a href="?exportar=excel&fecha_inicio=<?= $fecha_inicio ?>&fecha_fin=<?= $fecha_fin ?>&tipo=<?= $tipo_reporte ?>" class="adm-btn adm-btn-success">Exportar Excel</a>
                 </div>
@@ -101,7 +101,7 @@ include '_layout.php';
 
     <?php if ($tipo_reporte === 'general' && isset($totales) && !empty($totales)): ?>
     <!-- KPIs Financieros -->
-    <div class="adm-kpi-grid" style="--kpi-cols:3">
+    <div class="adm-kpi-grid !grid-cols-3">
         <div class="adm-kpi green">
             <div class="adm-kpi-label">Compras</div>
             <div class="adm-kpi-value"><?= formatearMoneda($totales['compras']) ?></div>
@@ -121,8 +121,8 @@ include '_layout.php';
     <?php endif; ?>
 
     <!-- Tabla de datos -->
-    <div class="adm-card" style="padding:0;overflow:hidden">
-        <div style="padding:1.25rem 1.5rem;border-bottom:1px solid rgba(255,255,255,0.04)">
+    <div class="adm-card !p-0 overflow-hidden">
+        <div class="adm-card-header">
             <span class="adm-card-title-text">
                 <?php
                 switch($tipo_reporte) {
@@ -135,7 +135,7 @@ include '_layout.php';
         </div>
 
         <?php if ($tipo_reporte === 'inventario' && isset($inventario)): ?>
-        <div class="adm-table-wrap" style="border:none;border-radius:0">
+        <div class="adm-table-wrap !border-none !rounded-none">
             <table class="adm-table">
                 <thead>
                     <tr><th>Producto</th><th>Categoría</th><th>Stock Actual</th><th>Precio Promedio</th><th>Valor Total</th></tr>
@@ -150,20 +150,20 @@ include '_layout.php';
                     <td><?= htmlspecialchars($item['categoria'] ?? '—') ?></td>
                     <td><span class="adm-badge <?= $item['stock_actual'] <= 0 ? 'adm-badge-red' : ($item['stock_actual'] <= 5 ? 'adm-badge-yellow' : 'adm-badge-green') ?>"><?= $item['stock_actual'] ?></span></td>
                     <td><?= $item['precio_promedio'] ? formatearMoneda($item['precio_promedio']) : '—' ?></td>
-                    <td style="font-weight:600"><?= formatearMoneda($vi) ?></td>
+                    <td class="adm-price-text"><?= formatearMoneda($vi) ?></td>
                 </tr>
                 <?php endforeach; ?>
                 </tbody>
                 <tfoot>
-                    <tr style="background:rgba(255,255,255,0.02)">
-                        <td colspan="4" style="text-align:right;padding:0.875rem 1rem;font-weight:700;color:#888">Valor Total del Inventario:</td>
-                        <td style="padding:0.875rem 1rem;font-weight:700;color:#22c55e"><?= formatearMoneda($valor_total) ?></td>
+                    <tr class="bg-white/[0.02]">
+                        <td colspan="4" class="text-right p-[0.875rem_1rem] font-bold text-[#888]">Valor Total del Inventario:</td>
+                        <td class="p-[0.875rem_1rem] font-bold text-[#22c55e]"><?= formatearMoneda($valor_total) ?></td>
                     </tr>
                 </tfoot>
             </table>
         </div>
         <?php else: ?>
-        <div class="adm-table-wrap" style="border:none;border-radius:0">
+        <div class="adm-table-wrap !border-none !rounded-none">
             <table class="adm-table">
                 <thead>
                     <tr>
@@ -179,10 +179,10 @@ include '_layout.php';
                 </thead>
                 <tbody>
                 <?php if (empty($movimientos)): ?>
-                <tr><td colspan="12" style="text-align:center;padding:2rem;color:#444">Sin registros en el período seleccionado</td></tr>
+                <tr><td colspan="12" class="text-center p-8 text-[#444]">Sin registros en el período seleccionado</td></tr>
                 <?php else: foreach ($movimientos as $m): ?>
                 <tr>
-                    <td style="color:#555;font-size:0.75rem;white-space:nowrap"><?= date('d/m/Y', strtotime($m['fecha'])) ?></td>
+                    <td class="text-[#555] text-[0.75rem] whitespace-nowrap"><?= date('d/m/Y', strtotime($m['fecha'])) ?></td>
                     <?php if ($tipo_reporte !== 'compras'): ?>
                     <td>
                         <?php if ($m['tipo']==='entrada'): ?><span class="adm-badge adm-badge-green">Entrada</span>
@@ -198,7 +198,7 @@ include '_layout.php';
                     <td><?= $m['cantidad'] ?></td>
                     <td><?= $m['precio_unitario'] ? formatearMoneda($m['precio_unitario']) : '—' ?></td>
                     <?php if ($tipo_reporte === 'compras'): ?>
-                    <td style="font-weight:600"><?= formatearMoneda(($m['precio_unitario']??0)*$m['cantidad']) ?></td>
+                    <td class="adm-price-text"><?= formatearMoneda(($m['precio_unitario']??0)*$m['cantidad']) ?></td>
                     <?php endif; ?>
                     <td><?= $m['iva'] ? formatearMoneda($m['iva']) : '—' ?></td>
                     <td><?= $m['retencion'] ? formatearMoneda($m['retencion']) : '—' ?></td>

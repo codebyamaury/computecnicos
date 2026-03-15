@@ -75,17 +75,17 @@ $admin_header_extra = '<a href="inventario.php" class="adm-btn adm-btn-blue">←
 include '_layout.php';
 ?>
 
-<main class="admin-content" style="padding:1.25rem 1.5rem;display:flex;flex-direction:column;overflow-y:auto;height:calc(100vh - 60px)">
+<main class="admin-content flex flex-col overflow-y-auto h-[calc(100vh-60px)] !p-6">
 
     <?php if (!$col_soporte): ?>
-    <div style="background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.3);border-radius:10px;padding:1rem 1.25rem;margin-bottom:1.25rem;color:#f59e0b;font-size:.82rem">
+    <div class="bg-[#f59e0b]/10 border border-[#f59e0b]/30 rounded-lg p-5 mb-5 text-[#f59e0b] text-[0.82rem]">
         ⚠️ La columna <code>soporte_documental</code> no existe en la tabla <code>movimientos_inventario</code>. Agrégala con:<br>
-        <code style="display:block;margin-top:.5rem;background:#181818;padding:.5rem .75rem;border-radius:6px;color:#ccc">ALTER TABLE movimientos_inventario ADD COLUMN soporte_documental VARCHAR(255) DEFAULT NULL;</code>
+        <code class="block mt-2 bg-[#181818] p-3 rounded-md text-[#ccc]">ALTER TABLE movimientos_inventario ADD COLUMN soporte_documental VARCHAR(255) DEFAULT NULL;</code>
     </div>
     <?php endif; ?>
 
     <!-- KPIs -->
-    <div class="adm-kpi-grid" style="--kpi-cols:3;margin-bottom:1.25rem">
+    <div class="adm-kpi-grid !mb-5">
         <div class="adm-kpi blue">
             <div class="adm-kpi-label">Soportes en BD</div>
             <div class="adm-kpi-value"><?= $total_soportes_bd ?></div>
@@ -104,13 +104,13 @@ include '_layout.php';
     </div>
 
     <?php if ($resultado): ?>
-    <div class="adm-card" style="padding:1.25rem;margin-bottom:1.25rem;border-left:4px solid #22c55e">
-        <div style="font-weight:700;margin-bottom:.5rem;color:#22c55e">Resultado de la Limpieza</div>
-        <div style="font-size:.85rem;color:#aaa">✅ Se eliminaron <strong style="color:#fff"><?= $resultado['archivos_eliminados'] ?></strong> archivos huérfanos.</div>
+    <div class="adm-card !p-5 !mb-5 border-l-4 border-l-[#22c55e]">
+        <div class="font-bold mb-2 text-[#22c55e]">Resultado de la Limpieza</div>
+        <div class="text-[0.85rem] text-[#aaa]">✅ Se eliminaron <strong class="text-white"><?= $resultado['archivos_eliminados'] ?></strong> archivos huérfanos.</div>
         <?php if (!empty($resultado['errores'])): ?>
-        <div style="margin-top:.75rem;color:#ef4444;font-size:.8rem">
+        <div class="mt-3 text-[#ef4444] text-[0.8rem]">
             <strong>Errores:</strong>
-            <ul style="margin-top:.25rem;padding-left:1rem">
+            <ul class="mt-1 pl-4">
                 <?php foreach ($resultado['errores'] as $error): ?>
                 <li><?= htmlspecialchars($error) ?></li>
                 <?php endforeach; ?>
@@ -121,21 +121,21 @@ include '_layout.php';
     <?php endif; ?>
 
     <!-- Info -->
-    <div class="adm-card" style="padding:1.25rem;margin-bottom:1.25rem">
-        <div style="font-weight:700;margin-bottom:.75rem;color:#f59e0b">¿Qué hace esta herramienta?</div>
-        <div style="font-size:.8rem;color:#999;line-height:1.7">
-            • <strong style="color:#ccc">Detecta archivos huérfanos:</strong> Archivos que existen en el servidor pero no están referenciados en la BD<br>
-            • <strong style="color:#ccc">Elimina automáticamente:</strong> Libera espacio eliminando archivos innecesarios<br>
-            • <strong style="color:#ccc">Mantiene integridad:</strong> Solo elimina archivos no asociados a ningún movimiento<br>
-            • <strong style="color:#ccc">Seguro:</strong> No afecta soportes correctamente vinculados a compras
+    <div class="adm-card !p-5 !mb-5">
+        <div class="font-bold mb-3 text-[#f59e0b]">¿Qué hace esta herramienta?</div>
+        <div class="text-[0.8rem] text-[#999] leading-loose">
+            • <strong class="text-[#ccc]">Detecta archivos huérfanos:</strong> Archivos que existen en el servidor pero no están referenciados en la BD<br>
+            • <strong class="text-[#ccc]">Elimina automáticamente:</strong> Libera espacio eliminando archivos innecesarios<br>
+            • <strong class="text-[#ccc]">Mantiene integridad:</strong> Solo elimina archivos no asociados a ningún movimiento<br>
+            • <strong class="text-[#ccc]">Seguro:</strong> No afecta soportes correctamente vinculados a compras
         </div>
     </div>
 
     <!-- Acción -->
-    <div class="adm-card" style="padding:1.25rem">
-        <div style="font-weight:700;margin-bottom:.5rem;color:#ef4444">Ejecutar Limpieza</div>
-        <p style="font-size:.8rem;color:#666;margin-bottom:1rem">Esta acción eliminará permanentemente los archivos de soporte no referenciados. No se puede deshacer.</p>
-        <form id="form-limpiar" method="post" style="display:inline">
+    <div class="adm-card !p-5">
+        <div class="font-bold mb-2 text-[#ef4444]">Ejecutar Limpieza</div>
+        <p class="text-[0.8rem] text-[#666] mb-4">Esta acción eliminará permanentemente los archivos de soporte no referenciados. No se puede deshacer.</p>
+        <form id="form-limpiar" method="post" class="inline">
             <input type="hidden" name="limpiar" value="1">
         </form>
         <button type="button" class="adm-btn adm-btn-danger" onclick="abrirConfirmLimpieza()">🗑️ Ejecutar Limpieza de Soportes</button>
@@ -146,17 +146,17 @@ include '_layout.php';
 <!-- Modal Confirmar Limpieza -->
 <div id="modal-limpiar-bg" class="adm-modal-overlay"></div>
 <div id="modal-limpiar" class="adm-modal hidden">
-    <div class="adm-modal-box" style="max-width:380px;text-align:center">
-        <div style="width:56px;height:56px;background:rgba(239,68,68,.12);border:2px solid rgba(239,68,68,.3);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 1.1rem">
-            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:26px;height:26px;stroke:#ef4444">
+    <div class="adm-modal-box !max-w-[380px] text-center">
+        <div class="w-14 h-14 bg-[#ef4444]/15 border-2 border-[#ef4444]/30 rounded-full flex items-center justify-center mx-auto mb-[1.1rem]">
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-[26px] h-[26px] stroke-[#ef4444]">
                 <path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
             </svg>
         </div>
-        <div class="adm-modal-title" style="margin-bottom:.4rem;font-size:1.1rem">¿Ejecutar limpieza?</div>
-        <p style="color:#888;font-size:.82rem;line-height:1.5;margin-bottom:1.4rem">Se eliminarán permanentemente todos los archivos de soporte huérfanos. Esta acción no se puede deshacer.</p>
-        <div style="display:flex;gap:10px">
-            <button type="button" onclick="cerrarConfirmLimpieza()" class="adm-btn" style="flex:1;justify-content:center">Cancelar</button>
-            <button type="button" onclick="document.getElementById('form-limpiar').submit()" class="adm-btn adm-btn-danger" style="flex:1;justify-content:center">Sí, limpiar</button>
+        <div class="adm-modal-title mb-1.5 !text-[1.1rem]">¿Ejecutar limpieza?</div>
+        <p class="text-[#888] text-[0.82rem] leading-relaxed mb-[1.4rem]">Se eliminarán permanentemente todos los archivos de soporte huérfanos. Esta acción no se puede deshacer.</p>
+        <div class="flex gap-[10px]">
+            <button type="button" onclick="cerrarConfirmLimpieza()" class="adm-btn flex-1 justify-center">Cancelar</button>
+            <button type="button" onclick="document.getElementById('form-limpiar').submit()" class="adm-btn adm-btn-danger flex-1 justify-center">Sí, limpiar</button>
         </div>
     </div>
 </div>

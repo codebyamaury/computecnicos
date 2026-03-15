@@ -121,11 +121,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 <div id="modal-edit-bg" class="adm-modal-overlay" onclick="cerrarModalEditarProducto()"></div>
 <div id="modal-edit-producto" class="adm-modal hidden">
-    <div class="adm-modal-box" style="width:100%;max-width:700px;max-height:90vh;overflow-y:auto;padding:1.5rem;text-align:left">
+    <div class="adm-modal-box !w-full !max-w-[700px] !max-h-[90vh] overflow-y-auto !p-6 text-left">
         <button type="button" class="adm-modal-close" onclick="cerrarModalEditarProducto()">&times;</button>
-        <div class="adm-modal-title" style="margin-bottom:1.5rem">Editar Producto: <?= htmlspecialchars($producto['nombre']) ?></div>
+        <div class="adm-modal-title mb-6">Editar Producto: <?= htmlspecialchars($producto['nombre']) ?></div>
         
-        <form id="form-editar-producto" onsubmit="guardarEdicionProducto(event, <?= $id ?>)" enctype="multipart/form-data" style="display:flex;flex-direction:column;gap:1.2rem">
+        <form id="form-editar-producto" onsubmit="guardarEdicionProducto(event, <?= $id ?>)" enctype="multipart/form-data" class="flex flex-col gap-[1.2rem]">
                 <!-- Nombre -->
                 <div class="adm-form-group">
                     <label class="adm-label">Nombre del producto *</label>
@@ -153,12 +153,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <!-- Imagen actual -->
                 <div class="adm-form-group">
                     <label class="adm-label">Imagen principal actual</label>
-                    <div style="margin-bottom:0.75rem">
-                        <img src="<?= htmlspecialchars((strpos($producto['imagen'], 'http') === 0) ? $producto['imagen'] : '../' . ($producto['imagen'] ?: 'uploads/products/default.png')) ?>" alt="Imagen actual" style="width:120px;height:80px;object-fit:cover;border-radius:0.5rem;border:1px solid var(--adm-border)">
+                    <div class="mb-3">
+                        <img src="<?= htmlspecialchars((strpos($producto['imagen'], 'http') === 0) ? $producto['imagen'] : '../' . ($producto['imagen'] ?: 'uploads/products/default.png')) ?>" alt="Imagen actual" class="w-[120px] h-20 object-cover rounded-lg border border-[var(--adm-border)]">
                     </div>
                     <label class="adm-label">Cambiar imagen principal (Solo PNG)</label>
-                    <input type="file" name="imagen" accept="image/png" class="adm-input" style="padding:0.5rem">
-                    <div style="font-size:0.7rem;color:#555;margin-top:0.35rem">⚠️ Solo se permiten imágenes en formato <strong style="color:#fff">PNG</strong>. Ésta será la portada del producto.</div>
+                    <input type="file" name="imagen" accept="image/png" class="adm-input !p-2">
+                    <div class="adm-form-help">⚠️ Solo se permiten imágenes en formato <strong>PNG</strong>. Ésta será la portada del producto.</div>
                 </div>
 
                 <!-- Categoría y Marca -->
@@ -187,12 +187,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <?php if (count($imagenes) > 0): ?>
                 <div class="adm-form-group">
                     <label class="adm-label">Galería de imágenes</label>
-                    <div style="display:flex;flex-wrap:wrap;gap:0.75rem;margin-bottom:0.75rem">
+                    <div class="flex flex-wrap gap-3 mb-3">
                         <?php foreach ($imagenes as $img): ?>
-                            <div style="position:relative">
-                                <img src="<?= htmlspecialchars((strpos($img['url_imagen'], 'http') === 0) ? $img['url_imagen'] : '../' . $img['url_imagen']) ?>" alt="img" style="width:90px;height:60px;object-fit:cover;border-radius:0.5rem;border:1px solid var(--adm-border)">
-                                <label style="position:absolute;top:-6px;right:-6px;background:var(--adm-red);color:#fff;width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:0.75rem;font-weight:700">
-                                    <input type="checkbox" name="eliminar_imagen[<?= $img['id'] ?>]" value="1" style="display:none">
+                            <div class="relative">
+                                <img src="<?= htmlspecialchars((strpos($img['url_imagen'], 'http') === 0) ? $img['url_imagen'] : '../' . $img['url_imagen']) ?>" alt="img" class="w-[90px] h-[60px] object-cover rounded-lg border border-[var(--adm-border)]">
+                                <label class="absolute -top-1.5 -right-1.5 bg-[var(--adm-red)] text-white w-5 h-5 rounded-full flex items-center justify-center cursor-pointer text-[0.75rem] font-bold">
+                                    <input type="checkbox" name="eliminar_imagen[<?= $img['id'] ?>]" value="1" class="hidden">
                                     ×
                                 </label>
                             </div>
@@ -204,104 +204,80 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <!-- Agregar nuevas imágenes -->
                 <div class="adm-form-group">
                     <label class="adm-label">Agregar nuevas imágenes a la galería (Solo PNG)</label>
-                    <input type="file" name="imagenes[]" accept="image/png" class="adm-input" multiple style="padding:0.5rem">
-                    <div style="font-size:0.7rem;color:#555;margin-top:0.35rem">Puedes seleccionar múltiples imágenes adicionales para la galería del producto.</div>
+                    <input type="file" name="imagenes[]" accept="image/png" class="adm-input !p-2" multiple>
+                    <div class="adm-form-help">Puedes seleccionar múltiples imágenes adicionales para la galería del producto.</div>
                 </div>
 
                 <!-- Separador visual -->
-                <div style="border-top:1px solid var(--adm-border);margin:1.5rem 0;padding-top:1.5rem">
-                    <h3 style="color:#fff;font-size:0.95rem;font-weight:700;margin-bottom:1rem;display:flex;align-items:center;gap:8px">
-                        <span style="width:3px;height:16px;background:var(--adm-red);border-radius:2px;display:inline-block"></span>
-                        Visibilidad y Promociones
-                    </h3>
+                <div class="adm-form-section">
+                    <h3 class="adm-form-section-title">Visibilidad y Promociones</h3>
 
                     <!-- Destacado -->
-                    <div class="adm-form-group" style="display:flex;align-items:center;gap:0.75rem;padding:1rem;background:rgba(255,255,255,0.03);border-radius:0.75rem;border:1px solid var(--adm-border)">
-                        <label style="position:relative;display:inline-block;width:48px;height:26px;flex-shrink:0">
-                            <input type="checkbox" name="destacado" value="1" style="opacity:0;width:0;height:0" id="toggle-destacado" <?php if(!empty($producto['destacado'])) echo 'checked'; ?>>
-                            <span style="position:absolute;cursor:pointer;top:0;left:0;right:0;bottom:0;background:rgba(255,255,255,0.08);border-radius:13px;transition:0.3s" id="slider-destacado"></span>
-                        </label>
-                        <div>
-                            <div style="font-size:0.88rem;font-weight:600;color:#e7e7ea">Producto Destacado</div>
-                            <div style="font-size:0.72rem;color:#666">Se mostrará en la sección "Productos Destacados" de la página principal</div>
+                    <div class="adm-form-group-box">
+                        <div class="adm-toggle-wrap">
+                            <label class="relative inline-block w-12 h-[26px] shrink-0">
+                                <input type="checkbox" name="destacado" value="1" class="opacity-0 w-0 h-0" id="toggle-destacado" <?php if(!empty($producto['destacado'])) echo 'checked'; ?>>
+                                <span class="adm-toggle-slider"></span>
+                            </label>
+                            <div class="adm-toggle-info">
+                                <div class="adm-toggle-title">Producto Destacado</div>
+                                <div class="adm-toggle-desc">Se mostrará en la sección "Productos Destacados" de la página principal</div>
+                            </div>
                         </div>
                     </div>
 
                     <!-- Tiempo como Nuevo -->
-                    <div class="adm-form-group" style="padding:1rem;background:rgba(255,255,255,0.03);border-radius:0.75rem;border:1px solid var(--adm-border)">
-                        <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.75rem">
-                            <span style="width:8px;height:8px;background:#3b82f6;border-radius:50%;display:inline-block"></span>
-                            <span style="font-size:0.88rem;font-weight:600;color:#e7e7ea">Badge "NUEVO"</span>
+                    <div class="adm-form-group-box">
+                        <div class="flex items-center gap-2 mb-3">
+                            <span class="w-2 h-2 bg-[#3b82f6] rounded-full inline-block"></span>
+                            <span class="text-[0.88rem] font-semibold text-[#e7e7ea]">Badge "NUEVO"</span>
                             <?php
                                 $nuevo_activo = !empty($producto['nuevo_hasta']) && strtotime($producto['nuevo_hasta']) >= strtotime('today');
                             ?>
                             <?php if ($nuevo_activo): ?>
-                                <span class="adm-badge adm-badge-blue" style="margin-left:auto">ACTIVO</span>
+                                <span class="adm-badge adm-badge-blue ml-auto">ACTIVO</span>
                             <?php elseif (!empty($producto['nuevo_hasta'])): ?>
-                                <span class="adm-badge adm-badge-gray" style="margin-left:auto">VENCIDO</span>
+                                <span class="adm-badge adm-badge-gray ml-auto">VENCIDO</span>
                             <?php endif; ?>
                         </div>
                         <label class="adm-label">Mostrar como nuevo hasta</label>
                         <input type="date" name="nuevo_hasta" class="adm-input" value="<?= htmlspecialchars($producto['nuevo_hasta'] ?? '') ?>">
-                        <div style="font-size:0.7rem;color:#555;margin-top:0.35rem">Déjalo vacío para que no muestre la badge "NUEVO". El producto mostrará la badge hasta la fecha indicada.</div>
+                        <div class="adm-form-help">Déjalo vacío para que no muestre la badge "NUEVO". El producto mostrará la badge hasta la fecha indicada.</div>
                     </div>
 
                     <!-- Oferta -->
-                    <div class="adm-form-group" style="padding:1rem;background:rgba(255,255,255,0.03);border-radius:0.75rem;border:1px solid var(--adm-border)">
-                        <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.75rem">
-                            <span style="width:8px;height:8px;background:#ef4444;border-radius:50%;display:inline-block"></span>
-                            <span style="font-size:0.88rem;font-weight:600;color:#e7e7ea">Badge "OFERTA"</span>
+                    <div class="adm-form-group-box">
+                        <div class="flex items-center gap-2 mb-3">
+                            <span class="w-2 h-2 bg-[#ef4444] rounded-full inline-block"></span>
+                            <span class="text-[0.88rem] font-semibold text-[#e7e7ea]">Badge "OFERTA"</span>
                             <?php
                                 $oferta_activa = $producto['oferta'] && (empty($producto['oferta_hasta']) || strtotime($producto['oferta_hasta']) >= strtotime('today'));
                             ?>
                             <?php if ($oferta_activa): ?>
-                                <span class="adm-badge adm-badge-red" style="margin-left:auto">ACTIVA</span>
+                                <span class="adm-badge adm-badge-red ml-auto">ACTIVA</span>
                             <?php elseif (!empty($producto['oferta_hasta']) && strtotime($producto['oferta_hasta']) < strtotime('today')): ?>
-                                <span class="adm-badge adm-badge-gray" style="margin-left:auto">VENCIDA</span>
+                                <span class="adm-badge adm-badge-gray ml-auto">VENCIDA</span>
                             <?php endif; ?>
                         </div>
-                        <div style="display:flex;align-items:center;gap:0.75rem;margin-bottom:0.75rem">
-                            <label style="position:relative;display:inline-block;width:48px;height:26px;flex-shrink:0">
-                                <input type="checkbox" name="oferta" value="1" style="opacity:0;width:0;height:0" id="toggle-oferta" <?php if($producto['oferta']) echo 'checked'; ?>>
-                                <span style="position:absolute;cursor:pointer;top:0;left:0;right:0;bottom:0;background:rgba(255,255,255,0.08);border-radius:13px;transition:0.3s" id="slider-oferta"></span>
+                        <div class="flex items-center gap-3 mb-3">
+                            <label class="relative inline-block w-12 h-[26px] shrink-0">
+                                <input type="checkbox" name="oferta" value="1" class="opacity-0 w-0 h-0" id="toggle-oferta" <?php if($producto['oferta']) echo 'checked'; ?>>
+                                <span class="adm-toggle-slider"></span>
                             </label>
-                            <span style="font-size:0.85rem;color:#aaa">Activar oferta</span>
+                            <span class="text-[0.85rem] text-[#aaa]">Activar oferta</span>
                         </div>
                         <label class="adm-label">Oferta válida hasta</label>
                         <input type="date" name="oferta_hasta" class="adm-input" value="<?= htmlspecialchars($producto['oferta_hasta'] ?? '') ?>">
-                        <div style="font-size:0.7rem;color:#555;margin-top:0.35rem">Si pones una fecha, la oferta se desactivará automáticamente al vencer. Déjalo vacío para oferta permanente (mientras esté activada).</div>
+                        <div class="adm-form-help">Si pones una fecha, la oferta se desactivará automáticamente al vencer. Déjalo vacío para oferta permanente (mientras esté activada).</div>
                     </div>
                 </div>
 
-                <div id="modal-edit-msg" style="display:none;text-align:center;color:#ef4444;font-size:0.85rem;margin-top:0.5rem"></div>
-                <button type="submit" class="adm-btn adm-btn-primary" style="width:100%;justify-content:center;padding:0.85rem;font-size:0.95rem;margin-top:0.5rem">
-                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width:18px;height:18px"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                <div id="modal-edit-msg" class="hidden text-center text-[#ef4444] text-[0.85rem] mt-2"></div>
+                <button type="submit" class="adm-btn adm-btn-primary w-full justify-center !p-[0.85rem] !text-[0.95rem] mt-2">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" class="adm-btn-icon"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
                     Guardar Cambios
                 </button>
             </form>
     </div>
 </div>
-
-<style>
-    /* Toggle switch styling override for modals if needed */
-    #toggle-destacado:checked + #slider-destacado,
-    #toggle-oferta:checked + #slider-oferta {
-        background: var(--adm-red) !important;
-    }
-    #toggle-destacado:checked + #slider-destacado::before,
-    #toggle-oferta:checked + #slider-oferta::before {
-        transform: translateX(22px);
-    }
-    #slider-destacado::before,
-    #slider-oferta::before {
-        position: absolute;
-        content: "";
-        height: 20px;
-        width: 20px;
-        left: 3px;
-        bottom: 3px;
-        background-color: white;
-        border-radius: 50%;
-        transition: 0.3s;
-    }
-</style>
+

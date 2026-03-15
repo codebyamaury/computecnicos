@@ -1800,3 +1800,16 @@
     transform: scale(1.05);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
 }
+
+/* ── Clases Auxiliares ────────────────────────────── */
+.prod-combo-msg {
+    text-align: center;
+    font-size: 0.85rem;
+    margin-bottom: 1.5rem;
+}
+
+.review-form-msg {
+    margin-top: 0.75rem;
+    text-align: center;
+    font-size: 0.85rem;
+}

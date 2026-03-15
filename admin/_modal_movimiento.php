@@ -4,7 +4,7 @@
     <div class="adm-modal-box">
         <button class="adm-modal-close" onclick="cerrarModalMovimiento()">&times;</button>
         <div class="adm-modal-title">Nuevo Movimiento</div>
-        <form id="form-nuevo-movimiento" method="post" enctype="multipart/form-data" style="display:flex;flex-direction:column;gap:0.875rem">
+        <form id="form-nuevo-movimiento" method="post" enctype="multipart/form-data" class="flex flex-col gap-[0.875rem]">
             <div>
                 <label class="adm-label">Producto *</label>
                 <select name="id_producto" class="adm-select" required>
@@ -23,7 +23,7 @@
                     <option value="ajuste">Ajuste</option>
                 </select>
             </div>
-            <div id="campos-entrada" style="display:none;display:flex;flex-direction:column;gap:0.875rem">
+            <div id="campos-entrada" class="hidden flex-col gap-[0.875rem]">
                 <div>
                     <label class="adm-label">Proveedor</label>
                     <select name="id_proveedor" class="adm-select">
@@ -34,22 +34,22 @@
                     </select>
                 </div>
                 <div><label class="adm-label">Número de factura/soporte</label><input type="text" name="numero_factura" class="adm-input"></div>
-                <div class="adm-form-row" style="margin-bottom:0">
+                <div class="adm-form-row !mb-0">
                     <div><label class="adm-label">Precio unitario</label><input type="number" name="precio_unitario" min="0" step="0.01" class="adm-input"></div>
                     <div><label class="adm-label">IVA (valor)</label><input type="number" name="iva" min="0" step="0.01" class="adm-input"></div>
                 </div>
-                <div class="adm-form-row" style="margin-bottom:0">
+                <div class="adm-form-row !mb-0">
                     <div><label class="adm-label">Retención (valor)</label><input type="number" name="retencion" min="0" step="0.01" class="adm-input"></div>
-                    <div><label class="adm-label">Soporte (PDF/JPG)</label><input type="file" name="soporte" accept=".pdf,image/*" class="adm-input" style="padding:0.35rem"></div>
+                    <div><label class="adm-label">Soporte (PDF/JPG)</label><input type="file" name="soporte" accept=".pdf,image/*" class="adm-input !p-[0.35rem]"></div>
                 </div>
             </div>
-            <div class="adm-form-row" style="margin-bottom:0">
+            <div class="adm-form-row !mb-0">
                 <div><label class="adm-label">Cantidad *</label><input type="number" name="cantidad" min="1" class="adm-input" required></div>
                 <div><label class="adm-label">Motivo</label><input type="text" name="motivo" class="adm-input"></div>
             </div>
-            <button type="submit" class="adm-btn adm-btn-primary" style="width:100%;justify-content:center;margin-top:0.25rem">Registrar movimiento</button>
+            <button type="submit" class="adm-btn adm-btn-primary w-full justify-center mt-1">Registrar movimiento</button>
         </form>
-        <div id="modal-nuevo-msg" style="display:none;margin-top:0.75rem;text-align:center;color:#ef4444;font-size:0.8rem"></div>
+        <div id="modal-nuevo-msg" class="hidden mt-3 text-center text-[#ef4444] text-[0.8rem]"></div>
     </div>
 </div>
 
@@ -60,20 +60,28 @@ function abrirModalMovimiento(e) {
     document.getElementById('modal-nuevo-movimiento').classList.remove('hidden');
     document.getElementById('modal-nuevo-movimiento').classList.add('show');
     document.getElementById('form-nuevo-movimiento').reset();
-    document.getElementById('campos-entrada').style.display='none';
-    document.body.style.overflow='hidden';
+    document.getElementById('campos-entrada').classList.add('hidden');
+    document.getElementById('campos-entrada').classList.remove('flex');
+    document.body.classList.add('overflow-hidden');
 }
 
 function cerrarModalMovimiento() {
     document.getElementById('modal-nuevo-bg').classList.remove('show');
     document.getElementById('modal-nuevo-movimiento').classList.add('hidden');
     document.getElementById('modal-nuevo-movimiento').classList.remove('show');
-    document.body.style.overflow='';
+    document.body.classList.remove('overflow-hidden');
 }
 
 function mostrarCamposEntrada() {
     var tipo = document.getElementById('nuevo-tipo').value;
-    document.getElementById('campos-entrada').style.display = (tipo === 'entrada') ? 'flex' : 'none';
+    var div = document.getElementById('campos-entrada');
+    if (tipo === 'entrada') {
+        div.classList.remove('hidden');
+        div.classList.add('flex');
+    } else {
+        div.classList.add('hidden');
+        div.classList.remove('flex');
+    }
 }
 
 document.getElementById('modal-nuevo-bg').addEventListener('click', cerrarModalMovimiento);
@@ -89,12 +97,12 @@ document.getElementById('form-nuevo-movimiento').addEventListener('submit', asyn
         } else {
             const m = document.getElementById('modal-nuevo-msg');
             m.textContent = result || 'Error al registrar movimiento. Revisa los datos.';
-            m.style.display = 'block';
+            m.classList.remove('hidden');
         }
     } catch (err) {
         const m = document.getElementById('modal-nuevo-msg');
         m.textContent = 'Error de conexión al registrar.';
-        m.style.display = 'block';
+        m.classList.remove('hidden');
     }
 });
 </script>

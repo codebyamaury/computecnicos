@@ -22,7 +22,7 @@ $admin_title      = 'Inventario';
 $admin_breadcrumb = [['label' => 'Inventario']];
 $admin_header_extra = '
     <a href="limpiar_soportes.php" class="adm-btn adm-btn-warning">🗑️ Limpiar Soportes</a>
-    <button id="btn-nuevo-movimiento" class="adm-btn adm-btn-success" onclick="abrirModalMovimiento(event)"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width:14px;height:14px"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg> Nuevo movimiento</button>';
+    <button id="btn-nuevo-movimiento" class="adm-btn adm-btn-success" onclick="abrirModalMovimiento(event)"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" class="adm-btn-icon"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg> Nuevo movimiento</button>';
 
 include '_layout.php';
 ?>
@@ -30,58 +30,58 @@ include '_layout.php';
 <main class="admin-content">
 <div class="admin-content-inner">
     <!-- Card estática con scroll interno -->
-    <div class="adm-card" style="padding:0;overflow:hidden">
+    <div class="adm-card !p-0 overflow-hidden">
         <!-- Header de la card (estático) -->
-        <div style="padding:1.25rem 1.5rem;border-bottom:1px solid rgba(255,255,255,0.04);flex-shrink:0">
-            <div class="adm-card-title" style="margin-bottom:0">
+        <div class="adm-inv-header flex-shrink-0">
+            <div class="adm-card-title mb-0">
                 <span class="adm-card-title-text">Movimientos de Inventario</span>
                 <span class="adm-badge adm-badge-gray"><?= count($movimientos) ?> registros</span>
             </div>
         </div>
         <!-- Zona scrolleable (con scroll horizontal en móvil) -->
-        <div class="adm-table-wrap" style="border:none;border-radius:0;overflow-x:auto;min-width:0;">
-            <table class="adm-table" id="tabla-inventario" style="min-width:1200px;">
-                <thead style="position:sticky;top:0;z-index:2;background:rgba(18,18,18,0.95);backdrop-filter:blur(8px);">
+        <div class="adm-table-wrap !border-none !rounded-none overflow-x-auto min-w-0">
+            <table class="adm-table min-w-[1200px]" id="tabla-inventario">
+                <thead class="adm-inv-sticky-thead">
                     <tr>
-                        <th style="padding:.5rem .75rem;min-width:140px;">Producto</th><th style="padding:.5rem .75rem;min-width:70px;">Tipo</th><th style="padding:.5rem .75rem;min-width:60px;">Cant.</th><th style="padding:.5rem .75rem;min-width:120px;">Proveedor</th>
-                        <th style="padding:.5rem .75rem;min-width:90px;">Factura</th><th style="padding:.5rem .75rem;min-width:100px;">Precio U.</th><th style="padding:.5rem .75rem;min-width:90px;">IVA</th><th style="padding:.5rem .75rem;min-width:90px;">Ret.</th>
-                        <th style="padding:.5rem .75rem;min-width:160px;">Motivo</th><th style="padding:.5rem .75rem;min-width:100px;">Usuario</th><th style="padding:.5rem .75rem;min-width:120px;">Fecha</th><th style="padding:.5rem .75rem;min-width:60px;">Sop.</th><th style="padding:.5rem .75rem;min-width:80px;">Acc.</th>
+                        <th class="adm-inv-th-padding min-w-[140px]">Producto</th><th class="adm-inv-th-padding min-w-[70px]">Tipo</th><th class="adm-inv-th-padding min-w-[60px]">Cant.</th><th class="adm-inv-th-padding min-w-[120px]">Proveedor</th>
+                        <th class="adm-inv-th-padding min-w-[90px]">Factura</th><th class="adm-inv-th-padding min-w-[100px]">Precio U.</th><th class="adm-inv-th-padding min-w-[90px]">IVA</th><th class="adm-inv-th-padding min-w-[90px]">Ret.</th>
+                        <th class="adm-inv-th-padding min-w-[160px]">Motivo</th><th class="adm-inv-th-padding min-w-[100px]">Usuario</th><th class="adm-inv-th-padding min-w-[120px]">Fecha</th><th class="adm-inv-th-padding min-w-[60px]">Sop.</th><th class="adm-inv-th-padding min-w-[80px]">Acc.</th>
                     </tr>
                 </thead>
                 <tbody>
                 <?php if (empty($movimientos)): ?>
-                <tr><td colspan="13" style="text-align:center;padding:2.5rem;color:#444">No hay movimientos de inventario</td></tr>
+                <tr><td colspan="13" class="text-center p-10 text-[#444]">No hay movimientos de inventario</td></tr>
                 <?php else: ?>
                 <?php foreach ($movimientos as $m): ?>
                 <tr>
-                    <td style="padding:.6rem .75rem;"><strong><?= htmlspecialchars($m['producto']) ?></strong></td>
-                    <td style="padding:.6rem .75rem">
+                    <td class="adm-inv-row-padding"><strong><?= htmlspecialchars($m['producto']) ?></strong></td>
+                    <td class="adm-inv-row-padding">
                         <?php if ($m['tipo'] === 'entrada'): ?>
-                        <span class="adm-badge adm-badge-green" style="font-size:.65rem;padding:.15rem .4rem">Entrada</span>
+                        <span class="adm-badge adm-badge-green adm-inv-badge-mini">Entrada</span>
                         <?php elseif ($m['tipo'] === 'salida'): ?>
-                        <span class="adm-badge adm-badge-red" style="font-size:.65rem;padding:.15rem .4rem">Salida</span>
+                        <span class="adm-badge adm-badge-red adm-inv-badge-mini">Salida</span>
                         <?php else: ?>
-                        <span class="adm-badge adm-badge-yellow" style="font-size:.65rem;padding:.15rem .4rem">Ajuste</span>
+                        <span class="adm-badge adm-badge-yellow adm-inv-badge-mini">Ajuste</span>
                         <?php endif; ?>
                     </td>
-                    <td style="padding:.6rem .75rem"><?= $m['cantidad'] ?></td>
-                    <td style="padding:.6rem .75rem;white-space:nowrap"><?= htmlspecialchars($m['proveedor'] ?? '—') ?></td>
-                    <td style="padding:.6rem .75rem;white-space:nowrap"><?= htmlspecialchars($m['numero_factura'] ?? '—') ?></td>
-                    <td style="padding:.6rem .75rem;white-space:nowrap"><?= $m['precio_unitario'] ? '$' . number_format($m['precio_unitario'], 0, ',', '.') : '—' ?></td>
-                    <td style="padding:.6rem .75rem;white-space:nowrap"><?= $m['iva'] ? '$' . number_format($m['iva'], 0, ',', '.') : '—' ?></td>
-                    <td style="padding:.6rem .75rem;white-space:nowrap"><?= $m['retencion'] ? '$' . number_format($m['retencion'], 0, ',', '.') : '—' ?></td>
-                    <td style="padding:.6rem .75rem;max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="<?= htmlspecialchars($m['motivo'] ?? '') ?>"><?= htmlspecialchars($m['motivo'] ?? '—') ?></td>
-                    <td style="padding:.6rem .75rem;white-space:nowrap"><?= htmlspecialchars($m['usuario'] ?? '—') ?></td>
-                    <td style="padding:.6rem .75rem;color:#555;white-space:nowrap"><?= date('d/m/Y H:i', strtotime($m['fecha'])) ?></td>
-                    <td style="padding:.6rem .75rem">
+                    <td class="adm-inv-row-padding"><?= $m['cantidad'] ?></td>
+                    <td class="adm-inv-row-padding whitespace-nowrap"><?= htmlspecialchars($m['proveedor'] ?? '—') ?></td>
+                    <td class="adm-inv-row-padding whitespace-nowrap"><?= htmlspecialchars($m['numero_factura'] ?? '—') ?></td>
+                    <td class="adm-inv-row-padding whitespace-nowrap"><?= $m['precio_unitario'] ? '$' . number_format($m['precio_unitario'], 0, ',', '.') : '—' ?></td>
+                    <td class="adm-inv-row-padding whitespace-nowrap"><?= $m['iva'] ? '$' . number_format($m['iva'], 0, ',', '.') : '—' ?></td>
+                    <td class="adm-inv-row-padding whitespace-nowrap"><?= $m['retencion'] ? '$' . number_format($m['retencion'], 0, ',', '.') : '—' ?></td>
+                    <td class="adm-inv-row-padding max-w-[180px] overflow-hidden text-ellipsis whitespace-nowrap" title="<?= htmlspecialchars($m['motivo'] ?? '') ?>"><?= htmlspecialchars($m['motivo'] ?? '—') ?></td>
+                    <td class="adm-inv-row-padding whitespace-nowrap"><?= htmlspecialchars($m['usuario'] ?? '—') ?></td>
+                    <td class="adm-inv-row-padding adm-inv-date whitespace-nowrap"><?= date('d/m/Y H:i', strtotime($m['fecha'])) ?></td>
+                    <td class="adm-inv-row-padding">
                         <?php if (!empty($m['soporte_documental'])): ?>
-                        <a href="../<?= htmlspecialchars($m['soporte_documental']) ?>" target="_blank" class="adm-badge adm-badge-blue" style="text-decoration:none;font-size:.65rem;padding:.15rem .35rem">Ver</a>
+                        <a href="../<?= htmlspecialchars($m['soporte_documental']) ?>" target="_blank" class="adm-badge adm-badge-blue !no-underline adm-inv-badge-mini">Ver</a>
                         <?php else: ?>
-                        <span style="color:#444">—</span>
+                        <span class="text-[#444]">—</span>
                         <?php endif; ?>
                     </td>
-                    <td style="padding:.6rem .75rem">
-                        <button onclick="eliminarMovimiento(<?= $m['id'] ?>)" class="adm-btn adm-btn-danger" style="font-size:.65rem;padding:.3rem .5rem">Eliminar</button>
+                    <td class="adm-inv-row-padding">
+                        <button onclick="eliminarMovimiento(<?= $m['id'] ?>)" class="adm-btn adm-btn-danger adm-inv-badge-mini !py-[0.3rem] !px-[0.5rem]">Eliminar</button>
                     </td>
                 </tr>
                 <?php endforeach; ?>
@@ -90,7 +90,7 @@ include '_layout.php';
             </table>
         </div>
 
-        <div id="pag-inventario" style="display:flex;align-items:center;justify-content:center;gap:8px;margin:1rem 0;flex-wrap:wrap;"></div>
+        <div id="pag-inventario" class="flex items-center justify-center gap-2 my-4 flex-wrap"></div>
     </div>
 </div>
 </main>
@@ -122,12 +122,18 @@ async function confirmarEliminarMov() {
     if (text === 'success') { window.location.href = window.location.pathname + '?exito=1'; }
     else {
         // Mostrar toast de error
-        var t = document.createElement('div');
+        const t = document.createElement('div');
         t.id = 'err-toast';
-        t.style.cssText = 'position:fixed;bottom:1.5rem;right:1.5rem;z-index:9999;display:flex;align-items:flex-start;gap:12px;background:#1e1e1e;border:1px solid rgba(239,68,68,.35);border-left:4px solid #ef4444;border-radius:12px;padding:1rem;min-width:280px;max-width:360px;box-shadow:0 8px 32px rgba(0,0,0,.55);animation:toastIn .35s cubic-bezier(.21,1.02,.73,1) forwards;overflow:hidden';
-        t.innerHTML = '<div style="flex:1"><div style="font-weight:700;font-size:.85rem;color:#fff;margin-bottom:.2rem">Error al eliminar</div><div style="font-size:.78rem;color:#999">' + text + '</div></div><button onclick="this.parentElement.remove()" style="background:none;border:none;color:#555;cursor:pointer;font-size:1.1rem">✕</button>';
+        t.className = 'fixed bottom-6 right-6 z-[9999] flex items-start gap-3 bg-[#1e1e1e] border border-red-500/35 border-l-4 border-l-red-500 rounded-xl p-4 min-w-[280px] max-w-[360px] shadow-2xl animate-[toastIn_0.35s_ease-out_forwards] overflow-hidden';
+        t.innerHTML = `
+            <div class="flex-1">
+                <div class="font-bold text-[0.85rem] text-white mb-0.5">Error al eliminar</div>
+                <div class="text-[0.78rem] text-[#999]">${text}</div>
+            </div>
+            <button onclick="this.parentElement.remove()" class="bg-none border-none text-[#555] cursor-pointer text-[1.1rem]">✕</button>
+        `;
         document.body.appendChild(t);
-        setTimeout(function(){ if(document.getElementById('err-toast')) document.getElementById('err-toast').remove(); }, 5000);
+        setTimeout(() => { if(document.getElementById('err-toast')) document.getElementById('err-toast').remove(); }, 5000);
     }
 }
 document.getElementById('modal-del-mov-bg').addEventListener('click', cerrarDelMov);
@@ -136,17 +142,17 @@ document.getElementById('modal-del-mov-bg').addEventListener('click', cerrarDelM
 <!-- Modal Confirmar Eliminar Movimiento -->
 <div id="modal-del-mov-bg" class="adm-modal-overlay"></div>
 <div id="modal-del-mov" class="adm-modal hidden">
-    <div class="adm-modal-box" style="max-width:380px;text-align:center">
-        <div style="width:56px;height:56px;background:rgba(239,68,68,.12);border:2px solid rgba(239,68,68,.3);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 1.1rem">
-            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:26px;height:26px;stroke:#ef4444">
+    <div class="adm-modal-box !max-w-[380px] text-center">
+        <div class="w-14 h-14 bg-[#ef4444]/15 border-2 border-[#ef4444]/30 rounded-full flex items-center justify-center mx-auto mb-[1.1rem]">
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-[26px] h-[26px] stroke-[#ef4444]">
                 <path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
             </svg>
         </div>
-        <div class="adm-modal-title" style="margin-bottom:.4rem;font-size:1.1rem">¿Eliminar movimiento?</div>
-        <p id="del-mov-msg" style="color:#888;font-size:.82rem;line-height:1.5;margin-bottom:1.4rem">Este movimiento será eliminado permanentemente.</p>
-        <div style="display:flex;gap:10px">
-            <button type="button" onclick="cerrarDelMov()" class="adm-btn" style="flex:1;justify-content:center">Cancelar</button>
-            <button type="button" id="del-mov-href" onclick="confirmarEliminarMov()" class="adm-btn adm-btn-danger" style="flex:1;justify-content:center">Sí, eliminar</button>
+        <div class="adm-modal-title mb-1.5 !text-[1.1rem]">¿Eliminar movimiento?</div>
+        <p id="del-mov-msg" class="text-[#888] text-[0.82rem] leading-relaxed mb-[1.4rem]">Este movimiento será eliminado permanentemente.</p>
+        <div class="flex gap-[10px]">
+            <button type="button" onclick="cerrarDelMov()" class="adm-btn flex-1 justify-center">Cancelar</button>
+            <button type="button" id="del-mov-href" onclick="confirmarEliminarMov()" class="adm-btn adm-btn-danger flex-1 justify-center">Sí, eliminar</button>
         </div>
     </div>
 </div>

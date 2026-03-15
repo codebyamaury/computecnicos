@@ -52,9 +52,9 @@
     </div>
 
     <!-- ========== FORMULARIO OLVIDAR CONTRASEÑA ========== -->
-    <div id="modal-glass-forgot-form" style="display:none;">
-      <div id="forgot-msg" style="display:none;border-radius:6px;padding:10px 14px;margin-bottom:14px;font-size:0.85rem;font-weight:600;text-align:center;"></div>
-      <p style="color:#888;font-size:0.85rem;margin-bottom:16px;text-align:center;line-height:1.5">
+    <div id="modal-glass-forgot-form" class="hidden">
+      <div id="forgot-msg" class="hidden rounded-md py-2.5 px-3.5 mb-3.5 text-[0.85rem] font-semibold text-center border"></div>
+      <p class="text-[#888] text-[0.85rem] mb-4 text-center leading-relaxed">
         Ingresa tu correo electrónico y te enviaremos un enlace para restablecer tu contraseña.
       </p>
       <form id="modal-form-forgot">
@@ -62,20 +62,20 @@
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
           <input type="email" id="forgot-email" class="glass-input" placeholder="tu@correo.com" required>
         </div>
-        <button type="submit" class="glass-btn" id="forgot-btn" style="margin-top:12px">
+        <button type="submit" class="glass-btn mt-3" id="forgot-btn">
           Enviar enlace de recuperación
           <span class="spinner hidden" id="forgot-spinner"></span>
         </button>
       </form>
-      <div style="text-align:center;margin-top:14px">
-        <a href="#" onclick="volverALogin(); return false;" style="color:#ff4444;font-size:0.82rem;text-decoration:none;font-weight:600">← Volver a iniciar sesión</a>
+      <div class="text-center mt-3.5">
+        <a href="#" onclick="volverALogin(); return false;" class="text-[#ff4444] text-[0.82rem] no-underline font-semibold tracking-wide hover:underline">← Volver a iniciar sesión</a>
       </div>
     </div>
 
     <!-- ========== FORMULARIO REGISTRO MULTI-PASO ========== -->
-    <div id="modal-glass-register-form" style="display:none;" class="flex flex-col items-center justify-center">
+    <div id="modal-glass-register-form" class="hidden flex flex-col items-center justify-center">
       <form class="w-full" id="modal-form-register-simple" autocomplete="off">
-        <div id="modal-register-error" style="color:#ff4747;background:#ff474722;border-radius:6px;padding:8px 12px;margin-bottom:10px;font-size:0.85rem;font-weight:600;text-align:center;display:none;"></div>
+        <div id="modal-register-error" class="text-[#ff4747] bg-[#ff4747]/15 border border-[#ff4747]/25 rounded-md py-2 px-3 mb-2.5 text-[0.85rem] font-semibold text-center hidden"></div>
 
         <!-- Barra de progreso -->
         <div class="reg-progress-bar" id="reg-progress">
@@ -93,7 +93,7 @@
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 12A4 4 0 118 12a4 4 0 018 0z"/></svg>
             <input type="text" id="register-simple-nombre" class="glass-input" placeholder="Nombre completo" autofocus>
           </div>
-          <button type="button" class="reg-next-btn" style="width:100%;margin-top:14px;" onclick="regValidateAndNext(1)">SIGUIENTE →</button>
+          <button type="button" class="reg-next-btn w-full mt-3.5" onclick="regValidateAndNext(1)">SIGUIENTE →</button>
         </div>
 
         <!-- PASO 2: Email -->
@@ -103,16 +103,16 @@
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
             <input type="email" id="register-simple-email" class="glass-input" placeholder="Correo electrónico">
           </div>
-          <div style="display:flex;gap:8px;margin-top:14px;">
-            <button type="button" class="reg-back-btn" style="flex:1;" onclick="regGoTo(1)">← ATRÁS</button>
-            <button type="button" class="reg-next-btn" style="flex:2;" onclick="regValidateAndNext(2)">SIGUIENTE →</button>
+          <div class="flex gap-2 mt-3.5">
+            <button type="button" class="reg-back-btn flex-1" onclick="regGoTo(1)">← ATRÁS</button>
+            <button type="button" class="reg-next-btn flex-[2]" onclick="regValidateAndNext(2)">SIGUIENTE →</button>
           </div>
         </div>
 
         <!-- PASO 3: Contraseña -->
         <div class="reg-step" id="reg-step-3">
           <div class="reg-step-title">Paso 3 de 5 — Crea una contraseña</div>
-          <div class="glass-input-group" style="margin-bottom:10px;">
+          <div class="glass-input-group mb-2.5">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 11c1.657 0 3-1.343 3-3V7a3 3 0 10-6 0v1c0 1.657 1.343 3 3 3zM5 11h14v10a2 2 0 01-2 2H7a2 2 0 01-2-2V11z"/></svg>
             <input type="password" id="register-simple-password" class="glass-input" placeholder="Contraseña (mín. 6 caracteres)">
           </div>
@@ -120,9 +120,9 @@
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 11c1.657 0 3-1.343 3-3V7a3 3 0 10-6 0v1c0 1.657 1.343 3 3 3zM5 11h14v10a2 2 0 01-2 2H7a2 2 0 01-2-2V11z"/></svg>
             <input type="password" id="register-simple-password2" class="glass-input" placeholder="Repetir contraseña">
           </div>
-          <div style="display:flex;gap:8px;margin-top:14px;">
-            <button type="button" class="reg-back-btn" style="flex:1;" onclick="regGoTo(2)">← ATRÁS</button>
-            <button type="button" class="reg-next-btn" style="flex:2;" onclick="regValidateAndNext(3)">SIGUIENTE →</button>
+          <div class="flex gap-2 mt-3.5">
+            <button type="button" class="reg-back-btn flex-1" onclick="regGoTo(2)">← ATRÁS</button>
+            <button type="button" class="reg-next-btn flex-[2]" onclick="regValidateAndNext(3)">SIGUIENTE →</button>
           </div>
         </div>
 
@@ -133,9 +133,9 @@
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 12.414a4 4 0 10-5.657 5.657l4.243 4.243a8 8 0 1011.314-11.314l-4.243 4.243z"/></svg>
             <input type="text" id="register-simple-direccion" class="glass-input" placeholder="Dirección completa">
           </div>
-          <div style="display:flex;gap:8px;margin-top:14px;">
-            <button type="button" class="reg-back-btn" style="flex:1;" onclick="regGoTo(3)">← ATRÁS</button>
-            <button type="button" class="reg-next-btn" style="flex:2;" onclick="regValidateAndNext(4)">SIGUIENTE →</button>
+          <div class="flex gap-2 mt-3.5">
+            <button type="button" class="reg-back-btn flex-1" onclick="regGoTo(step - 1)">← ATRÁS</button>
+            <button type="button" class="reg-next-btn flex-[2]" onclick="regValidateAndNext(step)">SIGUIENTE →</button>
           </div>
         </div>
 
@@ -146,9 +146,9 @@
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6.62 10.79a15.053 15.053 0 006.59 6.59l2.2-2.2a1 1 0 011.11-.21c1.21.49 2.53.76 3.88.76a1 1 0 011 1v3.5a1 1 0 01-1 1C10.07 22 2 13.93 2 4.5A1 1 0 013 3.5H6.5a1 1 0 011 1c0 1.35.27 2.67.76 3.88a1 1 0 01-.21 1.11l-2.2 2.2z"/></svg>
             <input type="tel" id="register-simple-telefono" class="glass-input" placeholder="Número de teléfono">
           </div>
-          <div style="display:flex;gap:8px;margin-top:14px;">
-            <button type="button" class="reg-back-btn" style="flex:1;" onclick="regGoTo(4)">← ATRÁS</button>
-            <button type="submit" class="reg-next-btn" style="flex:2;" id="reg-submit-btn">✓ COMPLETAR REGISTRO</button>
+          <div class="flex gap-2 mt-3.5">
+            <button type="button" class="reg-back-btn flex-1" onclick="regGoTo(4)">← ATRÁS</button>
+            <button type="submit" class="reg-next-btn flex-[2]" id="reg-submit-btn">✓ COMPLETAR REGISTRO</button>
           </div>
         </div>
       </form>
@@ -190,9 +190,7 @@ document.addEventListener('DOMContentLoaded', function() {
     modalTabLogin.onclick = function() {
       modalTabLogin.classList.add('active');
       modalTabRegister.classList.remove('active');
-      modalLoginForm.style.display = '';
       modalLoginForm.classList.remove('hidden');
-      modalRegisterForm.style.display = 'none';
       modalRegisterForm.classList.add('hidden');
       modalLoginTitle.textContent = 'Iniciar Sesión';
       modalLoginSubtitle.textContent = 'Accede a tu cuenta para continuar.';
@@ -201,9 +199,7 @@ document.addEventListener('DOMContentLoaded', function() {
     modalTabRegister.onclick = function() {
       modalTabRegister.classList.add('active');
       modalTabLogin.classList.remove('active');
-      modalRegisterForm.style.display = '';
       modalRegisterForm.classList.remove('hidden');
-      modalLoginForm.style.display = 'none';
       modalLoginForm.classList.add('hidden');
       modalLoginTitle.textContent = 'Crear Cuenta';
       modalLoginSubtitle.textContent = 'Regístrate paso a paso.';
@@ -228,11 +224,11 @@ var regTotalSteps = 5;
 
 function regShowError(msg) {
   var err = document.getElementById('modal-register-error');
-  if (err) { err.textContent = msg; err.style.display = 'block'; }
+  if (err) { err.textContent = msg; err.classList.remove('hidden'); }
 }
 function regHideError() {
   var err = document.getElementById('modal-register-error');
-  if (err) { err.textContent = ''; err.style.display = 'none'; }
+  if (err) { err.textContent = ''; err.classList.add('hidden'); }
 }
 
 function regGoTo(step) {
@@ -389,22 +385,22 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // ========== FORGOT PASSWORD ==========
 function mostrarForgotPassword() {
-  document.getElementById('modal-glass-login-form').style.display = 'none';
-  document.getElementById('modal-glass-register-form').style.display = 'none';
-  document.getElementById('modal-glass-forgot-form').style.display = '';
+  document.getElementById('modal-glass-login-form').classList.add('hidden');
+  document.getElementById('modal-glass-register-form').classList.add('hidden');
+  document.getElementById('modal-glass-forgot-form').classList.remove('hidden');
   document.getElementById('modal-login-title').textContent = 'Recuperar Contraseña';
   document.getElementById('modal-login-subtitle').textContent = 'Te ayudamos a recuperar el acceso a tu cuenta.';
-  document.querySelector('.glass-tabs').style.display = 'none';
+  document.querySelector('.glass-tabs').classList.add('hidden');
   var fm = document.getElementById('forgot-msg');
-  fm.style.display = 'none';
+  fm.classList.add('hidden');
   document.getElementById('forgot-email').value = '';
   document.getElementById('forgot-email').focus();
 }
 
 function volverALogin() {
-  document.getElementById('modal-glass-forgot-form').style.display = 'none';
-  document.getElementById('modal-glass-login-form').style.display = '';
-  document.querySelector('.glass-tabs').style.display = '';
+  document.getElementById('modal-glass-forgot-form').classList.add('hidden');
+  document.getElementById('modal-glass-login-form').classList.remove('hidden');
+  document.querySelector('.glass-tabs').classList.remove('hidden');
   document.getElementById('modal-login-title').textContent = 'Iniciar Sesión';
   document.getElementById('modal-login-subtitle').textContent = 'Accede a tu cuenta para continuar.';
   document.getElementById('modal-tab-login').classList.add('active');
@@ -426,7 +422,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     btn.disabled = true;
     if (spinner) spinner.classList.remove('hidden');
-    fm.style.display = 'none';
+    fm.classList.add('hidden');
     
     try {
       var fd = new FormData();
@@ -434,24 +430,18 @@ document.addEventListener('DOMContentLoaded', function() {
       var res = await fetch('api/forgot_password.php', { method: 'POST', body: fd });
       var data = await res.json();
       
-      fm.style.display = 'block';
+      fm.classList.remove('hidden');
       if (data.ok) {
-        fm.style.background = 'rgba(74,222,128,0.1)';
-        fm.style.border = '1px solid rgba(74,222,128,0.25)';
-        fm.style.color = '#4ade80';
+        fm.className = 'rounded-md py-2.5 px-3.5 mb-3.5 text-[0.85rem] font-semibold text-center border bg-green-500/10 border-green-500/25 text-green-400';
         fm.textContent = data.msg;
-        document.getElementById('modal-form-forgot').style.display = 'none';
+        document.getElementById('modal-form-forgot').classList.add('hidden');
       } else {
-        fm.style.background = '#ff474722';
-        fm.style.border = '1px solid rgba(255,71,71,0.25)';
-        fm.style.color = '#ff4747';
+        fm.className = 'rounded-md py-2.5 px-3.5 mb-3.5 text-[0.85rem] font-semibold text-center border bg-red-500/15 border-red-500/25 text-[#ff4747]';
         fm.textContent = data.msg;
       }
     } catch(err) {
-      fm.style.display = 'block';
-      fm.style.background = '#ff474722';
-      fm.style.border = '1px solid rgba(255,71,71,0.25)';
-      fm.style.color = '#ff4747';
+      fm.classList.remove('hidden');
+      fm.className = 'rounded-md py-2.5 px-3.5 mb-3.5 text-[0.85rem] font-semibold text-center border bg-red-500/15 border-red-500/25 text-[#ff4747]';
       fm.textContent = 'Error de conexión. Intenta de nuevo.';
     } finally {
       btn.disabled = false;
