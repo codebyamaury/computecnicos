@@ -64,34 +64,52 @@ if (isset($_SESSION['usuario']['id']) && isset($pdo)) {
 </head>
 
 <body class="min-h-screen flex flex-col" style="background-color: #111111 !important; color: #ffffff !important;">
-    <!-- Anti-FOUC Overlay (Tipo SPA Transition) -->
-    <div id="anti-fouc-overlay" style="position:fixed; inset:0; background-color:#111111; z-index:9999999; pointer-events:none; transition: opacity 0.3s ease;"></div>
+    <!-- Pantalla de Carga & Anti-FOUC Overlay -->
+    <div id="page-loader" style="position:fixed; inset:0; background-color:#111111; z-index:9999999; display:flex; align-items:center; justify-content:center; transition: opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.4s cubic-bezier(0.4, 0, 0.2, 1);">
+        <div style="display:flex; flex-direction:column; align-items:center; gap:1.25rem;">
+            <!-- Anillo Giratorio -->
+            <div style="width: 48px; height: 48px; border: 3px solid rgba(255, 71, 71, 0.15); border-radius: 50%; border-top-color: #ff4747; animation: spin-loader 0.8s linear infinite, glow-loader 2s ease-in-out infinite alternate;"></div>
+            <!-- Texto UI -->
+            <span style="color: #ff4747; font-family: 'Orbitron', 'Inter', sans-serif; font-size: 0.75rem; letter-spacing: 0.2em; text-transform: uppercase; font-weight: 600; animation: pulse-text 1.5s ease-in-out infinite;">Inicializando</span>
+        </div>
+    </div>
+    <style>
+        @keyframes spin-loader { 100% { transform: rotate(360deg); } }
+        @keyframes glow-loader { 
+            0% { box-shadow: 0 0 10px rgba(255, 71, 71, 0.2), inset 0 0 10px rgba(255, 71, 71, 0.2); }
+            100% { box-shadow: 0 0 20px rgba(255, 71, 71, 0.5), inset 0 0 15px rgba(255, 71, 71, 0.4); }
+        }
+        @keyframes pulse-text { 0%, 100% { opacity: 0.4; } 50% { opacity: 1; } }
+    </style>
     <script>
-        // Ocultar cortina con transición suave al cargar la estructura de la página
+        // Ocultar pantalla de carga una vez que la página nueva esté lista (DOM)
         document.addEventListener('DOMContentLoaded', function() {
-            var overlay = document.getElementById('anti-fouc-overlay');
-            if(overlay) {
-                overlay.style.opacity = '0';
-                setTimeout(function() { overlay.style.display = 'none'; }, 300);
+            var loader = document.getElementById('page-loader');
+            if(loader) {
+                // Micro-duración (milisegundos) para que el loader luzca fluido sin estorbar
+                setTimeout(function() {
+                    loader.style.opacity = '0';
+                    loader.style.visibility = 'hidden';
+                }, 200);
             }
         });
-        // Mostrar cortina oscura AL INSTANTE antes de destruir la página y viajar a otra (bloquea destello blanco del navegador)
+        // Mostrar loader AL INSTANTE antes de viajar a otra página
         window.addEventListener('beforeunload', function() {
-            var overlay = document.getElementById('anti-fouc-overlay');
-            if(overlay) {
-                overlay.style.transition = 'none';
-                overlay.style.display = 'block';
-                overlay.style.opacity = '1';
+            var loader = document.getElementById('page-loader');
+            if(loader) {
+                loader.style.transition = 'none'; // Sin retardo para tapar la vieja web
+                loader.style.opacity = '1';
+                loader.style.visibility = 'visible';
             }
         });
-        // Asegurar comportamiento correcto si se usa el botón de atrás/adelante del navegador (BFCache)
+        // BFCache (botón atrás/adelante de móvil y PC rápido)
         window.addEventListener('pageshow', function(e) {
             if (e.persisted) {
-                var overlay = document.getElementById('anti-fouc-overlay');
-                if(overlay) {
-                    overlay.style.transition = 'opacity 0.3s ease';
-                    overlay.style.opacity = '0';
-                    setTimeout(function() { overlay.style.display = 'none'; }, 300);
+                var loader = document.getElementById('page-loader');
+                if(loader) {
+                    loader.style.transition = 'opacity 0.4s ease, visibility 0.4s ease';
+                    loader.style.opacity = '0';
+                    loader.style.visibility = 'hidden';
                 }
             }
         });
