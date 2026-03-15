@@ -69,72 +69,7 @@ $nav_items = [
     <?= $admin_extra_css ?>
     <?= $admin_head_scripts ?>
 
-    <!-- Driver.js CSS & Professional Theme -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/driver.js@1.0.1/dist/driver.css"/>
-    <style>
-      .driver-popover {
-        background-color: #1e1e1e !important;
-        color: #f1f1f1 !important;
-        border: 1px solid rgba(255,255,255,0.08) !important;
-        box-shadow: 0 16px 48px rgba(0,0,0,0.6) !important;
-        border-radius: 12px !important;
-        font-family: 'Inter', sans-serif !important;
-        padding: 18px !important;
-      }
-      .driver-popover-title {
-        font-size: 1.15rem !important;
-        font-weight: 700 !important;
-        margin-bottom: 0.6rem !important;
-        color: #fff !important;
-      }
-      .driver-popover-description {
-        font-size: 0.88rem !important;
-        color: #aaa !important;
-        line-height: 1.5 !important;
-      }
-      .driver-popover-footer { margin-top: 1.2rem !important; }
-      .driver-popover-progress-text {
-        font-size: 0.8rem !important;
-        color: #777 !important;
-        font-weight: 500 !important;
-      }
-      .driver-popover-navigation-btns button {
-        background-color: #2a2a2a !important;
-        color: #eee !important;
-        border: 1px solid rgba(255,255,255,0.1) !important;
-        border-radius: 6px !important;
-        font-size: 0.85rem !important;
-        font-weight: 600 !important;
-        padding: 0.45rem 0.9rem !important;
-        cursor: pointer !important;
-        transition: all 0.2s !important;
-        text-shadow: none !important;
-      }
-      .driver-popover-navigation-btns button:hover {
-        background-color: #353535 !important;
-        border-color: rgba(255,255,255,0.2) !important;
-      }
-      .driver-popover-navigation-btns button.driver-popover-next-btn {
-        background-color: #e00000 !important;
-        color: #fff !important;
-        border-color: #e00000 !important;
-      }
-      .driver-popover-navigation-btns button.driver-popover-next-btn:hover {
-        background-color: #ff1a1a !important;
-        box-shadow: 0 0 12px rgba(224, 0, 0, 0.4) !important;
-      }
-      .driver-popover-close-btn {
-        color: #777 !important;
-        transition: color 0.2s !important;
-        top: 12px !important;
-        right: 12px !important;
-      }
-      .driver-popover-close-btn:hover { color: #e00000 !important; }
-      .driver-popover-arrow-side-top { border-top-color: #1e1e1e !important; }
-      .driver-popover-arrow-side-bottom { border-bottom-color: #1e1e1e !important; }
-      .driver-popover-arrow-side-left { border-left-color: #1e1e1e !important; }
-      .driver-popover-arrow-side-right { border-right-color: #1e1e1e !important; }
-    </style>
+
 </head>
 
 <body>
