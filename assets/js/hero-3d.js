@@ -12,6 +12,9 @@ const renderer = new THREE.WebGLRenderer({
     powerPreference: "high-performance"
 });
 
+// Forzar explícitamente que el canvas limpie con color negro y sea 100% transparente
+renderer.setClearColor(0x000000, 0);
+
 // Obtener dimensiones del contenedor
 const container = document.getElementById('hero-canvas-container');
 const width = container ? container.clientWidth : window.innerWidth;
@@ -19,6 +22,10 @@ const height = container ? container.clientHeight : window.innerHeight;
 
 renderer.setSize(width, height);
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+// Iniciar con el lienzo invisible para evitar cualquier destello blanco (FOUC de WebGL) antes del primer frame
+renderer.domElement.style.opacity = '0';
+renderer.domElement.style.transition = 'opacity 1s ease-in-out';
 
 if (container) {
     container.appendChild(renderer.domElement);
@@ -84,6 +91,7 @@ let targetRotateY = 0;
 let targetRotateX = 0;
 let currentRotateY = 0;
 let currentRotateX = 0;
+let firstFrame = true;
 
 function animate() {
     requestAnimationFrame(animate);
@@ -117,6 +125,15 @@ function animate() {
     pointLight.intensity = 2 + Math.sin(elapsedTime * 2) * 1;
 
     renderer.render(scene, camera);
+
+    // Fade-in seguro del canvas después de que WebGL ya dibujó el primer frame (sin destellos)
+    if (firstFrame) {
+        firstFrame = false;
+        // Pequeño timeout antes de aplicar opacidad para asegurar que la placa base/GPU ya procesó el buffer
+        setTimeout(() => {
+            renderer.domElement.style.opacity = '1';
+        }, 50);
+    }
 }
 
 animate();
