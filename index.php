@@ -242,7 +242,7 @@ include __DIR__ . '/includes/header.php';
 </script>
 
 <!-- Creadores -->
-<section class="container mx-auto px-2 sm:px-4 py-8 md:py-16 w-full relative z-10 border-t border-gray-800 mt-12">
+<section class="container mx-auto px-2 sm:px-4 py-8 md:py-16 w-full relative z-10 section-divider-top">
     <h2 class="section-title">Creadores</h2>
     <div class="team-grid mt-8">
         <!-- Amaury -->
