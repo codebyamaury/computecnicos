@@ -3,7 +3,7 @@
 require_once __DIR__ . '/../app/Core/bootstrap.php';
 
 if (!isset($_SESSION['usuario'])) {
-    header('Location: index.php?login=1');
+    header('Location: ../index.php?login=1');
     exit;
 }
 
@@ -11,7 +11,7 @@ $usuario_id = $_SESSION['usuario']['id'];
 $password = $_POST['password'] ?? '';
 
 if (!$password) {
-    header('Location: perfil.php?edit=personal&error=1');
+    header('Location: ../perfil.php?edit=personal&error=1');
     exit;
 }
 
@@ -22,7 +22,7 @@ $hash = $stmt->fetchColumn();
 
 if (!$hash || !password_verify($password, $hash)) {
     // Contraseña incorrecta
-    header('Location: perfil.php?edit=personal&error=1');
+    header('Location: ../perfil.php?edit=personal&error=1');
     exit;
 }
 
@@ -37,5 +37,5 @@ $stmt->execute([$usuario_id]);
 session_unset();
 session_destroy();
 
-header('Location: index.php?cuenta_eliminada=1');
+header('Location: ../index.php?cuenta_eliminada=1');
 exit;

@@ -22,7 +22,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     if (expects_json()) {
         respond_json(['ok' => false, 'msg' => 'Método inválido', 'total' => null]);
     }
-    header('Location: productos.php');
+    header('Location: ../productos.php');
     exit;
 }
 
@@ -31,7 +31,7 @@ if (!isset($_SESSION['usuario'])) {
     if (expects_json()) {
         respond_json(['ok' => false, 'msg' => 'Debes iniciar sesión para agregar productos al carrito.', 'total' => null]);
     }
-    header('Location: index.php');
+    header('Location: ../index.php');
     exit;
 }
 
@@ -43,7 +43,7 @@ if (!$id_producto) {
     if (expects_json()) {
         respond_json(['ok' => false, 'msg' => 'ID de producto inválido.', 'total' => null]);
     }
-    header('Location: ' . ($_SERVER['HTTP_REFERER'] ?? 'productos.php'));
+    header('Location: ' . ($_SERVER['HTTP_REFERER'] ?? '../productos.php'));
     exit;
 }
 
@@ -57,7 +57,7 @@ if (!$producto) {
     if (expects_json()) {
         respond_json(['ok' => false, 'msg' => 'Producto no encontrado.', 'total' => null]);
     }
-    header('Location: ' . ($_SERVER['HTTP_REFERER'] ?? 'productos.php'));
+    header('Location: ' . ($_SERVER['HTTP_REFERER'] ?? '../productos.php'));
     exit;
 }
 
@@ -68,7 +68,7 @@ if ((int) $producto['stock'] <= 0) {
     if (expects_json()) {
         respond_json(['ok' => false, 'msg' => 'Este producto está agotado.', 'total' => null]);
     }
-    header('Location: ' . ($_SERVER['HTTP_REFERER'] ?? 'productos.php'));
+    header('Location: ' . ($_SERVER['HTTP_REFERER'] ?? '../productos.php'));
     exit;
 }
 
@@ -127,7 +127,7 @@ if ($stock_limitado) {
 }
 
 // Determinar URL de redirección
-$redirect_url = $_SERVER['HTTP_REFERER'] ?? 'productos.php';
+$redirect_url = $_SERVER['HTTP_REFERER'] ?? '../productos.php';
 // Si se especifica redirect (ej: "Comprar Ahora" envía redirect=checkout.php)
 if (!empty($_POST['redirect'])) {
     $custom_redirect = $_POST['redirect'];

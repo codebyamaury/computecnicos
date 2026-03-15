@@ -51,7 +51,7 @@ if (isset($_GET['code'])) {
                 $_SESSION['login_success'] = '¡Bienvenido, ' . ($usuarioNuevo['nombre'] ?? 'usuario') . '! Tu cuenta fue creada con Google y has iniciado sesión.';
                 // Crear token persistente para mantener sesion activa (30 dias)
                 $rememberMe->createToken($usuarioNuevo['id']);
-                header('Location: index.php');
+                header('Location: ../index.php');
                 exit;
             } else {
                 // Usuario existe - actualizar foto y nombre con los datos de Google
@@ -76,7 +76,7 @@ if (isset($_GET['code'])) {
                 // Crear token persistente para mantener sesion activa (30 dias)
                 $rememberMe->createToken($usuario['id']);
                 // Redirigir a la página principal
-                header('Location: index.php');
+                header('Location: ../index.php');
                 exit;
             }
         } catch (Exception $e) {

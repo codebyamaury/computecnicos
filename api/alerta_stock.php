@@ -16,7 +16,7 @@ function respond_json($payload) {
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     if (expects_json()) return respond_json(['ok' => false, 'msg' => 'Método inválido']);
-    header('Location: productos.php');
+    header('Location: ../productos.php');
     exit;
 }
 
@@ -26,7 +26,7 @@ $id_usuario = isset($_SESSION['usuario']['id']) ? intval($_SESSION['usuario']['i
 
 if ($id_producto <= 0) {
     if (expects_json()) return respond_json(['ok' => false, 'msg' => 'Producto inválido']);
-    header('Location: productos.php');
+    header('Location: ../productos.php');
     exit;
 }
 
@@ -36,7 +36,7 @@ $stmtP->execute([$id_producto]);
 $prod = $stmtP->fetch();
 if (!$prod) {
     if (expects_json()) return respond_json(['ok' => false, 'msg' => 'Producto no encontrado']);
-    header('Location: productos.php');
+    header('Location: ../productos.php');
     exit;
 }
 
@@ -55,7 +55,7 @@ try {
 if (!$id_usuario && empty($email)) {
     if (expects_json()) return respond_json(['ok' => false, 'msg' => 'Proporciona un correo o inicia sesión']);
     $_SESSION['mensaje'] = ['tipo' => 'error', 'texto' => 'Proporciona un correo o inicia sesión'];
-    header('Location: producto.php?id=' . $id_producto);
+    header('Location: ../producto.php?id=' . $id_producto);
     exit;
 }
 
@@ -70,7 +70,7 @@ $existe = $stmtChk->fetch();
 if ($existe) {
     if (expects_json()) return respond_json(['ok' => true, 'msg' => 'Ya estabas suscrito']);
     $_SESSION['mensaje'] = ['tipo' => 'success', 'texto' => 'Ya estabas suscrito'];
-    header('Location: producto.php?id=' . $id_producto);
+    header('Location: ../producto.php?id=' . $id_producto);
     exit;
 }
 
@@ -79,6 +79,6 @@ $stmtIns->execute([$id_producto, $id_usuario, $email ?: null]);
 
 if (expects_json()) return respond_json(['ok' => true, 'msg' => 'Te avisaremos cuando haya stock']);
 $_SESSION['mensaje'] = ['tipo' => 'success', 'texto' => 'Te avisaremos cuando haya stock'];
-header('Location: producto.php?id=' . $id_producto);
+header('Location: ../producto.php?id=' . $id_producto);
 exit;
 ?>
