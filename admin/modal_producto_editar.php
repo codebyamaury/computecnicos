@@ -125,8 +125,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <button type="button" class="adm-modal-close" onclick="cerrarModalEditarProducto()">&times;</button>
         <div class="adm-modal-title" style="margin-bottom:1.5rem">Editar Producto: <?= htmlspecialchars($producto['nombre']) ?></div>
         
-        <form id="form-editar-producto" onsubmit="guardarEdicionProducto(event, <?= $id ?>
-                    <?= csrf_field() ?>)" enctype="multipart/form-data" style="display:flex;flex-direction:column;gap:1.2rem">
+        <form id="form-editar-producto" onsubmit="guardarEdicionProducto(event, <?= $id ?>)" enctype="multipart/form-data" style="display:flex;flex-direction:column;gap:1.2rem">
+            <?= csrf_field() ?>
                 <!-- Nombre -->
                 <div class="adm-form-group">
                     <label class="adm-label">Nombre del producto *</label>
