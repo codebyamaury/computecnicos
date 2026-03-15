@@ -5,7 +5,7 @@ require_once __DIR__ . '/../app/Core/bootstrap.php';
 $client = new Google_Client();
 $client->setClientId($_ENV['GOOGLE_CLIENT_ID'] ?? 'TU_CLIENT_ID'); // Reemplaza por tu Client ID o usa env
 $client->setClientSecret($_ENV['GOOGLE_CLIENT_SECRET'] ?? 'TU_CLIENT_SECRET'); // Reemplaza por tu Client Secret o usa env
-$client->setRedirectUri(base_url() . '/api/google-callback');
+$client->setRedirectUri(base_url() . '/google-callback');
 
 if (isset($_GET['code'])) {
     $token = $client->fetchAccessTokenWithAuthCode($_GET['code']);
@@ -51,7 +51,7 @@ if (isset($_GET['code'])) {
                 $_SESSION['login_success'] = '¡Bienvenido, ' . ($usuarioNuevo['nombre'] ?? 'usuario') . '! Tu cuenta fue creada con Google y has iniciado sesión.';
                 // Crear token persistente para mantener sesion activa (30 dias)
                 $rememberMe->createToken($usuarioNuevo['id']);
-                header('Location: ../index.php');
+                header('Location: /');
                 exit;
             } else {
                 // Usuario existe - actualizar foto y nombre con los datos de Google
@@ -76,7 +76,7 @@ if (isset($_GET['code'])) {
                 // Crear token persistente para mantener sesion activa (30 dias)
                 $rememberMe->createToken($usuario['id']);
                 // Redirigir a la página principal
-                header('Location: ../index.php');
+                header('Location: /');
                 exit;
             }
         } catch (Exception $e) {

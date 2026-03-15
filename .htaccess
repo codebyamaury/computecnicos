@@ -21,6 +21,9 @@ RewriteCond %{REQUEST_METHOD} !POST
 RewriteCond %{THE_REQUEST} ^[A-Z]{3,9}\ /([^.]+)\.php[\?\ ] [NC]
 RewriteRule ^([^.]+)\.php$ https://%{HTTP_HOST}/$1 [R=301,L,QSA]
 
+# Compatibilidad con Google OAuth Callback que fue movido a api/
+RewriteRule ^google-callback(\.php)?$ api/google-callback.php [L,QSA]
+
 # Internamente redirigir URLs sin .php al archivo físico .php
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteCond %{REQUEST_FILENAME}.php -f
