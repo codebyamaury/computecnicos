@@ -8,7 +8,7 @@ class PaypalHelper
     public function __construct(PDO $pdo)
     {
         $this->pdo = $pdo;
-        $this->config = require __DIR__ . '/../config/paypal_config.php';
+        $this->config = require __DIR__ . '/../../config/paypal_config.php';
         $this->baseUrl = ($this->config['environment'] ?? 'sandbox') === 'live'
             ? 'https://api-m.paypal.com'
             : 'https://api-m.sandbox.paypal.com';

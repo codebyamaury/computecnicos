@@ -14,8 +14,8 @@ try {
     $paypal = new PaypalHelper($pdo);
     $order = $paypal->createOrder((int)$input['pedido_id']);
     echo json_encode($order);
-} catch (Exception $e) {
+} catch (Throwable $e) {
     error_log('paypal_create_order: ' . $e->getMessage());
     http_response_code(500);
-    echo json_encode(['error' => 'No se pudo crear la orden']);
+    echo json_encode(['error' => 'No se pudo crear la orden: ' . $e->getMessage()]);
 }

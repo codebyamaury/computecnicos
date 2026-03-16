@@ -20,8 +20,8 @@ try {
         $_SESSION['checkout_success'] = 'Pago completado. Carrito vaciado.';
     }
     echo json_encode($result);
-} catch (Exception $e) {
+} catch (Throwable $e) {
     error_log('paypal_capture_order: ' . $e->getMessage());
     http_response_code(500);
-    echo json_encode(['error' => 'No se pudo capturar la orden']);
+    echo json_encode(['error' => 'No se pudo capturar la orden: ' . $e->getMessage()]);
 }
