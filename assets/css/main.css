@@ -428,6 +428,28 @@ body {
     box-shadow: none;
 }
 
+.reg-resend-link {
+    background: none;
+    border: none;
+    color: #ff4444;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: underline;
+    transition: color 0.2s, opacity 0.2s;
+    padding: 4px 8px;
+}
+
+.reg-resend-link:hover:not(:disabled) {
+    color: #ff6666;
+}
+
+.reg-resend-link:disabled {
+    color: #666;
+    cursor: not-allowed;
+    text-decoration: none;
+}
+
 /* ========================================
    STATUS PAGE
    (Movido desde status.php inline <style>)

@@ -28,6 +28,18 @@ if (strlen($password) < 6) {
     respuesta(false, 'La contraseña debe tener al menos 6 caracteres.');
 }
 
+// Verificar que el email fue verificado con código
+if (!isset($_SESSION['reg_email_verified']) 
+    || strtolower($_SESSION['reg_email_verified']['email']) !== strtolower($email)
+    || $_SESSION['reg_email_verified']['verificado'] !== true) {
+    respuesta(false, 'Debes verificar tu correo electrónico con el código enviado antes de registrarte.');
+}
+// Verificar que la verificación no haya expirado (30 minutos de gracia)
+if ((time() - ($_SESSION['reg_email_verified']['timestamp'] ?? 0)) > 1800) {
+    unset($_SESSION['reg_email_verified']);
+    respuesta(false, 'La verificación ha expirado. Solicita un nuevo código.');
+}
+
 // Verificar si el correo ya existe
 $stmt = $pdo->prepare('SELECT id FROM usuarios WHERE email = ?');
 $stmt->execute([$email]);
