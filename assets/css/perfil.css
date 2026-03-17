@@ -1,0 +1,630 @@
+/* ========================================
+   PERFIL.CSS — Estilo unificado con el sitio
+   Glassmorphism · Gradientes rojos · Animaciones
+   ======================================== */
+
+/* ── ANIMACIONES ─────────────────────────────── */
+@keyframes slideUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+@keyframes pulseGlow {
+    0%, 100% { box-shadow: 0 0 20px rgba(255, 0, 0, 0.25), 0 0 40px rgba(255, 0, 0, 0.08); }
+    50%       { box-shadow: 0 0 30px rgba(255, 0, 0, 0.45), 0 0 60px rgba(255, 0, 0, 0.15); }
+}
+
+@keyframes rotateBorder {
+    from { transform: rotate(0deg); }
+    to   { transform: rotate(360deg); }
+}
+
+@keyframes shimmer {
+    0%   { background-position: -200% center; }
+    100% { background-position:  200% center; }
+}
+
+.animate-slide-up { animation: slideUp 0.55s cubic-bezier(0.22, 1, 0.36, 1) forwards; opacity: 0; }
+.delay-100 { animation-delay: 0.08s; }
+.delay-200 { animation-delay: 0.16s; }
+.delay-300 { animation-delay: 0.24s; }
+.delay-400 { animation-delay: 0.32s; }
+
+/* ── HERO HEADER ─────────────────────────────── */
+.perfil-header {
+    position: relative;
+    padding: 5rem 1rem 3.5rem;
+    text-align: center;
+    overflow: hidden;
+}
+
+/* Fondo radial rojo igual que el hero del index */
+.perfil-header::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+        radial-gradient(ellipse 70% 60% at 50% 0%, rgba(255, 0, 0, 0.18) 0%, transparent 70%),
+        radial-gradient(ellipse 40% 40% at 20% 80%, rgba(200, 0, 0, 0.08) 0%, transparent 60%);
+    pointer-events: none;
+    z-index: 0;
+}
+
+/* Línea decorativa inferior */
+.perfil-header::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255, 0, 0, 0.5), transparent);
+}
+
+.perfil-header-inner {
+    position: relative;
+    z-index: 1;
+    max-width: 700px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.25rem;
+}
+
+/* ── AVATAR ──────────────────────────────────── */
+.perfil-avatar-wrapper {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Anillo giratorio decorativo */
+.perfil-avatar-wrapper::before {
+    content: '';
+    position: absolute;
+    inset: -4px;
+    border-radius: 50%;
+    background: conic-gradient(from 0deg, #ff0000, #cc0000, transparent 60%, transparent 80%, #ff0000);
+    animation: rotateBorder 4s linear infinite;
+    z-index: 0;
+}
+
+.perfil-avatar-wrapper::after {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    border-radius: 50%;
+    background: #0f0f10;
+    z-index: 1;
+}
+
+.perfil-avatar {
+    position: relative;
+    z-index: 2;
+    width: 110px;
+    height: 110px;
+    border-radius: 50%;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #1a1a1a 0%, #0f0f10 100%);
+    animation: pulseGlow 3s ease-in-out infinite;
+}
+
+.perfil-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.perfil-avatar span {
+    font-size: 2.8rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, #ff4a4a, #ff0000);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* ── INFO DEL HEADER ─────────────────────────── */
+.perfil-header-info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.perfil-name {
+    font-size: 2rem;
+    font-weight: 800;
+    color: #fff;
+    margin: 0;
+    letter-spacing: -0.02em;
+    /* Efecto shimmer en el nombre */
+    background: linear-gradient(90deg, #fff 30%, #ff4a4a 50%, #fff 70%);
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: shimmer 4s linear infinite;
+}
+
+.perfil-email {
+    color: #888;
+    font-size: 0.95rem;
+    margin: 0;
+}
+
+.perfil-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    margin-top: 0.25rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #888;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 9999px;
+    padding: 4px 12px;
+    backdrop-filter: blur(4px);
+}
+
+/* ── CONTENEDOR PRINCIPAL ────────────────────── */
+.perfil-container {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 2.5rem 1.25rem 4rem;
+}
+
+/* ── GRID DE TARJETAS ────────────────────────── */
+.perfil-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+}
+
+/* ── TARJETA (glassmorphism) ─────────────────── */
+.perfil-card {
+    position: relative;
+    background: rgba(20, 20, 20, 0.7);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    border-radius: 1.25rem;
+    padding: 1.75rem;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+                border-color 0.3s ease,
+                box-shadow 0.3s ease;
+    overflow: hidden;
+}
+
+/* Esquinas decorativas (igual que product-card) */
+.perfil-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 20px; height: 20px;
+    border-top: 2px solid transparent;
+    border-left: 2px solid transparent;
+    transition: all 0.4s ease;
+    z-index: 1;
+    pointer-events: none;
+}
+
+.perfil-card::after {
+    content: '';
+    position: absolute;
+    bottom: 0; right: 0;
+    width: 20px; height: 20px;
+    border-bottom: 2px solid transparent;
+    border-right: 2px solid transparent;
+    transition: all 0.4s ease;
+    z-index: 1;
+    pointer-events: none;
+}
+
+.perfil-card:hover {
+    border-color: rgba(255, 0, 0, 0.4);
+    box-shadow:
+        0 8px 30px rgba(0, 0, 0, 0.35),
+        0 0 30px rgba(255, 0, 0, 0.1);
+}
+
+.perfil-card:hover::before {
+    width: 100%; height: 100%;
+    border-top-color: rgba(255, 0, 0, 0.45);
+    border-left-color: rgba(255, 0, 0, 0.45);
+}
+
+.perfil-card:hover::after {
+    width: 100%; height: 100%;
+    border-bottom-color: rgba(255, 0, 0, 0.45);
+    border-right-color: rgba(255, 0, 0, 0.45);
+}
+
+/* ── HEADER DE TARJETA ───────────────────────── */
+.perfil-card-header {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    margin-bottom: 1.25rem;
+}
+
+.perfil-card-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    background: rgba(255, 0, 0, 0.1);
+    border: 1px solid rgba(255, 0, 0, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: all 0.3s ease;
+}
+
+.perfil-card:hover .perfil-card-icon {
+    background: rgba(255, 0, 0, 0.18);
+    box-shadow: 0 0 16px rgba(255, 0, 0, 0.2);
+}
+
+.perfil-card-icon svg {
+    width: 22px;
+    height: 22px;
+    color: #ff0000;
+}
+
+.perfil-card-title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #fff;
+    margin: 0;
+}
+
+.perfil-card-subtitle {
+    font-size: 0.78rem;
+    color: #666;
+    margin: 2px 0 0;
+}
+
+/* ── CAMPOS DE INFO ──────────────────────────── */
+.perfil-card-body {
+    flex: 1;
+    margin-bottom: 0;
+    padding-bottom: 1.25rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* Footer de la card — contiene el botón Editar */
+.perfil-card-footer {
+    padding-top: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+}
+
+/* Área del footer de la card (contiene el botón) */
+.perfil-card > .perfil-card-action,
+.perfil-card > span.perfil-card-action {
+    margin-top: 1rem;
+}
+
+.perfil-field {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.65rem 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.perfil-field:last-child { border-bottom: none; }
+
+.perfil-field-label {
+    color: #666;
+    font-size: 0.78rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+}
+
+.perfil-field-value {
+    color: #e7e7ea;
+    font-size: 0.9rem;
+    text-align: right;
+    max-width: 60%;
+    word-break: break-word;
+}
+
+/* ── BOTÓN EDITAR ────────────────────────────── */
+.perfil-card-action {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 0.55rem 1.25rem;
+    border-radius: 0.625rem;
+    font-size: 0.82rem;
+    font-weight: 600;
+    text-decoration: none;
+    color: #ff0000;
+    border: 1px solid rgba(255, 0, 0, 0.3);
+    background: rgba(255, 0, 0, 0.06);
+    transition: all 0.25s ease;
+    cursor: pointer;
+    width: 100%;
+    margin-top: auto;
+}
+
+.perfil-card-action:hover {
+    background: rgba(255, 0, 0, 0.15);
+    border-color: #ff0000;
+    box-shadow: 0 0 14px rgba(255, 0, 0, 0.2);
+    transform: translateY(-1px);
+}
+
+.perfil-card-action.disabled {
+    color: #555;
+    border-color: rgba(255, 255, 255, 0.06);
+    background: transparent;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+/* ── BOTÓN ELIMINAR CUENTA ───────────────────── */
+.perfil-danger-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 0.65rem 1.5rem;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: #ef4444;
+    background: transparent;
+    border: 1px solid rgba(239, 68, 68, 0.25);
+    border-radius: 0.625rem;
+    cursor: pointer;
+    transition: all 0.25s ease;
+}
+
+.perfil-danger-btn:hover {
+    background: rgba(239, 68, 68, 0.1);
+    border-color: #ef4444;
+    box-shadow: 0 0 14px rgba(239, 68, 68, 0.2);
+}
+
+/* ── MODALES ─────────────────────────────────── */
+.perfil-modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.75);
+    backdrop-filter: blur(6px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: 1rem;
+    animation: fadeIn 0.2s ease;
+}
+
+.perfil-modal-box {
+    background: rgba(18, 18, 20, 0.95);
+    border: 1px solid rgba(255, 0, 0, 0.2);
+    border-radius: 1.25rem;
+    padding: 2rem;
+    width: 100%;
+    max-width: 420px;
+    position: relative;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow:
+        0 25px 60px rgba(0, 0, 0, 0.6),
+        0 0 40px rgba(255, 0, 0, 0.08);
+    animation: slideUp 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Línea roja superior del modal */
+.perfil-modal-box::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 10%; right: 10%;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, #ff0000, transparent);
+    border-radius: 0 0 4px 4px;
+}
+
+.perfil-modal-close {
+    position: absolute;
+    top: 14px; right: 18px;
+    background: none;
+    border: none;
+    color: #555;
+    font-size: 1.6rem;
+    cursor: pointer;
+    text-decoration: none;
+    line-height: 1;
+    transition: color 0.2s;
+}
+
+.perfil-modal-close:hover { color: #ff0000; }
+
+.perfil-modal-title {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #fff;
+    margin: 0 0 0.75rem;
+}
+
+.perfil-modal-desc {
+    color: #888;
+    font-size: 0.9rem;
+    margin-bottom: 1.25rem;
+    line-height: 1.5;
+}
+
+/* ── AVATAR EN MODAL ─────────────────────────── */
+.perfil-modal-avatar-area {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1.25rem;
+}
+
+.perfil-modal-avatar {
+    width: 76px;
+    height: 76px;
+    border-radius: 50%;
+    border: 2px solid rgba(255, 0, 0, 0.5);
+    object-fit: cover;
+    box-shadow: 0 0 20px rgba(255, 0, 0, 0.2);
+}
+
+.perfil-modal-avatar-letter {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: #ff0000;
+    background: rgba(255, 0, 0, 0.08);
+}
+
+.perfil-change-photo {
+    color: #ff0000;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity 0.2s;
+}
+
+.perfil-change-photo:hover { opacity: 0.75; }
+
+/* ── INPUTS Y LABELS ─────────────────────────── */
+.perfil-label {
+    display: block;
+    color: #888;
+    font-size: 0.8rem;
+    font-weight: 600;
+    margin-bottom: 0.35rem;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+}
+
+.perfil-input {
+    width: 100%;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    color: #e7e7ea;
+    border-radius: 0.625rem;
+    padding: 0.7rem 0.9rem;
+    font-size: 0.95rem;
+    transition: border-color 0.25s, box-shadow 0.25s;
+    margin-bottom: 1rem;
+    outline: none;
+}
+
+.perfil-input:focus {
+    border-color: rgba(255, 0, 0, 0.5);
+    box-shadow: 0 0 0 3px rgba(255, 0, 0, 0.12);
+    background: rgba(255, 0, 0, 0.03);
+}
+
+/* ── BOTONES ─────────────────────────────────── */
+.perfil-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.25rem;
+    border-radius: 0.625rem;
+    font-weight: 700;
+    font-size: 0.9rem;
+    border: none;
+    cursor: pointer;
+    transition: all 0.25s ease;
+}
+
+.perfil-btn.primary {
+    background: linear-gradient(135deg, #cc0000, #ff0000);
+    color: #fff;
+    box-shadow: 0 4px 20px rgba(255, 0, 0, 0.25);
+}
+
+.perfil-btn.primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 28px rgba(255, 0, 0, 0.4);
+}
+
+.perfil-btn.danger {
+    background: #ef4444;
+    color: #fff;
+}
+
+.perfil-btn.danger:hover {
+    background: #dc2626;
+    transform: translateY(-1px);
+}
+
+/* ── MENSAJES ────────────────────────────────── */
+.perfil-msg {
+    padding: 0.7rem 1rem;
+    border-radius: 0.625rem;
+    font-weight: 600;
+    font-size: 0.85rem;
+    margin-bottom: 1rem;
+    text-align: center;
+    border: 1px solid;
+}
+
+.perfil-msg.success {
+    background: rgba(34, 197, 94, 0.08);
+    color: #22c55e;
+    border-color: rgba(34, 197, 94, 0.25);
+}
+
+.perfil-msg.error {
+    background: rgba(239, 68, 68, 0.08);
+    color: #ef4444;
+    border-color: rgba(239, 68, 68, 0.25);
+}
+
+/* ── RESPONSIVE ──────────────────────────────── */
+@media (max-width: 768px) {
+    .perfil-header { padding: 4rem 1rem 2.5rem; }
+
+    .perfil-header-inner { gap: 1rem; }
+
+    .perfil-name { font-size: 1.5rem; }
+
+    .perfil-avatar { width: 88px; height: 88px; }
+
+    .perfil-grid { grid-template-columns: 1fr; }
+
+    .perfil-field {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 2px;
+    }
+
+    .perfil-field-value { text-align: left; max-width: 100%; }
+}
+
+@media (max-width: 480px) {
+    .perfil-modal-box {
+        max-width: 100%;
+        border-radius: 1rem;
+    }
+}

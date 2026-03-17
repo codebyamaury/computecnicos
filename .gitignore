@@ -1,0 +1,8 @@
+/vendor/
+/node_modules/
+/.env
+/logs/
+/uploads/
+/schema_dump.txt
+*.log
+.DS_Store

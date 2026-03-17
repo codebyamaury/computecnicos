@@ -1,0 +1,90 @@
+name: Deploy to Azure VPS
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout del código
+        uses: actions/checkout@v4
+
+      - name: Desplegar en servidor Azure mediante SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.AZURE_HOST }}
+          username: ${{ secrets.AZURE_USERNAME }}
+          key: ${{ secrets.AZURE_SSH_KEY }}
+          port: 22
+          script: |
+            set -e
+
+            PROJECT_DIR="/var/www/computecnicosproject"
+            APACHE_CONF="/etc/apache2/sites-available/000-default.conf"
+
+            # ── 1. Instalar dependencias si faltan ──
+            if ! command -v git &> /dev/null || ! command -v php &> /dev/null || ! command -v composer &> /dev/null; then
+              apt-get update -qq
+              apt-get install -y -qq apache2 php libapache2-mod-php php-mysql php-curl php-json php-gd php-mbstring php-xml php-zip git unzip composer
+            fi
+
+            # ── 2. Clonar repositorio si no existe ──
+            if [ ! -d "$PROJECT_DIR/.git" ]; then
+              git clone https://github.com/codebyamaury/computecnicos.git "$PROJECT_DIR"
+            fi
+
+            # ── 3. Descargar los últimos cambios y dependencias ──
+            cd "$PROJECT_DIR"
+            git fetch origin main
+            git reset --hard origin/main
+            
+            # Instalar dependencias de PHP (Google Client, etc)
+            COMPOSER_ALLOW_SUPERUSER=1 composer install --no-dev --optimize-autoloader
+
+            # ── 4. Configurar Apache: DocumentRoot + AllowOverride ──
+            cat > "$APACHE_CONF" << 'VHOST'
+            <VirtualHost *:80>
+                ServerAdmin webmaster@localhost
+                DocumentRoot /var/www/computecnicosproject
+
+                <Directory /var/www/computecnicosproject>
+                    Options -Indexes +FollowSymLinks
+                    AllowOverride All
+                    Require all granted
+                </Directory>
+
+                ErrorLog ${APACHE_LOG_DIR}/error.log
+                CustomLog ${APACHE_LOG_DIR}/access.log combined
+            </VirtualHost>
+            VHOST
+
+            # ── 5. Habilitar módulos necesarios ──
+            a2enmod rewrite headers deflate expires
+            a2dissite 000-default > /dev/null 2>&1 || true
+            a2ensite 000-default
+
+            # ── 6. Permisos correctos ──
+            chown -R www-data:www-data "$PROJECT_DIR"
+            chmod -R 755 "$PROJECT_DIR"
+            # Proteger .env pero permitir lectura por Apache
+            if [ -f "$PROJECT_DIR/.env" ]; then
+              chmod 640 "$PROJECT_DIR/.env"
+              chown root:www-data "$PROJECT_DIR/.env"
+            fi
+            # Carpeta de logs con escritura para Apache
+            mkdir -p "$PROJECT_DIR/logs"
+            chown www-data:www-data "$PROJECT_DIR/logs"
+            chmod 775 "$PROJECT_DIR/logs"
+            # Carpeta de uploads con escritura para Apache
+            mkdir -p "$PROJECT_DIR/uploads"
+            chown www-data:www-data "$PROJECT_DIR/uploads"
+            chmod 775 "$PROJECT_DIR/uploads"
+
+            # ── 7. Reiniciar Apache ──
+            systemctl restart apache2
+
+            echo "✅ Deploy completado exitosamente"
