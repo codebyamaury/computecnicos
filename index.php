@@ -260,7 +260,7 @@ include __DIR__ . '/includes/header.php';
                 <img src="assets/images/Luis.jpg" onerror="this.onerror=null;this.src='https://ui-avatars.com/api/?name=Luis+Perez&background=0a0a0a&color=dc2626&size=200&bold=true';" alt="Luis David Perez Coa">
             </div>
             <h3 class="team-name">Luis Daniel<br>Perez Coa</h3>
-            <p class="team-role">Testers</p>
+            <p class="team-role">Tester</p>
         </div>
     </div>
 </section>
