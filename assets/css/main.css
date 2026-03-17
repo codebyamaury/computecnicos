@@ -408,43 +408,39 @@ body {
 }
 
 .reg-next-btn {
-    background: linear-gradient(135deg, #1a1a1a, #252525);
-    color: #ccc;
-    border: 1px solid rgba(255, 0, 0, 0.25);
+    background: var(--neon-red, #ff0000);
+    color: #000;
+    border: none;
     padding: 12px 0;
     border-radius: 0;
     cursor: pointer;
     font-weight: 800;
     font-size: 0.95rem;
     letter-spacing: 1.5px;
-    transition: all 0.35s ease;
+    transition: all 0.3s ease;
     text-transform: uppercase;
-    clip-path: polygon(8px 0, 100% 0, 100% 100%, 0 100%, 0 8px);
+    clip-path: polygon(10px 0, 100% 0, 100% 100%, 0 100%, 0 10px);
     text-shadow: none;
 }
 
 .reg-next-btn:hover {
-    background: linear-gradient(135deg, #cc0000, #ff0000, #ee2222);
-    color: #fff;
-    border-color: #ff0000;
-    box-shadow: 0 0 20px rgba(255, 0, 0, 0.45), 0 0 40px rgba(255, 0, 0, 0.15);
+    background: #fff;
+    color: #000;
+    box-shadow: 0 0 20px var(--neon-red, #ff0000);
     transform: translateY(-1px);
-    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
 }
 
 .reg-next-btn:active {
     transform: translateY(0);
-    box-shadow: 0 0 12px rgba(255, 0, 0, 0.35);
+    box-shadow: 0 0 10px var(--neon-red, #ff0000);
 }
 
 .reg-next-btn:disabled {
-    background: linear-gradient(135deg, #1a1a1a, #222);
-    color: #555;
-    border-color: #333;
+    background: #444;
+    color: #888;
     cursor: not-allowed;
     box-shadow: none;
     transform: none;
-    text-shadow: none;
 }
 
 /* Estilos especiales para el input del código de verificación */
