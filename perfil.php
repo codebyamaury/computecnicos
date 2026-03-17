@@ -325,11 +325,19 @@ include 'includes/header.php';
     <div id="modal-eliminar-cuenta" class="perfil-modal hidden" role="dialog" aria-modal="true">
         <div class="perfil-modal-box">
             <button class="perfil-modal-close" onclick="cerrarModal('modal-eliminar-cuenta')">&times;</button>
-            <h2 class="perfil-modal-title">Eliminar cuenta</h2>
-            <p class="perfil-modal-desc">¿Estás seguro? Esta acción es irreversible. Ingresa tu contraseña para confirmar:</p>
-            <form method="post" action="api/eliminar_cuenta.php">
-                <input type="password" name="password" class="perfil-input" placeholder="Contraseña" required>
-                <button type="submit" class="perfil-btn danger w-full">Eliminar definitivamente</button>
+            <h2 class="perfil-modal-title" style="color:#ff4444">Eliminar cuenta</h2>
+            <p class="perfil-modal-desc">¿Estás seguro? <strong>Esta acción es irreversible.</strong> Se eliminarán todos tus datos, pedidos e historial. Ingresa tu contraseña para confirmar:</p>
+            <div id="msg-eliminar" class="perfil-msg hidden"></div>
+            <form id="form-eliminar-cuenta">
+                <input type="password" name="password" id="eliminar-password" class="perfil-input" placeholder="Tu contraseña actual" required>
+                <label style="display:flex;align-items:center;gap:8px;margin:12px 0;color:#999;font-size:0.85rem;cursor:pointer">
+                    <input type="checkbox" id="eliminar-confirm-check" style="accent-color:#ff0000;width:16px;height:16px">
+                    Confirmo que quiero eliminar mi cuenta permanentemente
+                </label>
+                <button type="submit" class="perfil-btn danger w-full" id="btn-eliminar" disabled>
+                    <span id="btn-eliminar-text">Eliminar definitivamente</span>
+                    <span id="btn-eliminar-spinner" class="hidden">Eliminando…</span>
+                </button>
             </form>
         </div>
     </div>
@@ -360,6 +368,48 @@ document.querySelectorAll('.perfil-modal').forEach(modal => {
 
 // Botón eliminar cuenta
 document.getElementById('btn-eliminar-cuenta').onclick = () => abrirModal('modal-eliminar-cuenta');
+
+// Checkbox de confirmación habilita/deshabilita el botón de eliminar
+document.getElementById('eliminar-confirm-check').addEventListener('change', function() {
+    document.getElementById('btn-eliminar').disabled = !this.checked;
+});
+
+// Form eliminar cuenta (AJAX)
+document.getElementById('form-eliminar-cuenta').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const btn = document.getElementById('btn-eliminar');
+    const textSpan = document.getElementById('btn-eliminar-text');
+    const spinnerSpan = document.getElementById('btn-eliminar-spinner');
+    const password = document.getElementById('eliminar-password').value;
+
+    if (!password) {
+        mostrarMsg('msg-eliminar', 'Ingresa tu contraseña para confirmar.', 'error');
+        return;
+    }
+
+    btn.disabled = true;
+    if (textSpan) textSpan.classList.add('hidden');
+    if (spinnerSpan) spinnerSpan.classList.remove('hidden');
+
+    try {
+        const fd = new FormData();
+        fd.append('password', password);
+        const res = await fetch('api/eliminar_cuenta.php', { method: 'POST', body: fd });
+        const data = await res.json();
+        if (data.ok) {
+            mostrarMsg('msg-eliminar', data.msg || 'Cuenta eliminada correctamente. Redirigiendo...', 'success');
+            setTimeout(() => { window.location.href = 'index.php?cuenta_eliminada=1'; }, 1500);
+        } else {
+            mostrarMsg('msg-eliminar', data.msg || 'Error al eliminar la cuenta.', 'error');
+        }
+    } catch(err) {
+        mostrarMsg('msg-eliminar', 'Error de conexión. Intenta de nuevo.', 'error');
+    } finally {
+        btn.disabled = false;
+        if (textSpan) textSpan.classList.remove('hidden');
+        if (spinnerSpan) spinnerSpan.classList.add('hidden');
+    }
+});
 
 // ── Mostrar mensaje en modal ─────────────────────────────────────────────
 function mostrarMsg(id, texto, tipo) {
