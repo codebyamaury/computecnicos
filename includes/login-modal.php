@@ -94,7 +94,7 @@
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 12A4 4 0 118 12a4 4 0 018 0z"/></svg>
             <input type="text" id="register-simple-nombre" class="glass-input" placeholder="Nombre completo" autofocus>
           </div>
-          <button type="button" class="reg-next-btn" style="width:100%;margin-top:14px;" onclick="regValidateAndNext(1)">SIGUIENTE →</button>
+          <button type="button" class="glass-btn" style="margin-top:14px;" onclick="regValidateAndNext(1)">SIGUIENTE →</button>
         </div>
 
         <!-- PASO 2: Email -->
@@ -106,7 +106,7 @@
           </div>
           <div style="display:flex;gap:8px;margin-top:14px;">
             <button type="button" class="reg-back-btn" style="flex:1;" onclick="regGoTo(1)">← ATRÁS</button>
-            <button type="button" class="reg-next-btn" style="flex:2;" id="reg-send-code-btn" onclick="regSendVerificationCode()">ENVIAR CÓDIGO →</button>
+            <button type="button" class="glass-btn" style="flex:2;" id="reg-send-code-btn" onclick="regSendVerificationCode()">ENVIAR CÓDIGO →</button>
           </div>
         </div>
 
@@ -126,7 +126,7 @@
           </div>
           <div style="display:flex;gap:8px;margin-top:8px;">
             <button type="button" class="reg-back-btn" style="flex:1;" onclick="regGoTo(2)">← ATRÁS</button>
-            <button type="button" class="reg-next-btn" style="flex:2;" id="reg-verify-btn" onclick="regVerifyCode()">VERIFICAR ✓</button>
+            <button type="button" class="glass-btn" style="flex:2;" id="reg-verify-btn" onclick="regVerifyCode()">VERIFICAR ✓</button>
           </div>
         </div>
 
@@ -143,7 +143,7 @@
           </div>
           <div style="display:flex;gap:8px;margin-top:14px;">
             <button type="button" class="reg-back-btn" style="flex:1;" onclick="regGoTo(3)">← ATRÁS</button>
-            <button type="button" class="reg-next-btn" style="flex:2;" onclick="regValidateAndNext(4)">SIGUIENTE →</button>
+            <button type="button" class="glass-btn" style="flex:2;" onclick="regValidateAndNext(4)">SIGUIENTE →</button>
           </div>
         </div>
 
@@ -156,7 +156,7 @@
           </div>
           <div style="display:flex;gap:8px;margin-top:14px;">
             <button type="button" class="reg-back-btn" style="flex:1;" onclick="regGoTo(4)">← ATRÁS</button>
-            <button type="button" class="reg-next-btn" style="flex:2;" onclick="regValidateAndNext(5)">SIGUIENTE →</button>
+            <button type="button" class="glass-btn" style="flex:2;" onclick="regValidateAndNext(5)">SIGUIENTE →</button>
           </div>
         </div>
 
@@ -169,7 +169,7 @@
           </div>
           <div style="display:flex;gap:8px;margin-top:14px;">
             <button type="button" class="reg-back-btn" style="flex:1;" onclick="regGoTo(5)">← ATRÁS</button>
-            <button type="submit" class="reg-next-btn" style="flex:2;" id="reg-submit-btn">✓ COMPLETAR REGISTRO</button>
+            <button type="submit" class="glass-btn" style="flex:2;" id="reg-submit-btn">✓ COMPLETAR REGISTRO</button>
           </div>
         </div>
       </form>
