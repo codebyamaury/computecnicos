@@ -1,0 +1,58 @@
+/* ========================================
+   ESTILOS ESPECÍFICOS PARA SERVICIOS.PHP
+   (Complementan a index.css)
+   ======================================== */
+
+/* Ajustes específicos para la página de servicios si son necesarios */
+/* Por ahora, la mayoría de estilos se heredan de index.css para mantener consistencia */
+
+/* Animación suave para el acordeón FAQ */
+.tech-card button svg {
+    transition: transform 0.3s ease;
+}
+
+.tech-card div.hidden {
+    display: none;
+}
+
+.tech-card div:not(.hidden) {
+    display: block;
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Botones de acción en servicios (Estilo Hero Secondary) */
+.service-action-btn {
+    position: relative;
+    padding: 0.75rem 1.5rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    text-decoration: none;
+    clip-path: polygon(10% 0, 100% 0, 100% 70%, 90% 100%, 0 100%, 0 30%);
+    transition: all 0.3s ease;
+    border: 1px solid var(--neon-red, #ff0000);
+    background: transparent;
+    color: #fff;
+    box-shadow: inset 0 0 10px rgba(255, 0, 0, 0.2);
+    display: inline-block;
+    cursor: pointer;
+}
+
+.service-action-btn:hover {
+    background: rgba(255, 0, 0, 0.1);
+    box-shadow: inset 0 0 20px rgba(255, 0, 0, 0.4);
+    text-shadow: 0 0 5px var(--neon-red, #ff0000);
+    color: #fff;
+}

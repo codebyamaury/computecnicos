@@ -1,0 +1,73 @@
+# ============================================
+# .htaccess - CompuTécnicos Project
+# Configuración de Apache para la aplicación
+# ============================================
+
+# Habilitar motor de reescritura
+RewriteEngine On
+
+# Forzar HTTPS en producción (descomenta en producción)
+RewriteCond %{HTTPS} off
+RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+# Eliminar /index.php de la URL
+RewriteCond %{THE_REQUEST} ^[A-Z]{3,9}\ /([^/]+/)*index\.php\ HTTP/
+RewriteRule ^(([^/]+/)*)index\.php$ https://%{HTTP_HOST}/$1 [R=301,L]
+
+# Ocultar extensión .php para el resto de páginas (solo GET, no POST)
+# Las peticiones POST a archivos .php (formularios, AJAX) no deben redirigirse
+# porque el redirect 301 convierte POST en GET y se pierden los datos
+RewriteCond %{REQUEST_METHOD} !POST
+RewriteCond %{THE_REQUEST} ^[A-Z]{3,9}\ /([^.]+)\.php[\?\ ] [NC]
+RewriteRule ^([^.]+)\.php$ https://%{HTTP_HOST}/$1 [R=301,L,QSA]
+
+# Compatibilidad con Google OAuth Callback que fue movido a api/
+RewriteRule ^google-callback(\.php)?$ api/google-callback.php [L,QSA]
+
+# Internamente redirigir URLs sin .php al archivo físico .php
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME}.php -f
+RewriteRule ^(.*)$ $1.php [L]
+
+# Denegar acceso a archivos sensibles
+<FilesMatch "\.(env|ini|log|sh|sql)$">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+# Denegar acceso a directorios sensibles
+<IfModule mod_rewrite.c>
+
+    RewriteRule ^config/ - [F,L]
+    RewriteRule ^logs/ - [F,L]
+    RewriteRule ^database/ - [F,L]
+    RewriteRule ^scripts/ - [F,L]
+    RewriteRule ^vendor/ - [F,L]
+    RewriteRule ^composer\.(json|lock)$ - [F,L]
+</IfModule>
+
+# Cabeceras de seguridad
+<IfModule mod_headers.c>
+    Header set X-Content-Type-Options "nosniff"
+    Header set X-Frame-Options "SAMEORIGIN"
+    Header set X-XSS-Protection "1; mode=block"
+    Header set Referrer-Policy "strict-origin-when-cross-origin"
+</IfModule>
+
+# Compresión GZIP
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/html text/css application/javascript application/json
+    AddOutputFilterByType DEFLATE image/svg+xml application/xml
+</IfModule>
+
+# Cache de archivos estáticos
+<IfModule mod_expires.c>
+    ExpiresActive On
+    ExpiresByType image/jpeg "access plus 1 month"
+    ExpiresByType image/png "access plus 1 month"
+    ExpiresByType image/webp "access plus 1 month"
+    ExpiresByType image/svg+xml "access plus 1 month"
+    ExpiresByType text/css "access plus 1 week"
+    ExpiresByType application/javascript "access plus 1 week"
+    ExpiresByType application/x-font-woff2 "access plus 1 month"
+</IfModule>
