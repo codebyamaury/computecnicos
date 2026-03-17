@@ -214,8 +214,10 @@
 
 .prod-thumb:hover {
     border-color: rgba(255, 0, 0, 0.5);
-    transform: scale(1.08);
-    box-shadow: 0 0 12px rgba(255, 0, 0, 0.15);
+    transform: scale(1.1); /* Ligeramente más grande para que se note el cambio */
+    box-shadow: 0 0 15px rgba(255, 0, 0, 0.3);
+    z-index: 10;
+    position: relative;
 }
 
 .prod-thumb.active {
