@@ -307,7 +307,7 @@ include 'includes/header.php';
                     formData.append('mensaje', mensaje.value.trim());
 
                     try {
-                        const res = await fetch('contacto_backend', {
+                        const res = await fetch('api/contacto_backend', {
                             method: 'POST',
                             body: formData
                         });
