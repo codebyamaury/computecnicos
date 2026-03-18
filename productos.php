@@ -111,10 +111,10 @@ include __DIR__ . '/includes/header.php';
 <main class="flex-1 bg-[#050505] text-white relative z-10">
     
     <!-- Hero Section -->
-    <section class="products-hero">
-        <div class="container mx-auto px-4 relative z-10">
-            <h1 class="section-title animate-slide-up">Nuestros Productos</h1>
-            <p class="text-gray-400 max-w-2xl mx-auto mt-4 animate-slide-up delay-100 text-center">
+    <section class="products-hero py-12 md:py-20">
+        <div class="container mx-auto px-4 relative z-10 text-center">
+            <h1 class="section-title animate-slide-up" style="font-family:'Orbitron', sans-serif; letter-spacing: 4px;">Nuestros Productos</h1>
+            <p class="text-gray-400 max-w-2xl mx-auto mt-6 animate-slide-up delay-100 text-base md:text-lg">
                 Explora nuestra selección de productos tecnológicos de alta calidad. Encuentra lo que necesitas para potenciar tu experiencia digital.
             </p>
             

@@ -98,34 +98,37 @@
 
 /* Layout Principal */
 .products-layout {
-    display: grid;
-    grid-template-columns: 1fr;
+    display: flex;
+    flex-direction: column;
     gap: 2rem;
 }
 
 @media (min-width: 1024px) {
     .products-layout {
-        grid-template-columns: 280px 1fr;
-        gap: 3rem;
+        display: grid;
+        grid-template-columns: 320px 1fr;
+        gap: 2.5rem;
     }
 }
 
 /* Sidebar de Filtros */
 .filters-sidebar {
-    background: rgba(20, 20, 20, 0.6);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(10, 10, 10, 0.7);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
     border-radius: 1rem;
-    padding: 1.5rem;
+    padding: 2rem 1.5rem;
     height: fit-content;
     position: sticky;
     top: 100px;
-    transition: all 0.3s ease;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
 }
 
 .filters-sidebar:hover {
-    border-color: rgba(255, 0, 0, 0.3);
-    box-shadow: 0 0 20px rgba(255, 0, 0, 0.05);
+    border-color: rgba(255, 0, 0, 0.25);
+    box-shadow: 0 15px 40px rgba(255, 0, 0, 0.05);
 }
 
 .filters-header {
@@ -383,25 +386,27 @@
 /* Grid de Productos */
 .products-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-    gap: 1.5rem;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 2rem;
     align-items: stretch;
     max-width: 100%;
-    overflow: hidden;
 }
 
-/* Cards de Producto */
+/* Cards de Producto Futuristas */
 .product-card {
-    background: rgba(20, 20, 20, 0.6);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 1rem;
+    background: rgba(15, 15, 15, 0.8);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 1.25rem;
     overflow: hidden;
     cursor: pointer;
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
     position: relative;
     display: flex;
     flex-direction: column;
+    transform-style: preserve-3d;
+    perspective: 1000px;
 }
 
 .product-card::before {
@@ -431,25 +436,45 @@
 }
 
 .product-card:hover {
-    transform: translateY(-8px);
-    border-color: rgba(255, 0, 0, 0.5);
-    box-shadow:
-        0 20px 40px rgba(0, 0, 0, 0.3),
-        0 0 30px rgba(255, 0, 0, 0.1);
+    transform: rotateX(4deg) rotateY(-4deg) translateY(-10px);
+    border-color: rgba(255, 0, 0, 0.4);
+    box-shadow: 
+        -20px 20px 40px rgba(0, 0, 0, 0.6),
+        0 0 30px rgba(255, 0, 0, 0.15);
+    z-index: 10;
 }
 
-.product-card:hover::before {
-    width: 100%;
-    height: 100%;
-    border-top-color: rgba(255, 0, 0, 0.5);
-    border-left-color: rgba(255, 0, 0, 0.5);
+.product-card::before,
+.product-card::after {
+    content: '';
+    position: absolute;
+    width: 25px;
+    height: 25px;
+    border-color: rgba(255, 0, 0, 0.6);
+    border-style: solid;
+    transition: all 0.4s ease;
+    opacity: 0;
+    z-index: 5;
+    pointer-events: none;
 }
 
+.product-card::before {
+    top: 0;
+    left: 0;
+    border-width: 2px 0 0 2px;
+}
+
+.product-card::after {
+    bottom: 0;
+    right: 0;
+    border-width: 0 2px 2px 0;
+}
+
+.product-card:hover::before,
 .product-card:hover::after {
     width: 100%;
     height: 100%;
-    border-bottom-color: rgba(255, 0, 0, 0.5);
-    border-right-color: rgba(255, 0, 0, 0.5);
+    opacity: 0.8;
 }
 
 /* Imagen del producto */
@@ -550,6 +575,7 @@
 }
 
 .product-name {
+    font-family: 'Orbitron', sans-serif;
     font-size: 1rem;
     font-weight: 700;
     color: #fff;
@@ -560,8 +586,9 @@
     line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
-    transition: color 0.3s ease;
-    min-height: 2.8em; /* 2 lines * 1.4 line-height = 2.8em — fuerza altura uniforme */
+    transition: all 0.3s ease;
+    min-height: 2.8em;
+    letter-spacing: 0.5px;
 }
 
 .product-card:hover .product-name {
