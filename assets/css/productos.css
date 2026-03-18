@@ -327,6 +327,7 @@
 /* Contenido de Productos */
 .products-content {
     min-width: 0;
+    overflow: hidden;
 }
 
 .products-header {
@@ -382,9 +383,11 @@
 /* Grid de Productos */
 .products-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
     gap: 1.5rem;
     align-items: stretch;
+    max-width: 100%;
+    overflow: hidden;
 }
 
 /* Cards de Producto */
@@ -393,7 +396,7 @@
     backdrop-filter: blur(10px);
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 1rem;
-    overflow: visible;
+    overflow: hidden;
     cursor: pointer;
     transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
