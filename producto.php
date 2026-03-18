@@ -728,6 +728,9 @@ $tieneVideo = !empty($videoEmbedUrl);
                     if (videoEl) videoEl.pause();
                     if (videoThumb) videoThumb.classList.remove('active');
                 }
+                // Mostrar la lupa de nuevo al volver a imagen
+                const zoomBtn = document.getElementById('open-lightbox');
+                if (zoomBtn) zoomBtn.style.display = '';
             });
         });
 
@@ -744,6 +747,9 @@ $tieneVideo = !empty($videoEmbedUrl);
                 // Quitar active de todos los thumbs imagen
                 thumbs.forEach(t => t.classList.remove('active'));
                 videoThumbBtn.classList.add('active');
+                // Ocultar la lupa cuando hay video
+                const zoomBtn = document.getElementById('open-lightbox');
+                if (zoomBtn) zoomBtn.style.display = 'none';
             });
         }
 
