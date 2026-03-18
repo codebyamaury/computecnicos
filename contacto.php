@@ -74,6 +74,12 @@ include 'includes/header.php';
                         ¡Mensaje enviado con éxito! Nos pondremos en contacto pronto.
                     </div>
 
+                    <div id="form-error"
+                        class="hidden bg-red-900/30 border border-red-500/50 text-red-400 p-4 rounded-lg mt-6 text-center font-semibold shrink-0">
+                        Error al enviar el mensaje. Intenta de nuevo.
+                    </div>
+
+
                     <!-- 3D Element Container -->
                     <div id="tech-3d-container"
                         class="mt-8 w-full flex-1 min-h-[200px] rounded-lg overflow-hidden relative z-10 border border-gray-800 bg-black/20">
@@ -253,12 +259,17 @@ include 'includes/header.php';
             const errorEmail = document.getElementById('error-email');
             const errorMensaje = document.getElementById('error-mensaje');
             const formSuccess = document.getElementById('form-success');
+            const formError = document.getElementById('form-error');
             const btnEnviar = document.getElementById('btnEnviar');
             const btnText = btnEnviar.querySelector('span');
 
             form.addEventListener('submit', async function (e) {
                 e.preventDefault();
                 let valido = true;
+
+                // Ocultar mensajes previos
+                formSuccess.classList.add('hidden');
+                formError.classList.add('hidden');
 
                 // Validar nombre
                 if (!nombre.value.trim()) {
@@ -311,21 +322,37 @@ include 'includes/header.php';
                             email.value = '';
                             mensaje.value = '';
 
+                            // Quitar clase has-content de los inputs
+                            [nombre, email, mensaje].forEach(inp => inp.classList.remove('has-content'));
+
                             setTimeout(() => {
                                 formSuccess.classList.add('hidden');
-                            }, 5000);
+                            }, 7000);
                         } else {
-                            alert('Error: ' + data.msg);
+                            formError.textContent = data.msg || 'Error al enviar el mensaje.';
+                            formError.classList.remove('hidden');
+                            formError.classList.add('animate-slide-up');
+
+                            setTimeout(() => {
+                                formError.classList.add('hidden');
+                            }, 7000);
                         }
                     } catch (err) {
                         console.error(err);
-                        alert('Error de conexión. Intenta de nuevo.');
+                        formError.textContent = 'Error de conexión. Verifica tu internet e intenta de nuevo.';
+                        formError.classList.remove('hidden');
+                        formError.classList.add('animate-slide-up');
+
+                        setTimeout(() => {
+                            formError.classList.add('hidden');
+                        }, 7000);
                     } finally {
                         btnEnviar.disabled = false;
                         btnText.textContent = originalText;
                     }
                 }
             });
+
         });
     </script>
 
