@@ -77,19 +77,20 @@ $htmlBody = '
     <div style="padding:32px">
         <h2 style="color:#fff;margin:0 0 8px;font-size:18px">Hola, ' . htmlspecialchars($nombre) . '</h2>
         <p style="color:#999;font-size:14px;line-height:1.6;margin:0 0 24px">
-            Para completar tu registro, ingresa el siguiente código de verificación en la página:
+            Para completar tu registro, escribe el siguiente código de verificación en nuestra página:
         </p>
-        <div style="text-align:center;margin:24px 0">
-            <div style="display:inline-block;background:#111;border:2px solid #ff0000;border-radius:12px;padding:18px 40px;font-family:monospace">
-                <span style="color:#ff0000;font-size:36px;font-weight:900;letter-spacing:12px">' . $codigo . '</span>
+        <div style="text-align:center;margin:32px 0">
+            <div style="display:inline-block;background:#222;border:1px solid #444;border-radius:12px;padding:20px 40px;box-shadow: 0 4px 20px rgba(0,0,0,0.5)">
+                <span style="color:#ff0000;font-size:32px;font-weight:900;letter-spacing:10px;font-family:monospace;display:block">' . $codigo . '</span>
             </div>
+            <p style="color:#666;font-size:11px;margin-top:12px">Este código expira en 10 minutos</p>
         </div>
         <p style="color:#666;font-size:12px;line-height:1.5;margin:0 0 16px;text-align:center">
-            Este código expira en <strong style="color:#999">10 minutos</strong>. Si no solicitaste este registro, ignora este mensaje.
+            Si no solicitaste este registro, ignora este mensaje y nada cambiará en tu cuenta.
         </p>
         <div style="border-top:1px solid #333;padding-top:16px;margin-top:16px">
-            <p style="color:#555;font-size:11px;margin:0;text-align:center">
-                Por seguridad, nunca compartas este código con nadie.
+            <p style="color:#555;font-size:10px;margin:0;text-align:center;line-height:1.4">
+                Por seguridad, nunca compartas este código con nadie. El equipo de CompuTécnicos nunca te pedirá este código por teléfono o chat.
             </p>
         </div>
     </div>
