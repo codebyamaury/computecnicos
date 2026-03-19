@@ -112,10 +112,30 @@ if (session_status() === PHP_SESSION_ACTIVE) {
     auto_protect_admin_csrf();
 }
 
-// ─── Remember Me ───
-require_once BASE_PATH . '/app/Core/RememberMe.php';
 $rememberMe = new RememberMe($pdo);
 $rememberMe->tryRestore();
+
+// ─── Validación de Usuario Activo (Auto-logout si fue eliminado) ───
+if (isset($_SESSION['usuario']['id'])) {
+    $stmtCheckUser = $pdo->prepare("SELECT id FROM usuarios WHERE id = ?");
+    $stmtCheckUser->execute([$_SESSION['usuario']['id']]);
+    if (!$stmtCheckUser->fetch()) {
+        // El usuario ya no existe en la BD (fue eliminado por un administrador)
+        $deletedUserId = $_SESSION['usuario']['id'];
+        
+        // Destruir sesión y cookies de "Recordarme"
+        session_unset();
+        session_destroy();
+        $rememberMe->invalidateAllTokens($deletedUserId);
+        
+        // Iniciar una sesión nueva temporal solo para mostrar el mensaje
+        session_start();
+        $_SESSION['error_google'] = 'Tu cuenta ha sido eliminada por el administrador. Se ha cerrado la sesión.';
+        
+        header('Location: ' . base_url() . '/index.php?error=account_deleted');
+        exit;
+    }
+}
 
 // ─── Migraciones de esquema (se ejecutan UNA SOLA VEZ) ───
     // Usa un archivo bandera para evitar consultas de esquema en cada request
