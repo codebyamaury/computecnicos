@@ -12,7 +12,7 @@
 
 function enviar_email($to, $subject, $htmlBody, $fromName = 'Computécnicos') {
     $apiKey = $_ENV['BREVO_API_KEY'] ?? '';
-    $fromEmail = $_ENV['MAIL_FROM'] ?? 'noreply@computecnicos.com';
+    $fromEmail = $_ENV['MAIL_FROM'] ?? 'soportecomputecnicos@yahoo.com';
     $fromName = $_ENV['MAIL_FROM_NAME'] ?? $fromName;
     
     if (!empty($apiKey)) {

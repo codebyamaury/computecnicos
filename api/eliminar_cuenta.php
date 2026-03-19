@@ -38,7 +38,7 @@ $hash = $stmt->fetchColumn();
 
 // Caso: usuario registrado con Google (no tiene contraseña)
 if (!$hash || $hash === '' || $hash === null) {
-    respuesta(false, 'Tu cuenta fue creada con Google. Para eliminarla, contacta a soporte: info@computecnicos.com');
+    respuesta(false, 'Tu cuenta fue creada con Google. Para eliminarla, contacta a soporte: soportecomputecnicos@yahoo.com');
 }
 
 if (!password_verify($password, $hash)) {

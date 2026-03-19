@@ -43,9 +43,9 @@ try {
 
 // ─── Enviar correo vía Brevo API ───
 $brevoApiKey     = $_ENV['BREVO_API_KEY'] ?? '';
-$senderEmail     = $_ENV['BREVO_SENDER_EMAIL'] ?? 'info@computecnicos.com';
+$senderEmail     = $_ENV['BREVO_SENDER_EMAIL'] ?? 'soportecomputecnicos@yahoo.com';
 $senderName      = $_ENV['BREVO_SENDER_NAME'] ?? 'CompuTécnicos';
-$contactEmail    = $_ENV['BREVO_CONTACT_EMAIL'] ?? 'info@computecnicos.com';
+$contactEmail    = $_ENV['BREVO_CONTACT_EMAIL'] ?? 'soportecomputecnicos@yahoo.com';
 
 if (empty($brevoApiKey) || $brevoApiKey === 'tu_api_key_de_brevo_aqui') {
     log_event('Brevo API key no configurada. Mensaje guardado en BD pero no enviado por email.');

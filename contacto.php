@@ -99,8 +99,7 @@ include 'includes/header.php';
                         </div>
                         <div class="info-content">
                             <h4>Email</h4>
-                            <p>info@computecnicos.com</p>
-                            <p>soporte@computecnicos.com</p>
+                            <p>soportecomputecnicos@yahoo.com</p>
                         </div>
                     </div>
 
