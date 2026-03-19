@@ -2,24 +2,28 @@
 /**
  * Email Helper — Computécnicos
  * 
- * Envía emails usando Brevo API (gratis: 300 emails/día, sin verificar dominio)
+ * Envía emails usando Brevo API (gratis: 300 emails/día)
  * 
  * Configuración en .env:
  *   BREVO_API_KEY=xkeysib-xxxxxxxxxxxx
- *   MAIL_FROM=tu@email.com
- *   MAIL_FROM_NAME=Computécnicos
+ *   BREVO_SENDER_EMAIL=tu@email.com
+ *   BREVO_SENDER_NAME=Computécnicos
  */
 
-function enviar_email($to, $subject, $htmlBody, $fromName = 'Computécnicos') {
+function enviar_email($to, $subject, $htmlBody, $fromName = 'CompuTécnicos') {
     $apiKey = $_ENV['BREVO_API_KEY'] ?? '';
-    $fromEmail = $_ENV['MAIL_FROM'] ?? 'soportecomputecnicos@yahoo.com';
-    $fromName = $_ENV['MAIL_FROM_NAME'] ?? $fromName;
+    // Unificar: usar BREVO_SENDER_EMAIL o MAIL_FROM como fallback
+    $fromEmail = $_ENV['BREVO_SENDER_EMAIL'] ?? $_ENV['MAIL_FROM'] ?? 'soportecomputecnicos@yahoo.com';
+    $fromName = $_ENV['BREVO_SENDER_NAME'] ?? $_ENV['MAIL_FROM_NAME'] ?? $fromName;
     
-    if (!empty($apiKey)) {
+    if (!empty($apiKey) && $apiKey !== 'tu_api_key_de_brevo_aqui') {
         return enviar_con_brevo($apiKey, $fromEmail, $fromName, $to, $subject, $htmlBody);
     }
     
     // Fallback: mail() nativo
+    if (function_exists('log_event')) {
+        log_event("BREVO_API_KEY no configurada o es placeholder. Intentando mail() nativo para: $to");
+    }
     return enviar_con_mail($fromEmail, $fromName, $to, $subject, $htmlBody);
 }
 
@@ -46,6 +50,7 @@ function enviar_con_brevo($apiKey, $fromEmail, $fromName, $to, $subject, $htmlBo
         ],
         CURLOPT_RETURNTRANSFER => true,
         CURLOPT_TIMEOUT => 15,
+        CURLOPT_CONNECTTIMEOUT => 10,
         CURLOPT_SSL_VERIFYPEER => true
     ]);
 
@@ -55,16 +60,18 @@ function enviar_con_brevo($apiKey, $fromEmail, $fromName, $to, $subject, $htmlBo
     curl_close($ch);
 
     if ($error) {
-        if (function_exists('log_event')) log_event("Brevo curl error: $error");
+        if (function_exists('log_event')) log_event("Brevo cURL error: $error");
         return false;
     }
 
     if ($httpCode >= 200 && $httpCode < 300) {
-        if (function_exists('log_event')) log_event("Email enviado via Brevo a: $to");
+        if (function_exists('log_event')) log_event("Email enviado via Brevo a: $to (subject: $subject)");
         return true;
     }
 
-    if (function_exists('log_event')) log_event("Brevo error ($httpCode): $response");
+    $responseData = json_decode($response, true);
+    $errorMsg = $responseData['message'] ?? 'Error desconocido';
+    if (function_exists('log_event')) log_event("Brevo error HTTP $httpCode: $errorMsg | to: $to | response: $response");
     return false;
 }
 
