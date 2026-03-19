@@ -112,6 +112,8 @@ if (session_status() === PHP_SESSION_ACTIVE) {
     auto_protect_admin_csrf();
 }
 
+// ─── Remember Me ───
+require_once BASE_PATH . '/app/Core/RememberMe.php';
 $rememberMe = new RememberMe($pdo);
 $rememberMe->tryRestore();
 
