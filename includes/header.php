@@ -39,6 +39,23 @@ if (isset($_SESSION['usuario']['id']) && isset($pdo)) {
             display: flex !important;
             flex-direction: column !important;
         }
+        /* Overlay de transición de página — previene destello blanco (FOUC) entre navegaciones */
+        #page-transition-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 99999;
+            background-color: #050505;
+            opacity: 1;
+            transition: opacity .28s ease-out;
+            pointer-events: none;
+        }
+        #page-transition-overlay.pto-hidden {
+            opacity: 0;
+        }
+        #page-transition-overlay.pto-active {
+            opacity: 1;
+            pointer-events: all;
+        }
     </style>
 
     <!-- 1. Cargar fuentes pre-connect -->
@@ -64,6 +81,53 @@ if (isset($_SESSION['usuario']['id']) && isset($pdo)) {
 </head>
 
 <body class="min-h-screen flex flex-col" style="background-color: #050505 !important; color: #ffffff !important;">
+    <!-- Overlay de transición de página (previene parpadeo blanco al navegar) -->
+    <div id="page-transition-overlay"></div>
+    <script>
+    (function(){
+        var ov = document.getElementById('page-transition-overlay');
+        // Fade-out del overlay al cargar la página
+        function hideOverlay() {
+            if (ov) { ov.classList.add('pto-hidden'); ov.classList.remove('pto-active'); }
+        }
+        // Fade-in del overlay antes de navegar
+        function showOverlay() {
+            if (ov) { ov.classList.remove('pto-hidden'); ov.classList.add('pto-active'); }
+        }
+        // Al cargar la página: ocultar overlay con fade-out
+        if (document.readyState === 'complete' || document.readyState === 'interactive') {
+            setTimeout(hideOverlay, 10);
+        } else {
+            document.addEventListener('DOMContentLoaded', function(){ setTimeout(hideOverlay, 10); });
+        }
+        // Interceptar clics en links internos
+        document.addEventListener('click', function(e) {
+            var link = e.target.closest('a');
+            if (!link) return;
+            var href = link.getAttribute('href');
+            if (!href) return;
+            // Ignorar: links externos, anclas, javascript:, target=_blank, mailto:, tel:
+            if (link.target === '_blank' || link.target === '_new') return;
+            if (href.charAt(0) === '#' || href.indexOf('javascript:') === 0) return;
+            if (href.indexOf('mailto:') === 0 || href.indexOf('tel:') === 0) return;
+            if (href.indexOf('http') === 0 && href.indexOf(window.location.hostname) === -1) return;
+            // Mostrar overlay antes de navegar
+            showOverlay();
+        });
+        // También manejar envíos de formulario que redirigen
+        document.addEventListener('submit', function(e) {
+            var form = e.target;
+            // Solo forms que NO son AJAX (no tienen fetch/preventDefault)
+            if (form && !form.dataset.ajax) {
+                showOverlay();
+            }
+        });
+        // Manejar navegación con botones atrás/adelante del navegador
+        window.addEventListener('pageshow', function(e) {
+            if (e.persisted) { hideOverlay(); }
+        });
+    })();
+    </script>
     <header class="py-4 px-4 flex justify-between items-center relative z-50">
         <!-- Logo y Menú Hamburger a la izquierda -->
         <div class="flex items-center gap-2">
