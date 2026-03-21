@@ -33,7 +33,7 @@ if (container) {
 
 // Partículas
 const particlesGeometry = new THREE.BufferGeometry();
-const particlesCount = 2000;
+const particlesCount = 6000; // Incrementamos la cantidad de partículas
 const posArray = new Float32Array(particlesCount * 3);
 
 for (let i = 0; i < particlesCount * 3; i++) {
