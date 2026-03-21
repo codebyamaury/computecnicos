@@ -65,6 +65,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['ajax'])) {
         if ($stmt_check->fetch()) {
             echo json_encode(['ok' => false, 'msg' => 'Este correo ya está en uso por otra cuenta.']); exit;
         }
+        // Si el email cambió, exigir verificación con código
+        if (strtolower($email) !== strtolower($usuario['email'])) {
+            $codigo_enviado = trim($_POST['codigo_verificacion'] ?? '');
+            if (empty($codigo_enviado)) {
+                echo json_encode(['ok' => false, 'msg' => 'Debes verificar tu nuevo correo con un código.', 'requires_verification' => true]); exit;
+            }
+            $verif = $_SESSION['cambio_email_verificacion'] ?? null;
+            if (!$verif || strtolower($verif['email']) !== strtolower($email)) {
+                echo json_encode(['ok' => false, 'msg' => 'Solicita un nuevo código de verificación para este correo.', 'requires_verification' => true]); exit;
+            }
+            if (time() > $verif['expira']) {
+                unset($_SESSION['cambio_email_verificacion']);
+                echo json_encode(['ok' => false, 'msg' => 'El código ha expirado. Solicita uno nuevo.', 'requires_verification' => true]); exit;
+            }
+            if ($verif['intentos'] >= 5) {
+                unset($_SESSION['cambio_email_verificacion']);
+                echo json_encode(['ok' => false, 'msg' => 'Demasiados intentos fallidos. Solicita un nuevo código.', 'requires_verification' => true]); exit;
+            }
+            if ($codigo_enviado !== $verif['codigo']) {
+                $_SESSION['cambio_email_verificacion']['intentos']++;
+                echo json_encode(['ok' => false, 'msg' => 'Código incorrecto. Intento ' . $_SESSION['cambio_email_verificacion']['intentos'] . ' de 5.']); exit;
+            }
+            // Código correcto — limpiar verificación
+            unset($_SESSION['cambio_email_verificacion']);
+        }
         $foto_url = $usuario['foto'];
         if (!empty($_FILES['foto']['tmp_name'])) {
             $ext = strtolower(pathinfo($_FILES['foto']['name'], PATHINFO_EXTENSION));
@@ -274,7 +299,24 @@ include 'includes/header.php';
                 <label class="perfil-label">Nombre completo</label>
                 <input type="text" name="nombre" class="perfil-input" value="<?php echo htmlspecialchars($usuario['nombre']); ?>" required>
                 <label class="perfil-label">Correo electrónico</label>
-                <input type="email" name="email" class="perfil-input" value="<?php echo htmlspecialchars($usuario['email']); ?>" required>
+                <input type="email" name="email" id="input-email-perfil" class="perfil-input" value="<?php echo htmlspecialchars($usuario['email']); ?>" required>
+                <!-- Verificación de cambio de email -->
+                <div id="email-verify-section" class="hidden" style="margin-top:8px;margin-bottom:12px;">
+                    <div id="email-verify-send" style="margin-bottom:8px;">
+                        <button type="button" id="btn-enviar-codigo-email" class="perfil-btn" style="width:100%;background:#222;border:1px solid #444;color:#ccc;font-size:13px;padding:10px;" onclick="enviarCodigoCambioEmail()">
+                            <span id="btn-codigo-text">📧 Enviar código al nuevo correo</span>
+                            <span id="btn-codigo-spinner" class="hidden">Enviando...</span>
+                        </button>
+                    </div>
+                    <div id="email-verify-code" class="hidden">
+                        <label class="perfil-label" style="color:#ff4444;">Código de verificación</label>
+                        <div style="display:flex;gap:8px;">
+                            <input type="text" id="input-codigo-email" maxlength="6" placeholder="000000" class="perfil-input" style="text-align:center;letter-spacing:8px;font-size:20px;font-weight:bold;font-family:monospace;flex:1;">
+                        </div>
+                        <p style="color:#666;font-size:11px;margin-top:4px;">Revisa tu correo. El código expira en 10 minutos.</p>
+                    </div>
+                </div>
+                <input type="hidden" name="codigo_verificacion" id="hidden-codigo-verificacion" value="">
                 <label class="perfil-label">Teléfono</label>
                 <input type="text" name="telefono" class="perfil-input" value="<?php echo htmlspecialchars($usuario['telefono'] ?? ''); ?>">
                 <button type="submit" class="perfil-btn primary w-full" id="btn-personal">
@@ -452,6 +494,69 @@ if (fotoInput) {
     });
 }
 
+// ── Verificación de cambio de email ─────────────────────────────────────
+var emailOriginal = '<?php echo addslashes($usuario['email']); ?>';
+var emailCodigoEnviado = false;
+
+// Detectar cambios en el campo de email
+document.getElementById('input-email-perfil').addEventListener('input', function() {
+    var nuevoEmail = this.value.trim().toLowerCase();
+    var section = document.getElementById('email-verify-section');
+    if (nuevoEmail !== emailOriginal.toLowerCase() && nuevoEmail.length > 5) {
+        section.classList.remove('hidden');
+    } else {
+        section.classList.add('hidden');
+        document.getElementById('email-verify-code').classList.add('hidden');
+        document.getElementById('hidden-codigo-verificacion').value = '';
+        emailCodigoEnviado = false;
+    }
+});
+
+// Enviar código al nuevo email
+async function enviarCodigoCambioEmail() {
+    var nuevoEmail = document.getElementById('input-email-perfil').value.trim();
+    var emailCheck = validarEmail(nuevoEmail);
+    if (!emailCheck.ok) {
+        showToast(emailCheck.msg, 'error', 5000);
+        return;
+    }
+
+    var btn = document.getElementById('btn-enviar-codigo-email');
+    var btnText = document.getElementById('btn-codigo-text');
+    var btnSpinner = document.getElementById('btn-codigo-spinner');
+    btn.disabled = true;
+    btnText.classList.add('hidden');
+    btnSpinner.classList.remove('hidden');
+
+    try {
+        var fd = new FormData();
+        fd.append('email', nuevoEmail);
+        var res = await fetch('api/enviar_codigo_cambio_email.php', { method: 'POST', body: fd });
+        var data = await res.json();
+        if (data.ok) {
+            showToast(data.msg, 'success', 5000);
+            document.getElementById('email-verify-code').classList.remove('hidden');
+            document.getElementById('input-codigo-email').focus();
+            emailCodigoEnviado = true;
+            // Cambiar botón a "Reenviar"
+            btnText.textContent = '🔄 Reenviar código';
+        } else {
+            showToast(data.msg, 'error', 5000);
+        }
+    } catch (err) {
+        showToast('Error de conexión. Intenta de nuevo.', 'error', 5000);
+    } finally {
+        btn.disabled = false;
+        btnText.classList.remove('hidden');
+        btnSpinner.classList.add('hidden');
+    }
+}
+
+// Copiar código al hidden antes del submit
+document.getElementById('input-codigo-email').addEventListener('input', function() {
+    document.getElementById('hidden-codigo-verificacion').value = this.value.trim();
+});
+
 // ── Envío AJAX genérico ──────────────────────────────────────────────────
 function enviarFormAjax(formId, btnId, msgId, onSuccess) {
     const form = document.getElementById(formId);
@@ -461,6 +566,23 @@ function enviarFormAjax(formId, btnId, msgId, onSuccess) {
 
     form.addEventListener('submit', async function(e) {
         e.preventDefault();
+
+        // Si es form-personal y el email cambió, verificar que haya código
+        if (formId === 'form-personal') {
+            var emailActual = document.getElementById('input-email-perfil').value.trim().toLowerCase();
+            if (emailActual !== emailOriginal.toLowerCase()) {
+                var codigo = document.getElementById('hidden-codigo-verificacion').value.trim();
+                if (!codigo || codigo.length !== 6) {
+                    showToast('Debes enviar y escribir el código de verificación de 6 dígitos.', 'error', 5000);
+                    document.getElementById('email-verify-section').classList.remove('hidden');
+                    if (!emailCodigoEnviado) {
+                        document.getElementById('email-verify-code').classList.add('hidden');
+                    }
+                    return;
+                }
+            }
+        }
+
         // Estado cargando
         btn.disabled = true;
         if (textSpan)    textSpan.classList.add('hidden');
@@ -474,6 +596,16 @@ function enviarFormAjax(formId, btnId, msgId, onSuccess) {
                 cerrarModal(form.closest('.perfil-modal').id);
                 showToast(data.msg, 'success', 4000);
                 if (onSuccess) onSuccess(data);
+                // Resetear estado de verificación de email
+                if (formId === 'form-personal' && data.email) {
+                    emailOriginal = data.email;
+                    emailCodigoEnviado = false;
+                    document.getElementById('hidden-codigo-verificacion').value = '';
+                    document.getElementById('input-codigo-email').value = '';
+                    document.getElementById('email-verify-section').classList.add('hidden');
+                    document.getElementById('email-verify-code').classList.add('hidden');
+                    document.getElementById('btn-codigo-text').textContent = '📧 Enviar código al nuevo correo';
+                }
             } else {
                 showToast(data.msg, 'error', 5000);
             }
