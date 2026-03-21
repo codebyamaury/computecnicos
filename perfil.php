@@ -53,14 +53,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['ajax'])) {
         if (!$nombre || !$email) {
             echo json_encode(['ok' => false, 'msg' => 'Nombre y correo son obligatorios.']); exit;
         }
-        // Validar formato de email
-        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            echo json_encode(['ok' => false, 'msg' => 'El correo electrónico no tiene un formato válido.']); exit;
-        }
-        // Validar dominio del email (debe tener registros MX)
-        $email_domain = substr(strrchr($email, '@'), 1);
-        if (!checkdnsrr($email_domain, 'MX') && !checkdnsrr($email_domain, 'A')) {
-            echo json_encode(['ok' => false, 'msg' => 'El dominio del correo electrónico no existe o no acepta correos.']); exit;
+        // Validar email completo (formato + DNS + detección de typos)
+        require_once __DIR__ . '/app/Core/email_validator.php';
+        $email_check = validar_email_completo($email);
+        if (!$email_check['ok']) {
+            echo json_encode(['ok' => false, 'msg' => $email_check['msg']]); exit;
         }
         // Verificar que el email no esté en uso por otro usuario
         $stmt_check = $pdo->prepare('SELECT id FROM usuarios WHERE email = ? AND id != ?');

@@ -308,20 +308,32 @@ function regValidateAndNext(step) {
 // ========== VALIDACIÓN DE EMAIL GLOBAL ==========
 
 /**
- * Valida formato de email estrictamente.
- * Requiere: usuario@dominio.extension
- * La extensión debe tener entre 2 y 10 caracteres (soporta .com, .co, .org, .com.co, etc.)
- * No permite: espacios, caracteres especiales inválidos, dominios sin TLD real
+ * Valida formato de email + detecta dominios sospechosos/typos.
+ * Retorna { ok: true } o { ok: false, msg: 'razón' }
  */
 function validarEmail(email) {
-    if (!email || typeof email !== 'string') return false;
-    email = email.trim();
-    // Regex: usuario válido @ dominio con al menos un punto y TLD de 2-10 chars
+    if (!email || typeof email !== 'string') return { ok: false, msg: 'Ingresa un correo electrónico.' };
+    email = email.trim().toLowerCase();
     var re = /^[a-zA-Z0-9](?:[a-zA-Z0-9._%+\-]*[a-zA-Z0-9])?@[a-zA-Z0-9](?:[a-zA-Z0-9\-]*[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9\-]*[a-zA-Z0-9])?)*\.[a-zA-Z]{2,10}$/;
-    if (!re.test(email)) return false;
-    // No permitir puntos consecutivos en la parte local
-    if (email.split('@')[0].indexOf('..') !== -1) return false;
-    return true;
+    if (!re.test(email)) return { ok: false, msg: 'El correo no tiene un formato válido (ejemplo: nombre@gmail.com).' };
+    if (email.split('@')[0].indexOf('..') !== -1) return { ok: false, msg: 'El correo no puede tener puntos consecutivos.' };
+    var domain = email.split('@')[1];
+    var base = domain.split('.')[0];
+    var pv = {
+        'gmail':['gmail.com'],'yahoo':['yahoo.com','yahoo.es','yahoo.com.mx','yahoo.com.co','yahoo.com.ar','yahoo.co.uk','ymail.com'],
+        'outlook':['outlook.com','outlook.es','outlook.com.mx','outlook.co','outlook.com.co'],
+        'hotmail':['hotmail.com','hotmail.es','hotmail.com.mx','hotmail.co','hotmail.com.co','hotmail.co.uk'],
+        'live':['live.com','live.com.mx','live.com.co'],'icloud':['icloud.com'],'me':['me.com'],'mac':['mac.com'],
+        'aol':['aol.com'],'protonmail':['protonmail.com','proton.me','pm.me'],'zoho':['zoho.com','zohomail.com']
+    };
+    if (pv[base] && pv[base].indexOf(domain) === -1) {
+        return { ok: false, msg: 'El dominio "' + domain + '" no es válido. ¿Quisiste escribir @' + pv[base][0] + '?' };
+    }
+    var typos = {'gmal':'gmail.com','gmial':'gmail.com','gmaill':'gmail.com','gamil':'gmail.com','gnail':'gmail.com','gmai':'gmail.com','gimail':'gmail.com','gmil':'gmail.com','yaho':'yahoo.com','yahooo':'yahoo.com','yhaoo':'yahoo.com','outllok':'outlook.com','outlok':'outlook.com','outloock':'outlook.com','hotmal':'hotmail.com','hotmial':'hotmail.com','hotmaill':'hotmail.com','htmail':'hotmail.com','htomail':'hotmail.com','iclould':'icloud.com'};
+    if (typos[base]) {
+        return { ok: false, msg: 'Parece un error de escritura. ¿Quisiste escribir @' + typos[base] + '?' };
+    }
+    return { ok: true };
 }
 
 // ========== ENVÍO Y VERIFICACIÓN DE CÓDIGO ==========
@@ -330,8 +342,9 @@ async function regSendVerificationCode() {
   regHideError();
   var email = document.getElementById('register-simple-email').value.trim();
   var nombre = document.getElementById('register-simple-nombre').value.trim();
-  if (!validarEmail(email)) {
-    regShowError('Ingresa un correo electrónico válido (ejemplo: nombre@gmail.com).');
+  var emailCheck = validarEmail(email);
+  if (!emailCheck.ok) {
+    regShowError(emailCheck.msg);
     return;
   }
 

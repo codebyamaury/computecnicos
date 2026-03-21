@@ -22,14 +22,10 @@ $email = trim($_POST['email'] ?? '');
 $nombre = trim($_POST['nombre'] ?? 'Usuario');
 
 // Validar email
-if (empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
-    echo json_encode(['ok' => false, 'msg' => 'Ingresa un correo electrónico válido.']);
-    exit;
-}
-// Validar que el dominio del email exista
-$email_domain = substr(strrchr($email, '@'), 1);
-if (!checkdnsrr($email_domain, 'MX') && !checkdnsrr($email_domain, 'A')) {
-    echo json_encode(['ok' => false, 'msg' => 'El dominio del correo no existe o no acepta correos.']);
+require_once __DIR__ . '/../app/Core/email_validator.php';
+$email_check = validar_email_completo($email);
+if (!$email_check['ok']) {
+    echo json_encode(['ok' => false, 'msg' => $email_check['msg']]);
     exit;
 }
 

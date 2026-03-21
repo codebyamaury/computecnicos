@@ -24,13 +24,10 @@ if (!$nombre || !$email || !$mensaje) {
     respuesta(false, 'Todos los campos son obligatorios.');
 }
 
-if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-    respuesta(false, 'Correo electrónico inválido.');
-}
-// Validar que el dominio del email exista
-$email_domain = substr(strrchr($email, '@'), 1);
-if (!checkdnsrr($email_domain, 'MX') && !checkdnsrr($email_domain, 'A')) {
-    respuesta(false, 'El dominio del correo electrónico no existe o no acepta correos.');
+require_once __DIR__ . '/../app/Core/email_validator.php';
+$email_check = validar_email_completo($email);
+if (!$email_check['ok']) {
+    respuesta(false, $email_check['msg']);
 }
 
 if (strlen($mensaje) < 10) {

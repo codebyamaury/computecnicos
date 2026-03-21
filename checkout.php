@@ -156,14 +156,11 @@ if (!$carrito_vacio && $_SERVER['REQUEST_METHOD'] === 'POST' && !isset($_POST['c
     $direccion = $_POST['direccion'] ?? '';
 
     if ($nombre && $email && $direccion) {
-        // Validar formato de email
-        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            $mensaje = 'El correo electrónico no tiene un formato válido.';
-        } else {
-            $email_domain = substr(strrchr($email, '@'), 1);
-            if (!checkdnsrr($email_domain, 'MX') && !checkdnsrr($email_domain, 'A')) {
-                $mensaje = 'El dominio del correo electrónico no existe.';
-            }
+        // Validar email completo (formato + DNS + detección de typos)
+        require_once __DIR__ . '/app/Core/email_validator.php';
+        $email_check = validar_email_completo($email);
+        if (!$email_check['ok']) {
+            $mensaje = $email_check['msg'];
         }
         if (empty($mensaje)) {
         try {
@@ -710,9 +707,10 @@ document.addEventListener('DOMContentLoaded', function() {
             // Solo validar si los inputs editables están activos
             const inputEmail = document.getElementById('input-email');
             if (inputEmail && !inputEmail.disabled) {
-                if (!validarEmail(inputEmail.value)) {
+                var emailCheck = validarEmail(inputEmail.value);
+                if (!emailCheck.ok) {
                     e.preventDefault();
-                    showToast('Ingresa un correo electrónico válido (ejemplo: nombre@gmail.com).', 'error', 5000);
+                    showToast(emailCheck.msg, 'error', 5000);
                     inputEmail.focus();
                     return false;
                 }
