@@ -43,10 +43,10 @@ for (let i = 0; i < particlesCount * 3; i++) {
 particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
 
 const particlesMaterial = new THREE.PointsMaterial({
-    size: 0.05,
-    color: 0xff0000,
+    size: 0.08, // Ligeramente más grande para que resalte más
+    color: 0xff1111, // Rojo neón más intenso
     transparent: true,
-    opacity: 0.8,
+    opacity: 0.9,
     blending: THREE.AdditiveBlending
 });
 
@@ -57,10 +57,11 @@ scene.add(particlesMesh);
 // Esfera Gigante
 const geometry = new THREE.IcosahedronGeometry(65, 2);
 const material = new THREE.MeshBasicMaterial({
-    color: 0xff0000,
+    color: 0xff1111, // Rojo brillante
     wireframe: true,
     transparent: true,
-    opacity: 0.15
+    opacity: 0.5, // Mayor opacidad para que se vea claro en celulares
+    blending: THREE.AdditiveBlending // Esto crea el efecto luminoso de neón al superponer las líneas
 });
 const sphere = new THREE.Mesh(geometry, material);
 scene.add(sphere);
