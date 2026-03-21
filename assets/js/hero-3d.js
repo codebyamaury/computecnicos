@@ -57,11 +57,11 @@ scene.add(particlesMesh);
 // Esfera Gigante
 const geometry = new THREE.IcosahedronGeometry(65, 2);
 const material = new THREE.MeshBasicMaterial({
-    color: 0xff0505, // Un poco menos intenso
+    color: 0xff0505,
     wireframe: true,
     transparent: true,
-    opacity: 0.25, // Opacidad más baja para que no resalte demasiado
-    blending: THREE.AdditiveBlending // Mantiene brillo sutil
+    opacity: 0.12, // Muy sutil para que sea elegante y no canse la vista
+    blending: THREE.AdditiveBlending // Mantiene el brillo en las intersecciones pero suave
 });
 const sphere = new THREE.Mesh(geometry, material);
 scene.add(sphere);
