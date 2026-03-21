@@ -109,14 +109,22 @@ include '_layout.php';
     <!-- Filtros de estado -->
     <div class="adm-pedido-filters">
         <?php
-        $estados_ui = ['todos'=>'Todos','pendiente'=>'Pendientes','pagado'=>'Pagados','preparacion'=>'En preparación','enviado'=>'Enviados','entregado'=>'Entregados','cancelado'=>'Cancelados'];
-        foreach ($estados_ui as $estado => $label):
+        $estados_ui = [
+            'todos'       => ['label' => 'Todos',          'icon' => 'layers',        'class' => 'adm-btn-todos'],
+            'pendiente'   => ['label' => 'Pendientes',     'icon' => 'clock',         'class' => 'adm-btn-pendiente'],
+            'pagado'      => ['label' => 'Pagados',        'icon' => 'credit-card',   'class' => 'adm-btn-pagado'],
+            'preparacion' => ['label' => 'En preparación', 'icon' => 'package',       'class' => 'adm-btn-preparacion'],
+            'enviado'     => ['label' => 'Enviados',       'icon' => 'truck',         'class' => 'adm-btn-enviado'],
+            'entregado'   => ['label' => 'Entregados',     'icon' => 'check-circle',  'class' => 'adm-btn-entregado'],
+            'cancelado'   => ['label' => 'Cancelados',     'icon' => 'x-circle',      'class' => 'adm-btn-cancelado'],
+        ];
+        foreach ($estados_ui as $estado => $data):
             $active = ($estado_filtro === $estado);
         ?>
         <a href="pedidos.php<?= $estado === 'todos' ? '' : ('?estado='.$estado) ?>"
-           class="adm-btn <?= $active ? 'adm-btn-primary' : '' ?>"
-           style="<?= !$active ? '--btn-bg:rgba(255,255,255,0.04);--btn-color:#aaa;--btn-border:1px solid rgba(255,255,255,0.07)' : '' ?>">
-            <?= $label ?>
+           class="adm-btn <?= $data['class'] ?> <?= $active ? 'active' : '' ?>">
+            <i data-lucide="<?= $data['icon'] ?>" style="width:16px;height:16px"></i>
+            <span><?= $data['label'] ?></span>
         </a>
         <?php endforeach; ?>
     </div>

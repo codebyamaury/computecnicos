@@ -2046,9 +2046,95 @@ input[type="checkbox"]:checked + .adm-toggle-slider::before {
 /* ── Gestión de Pedidos ────────────────────────────────── */
 .adm-pedido-filters {
     display: flex;
+    justify-content: center;
+    align-items: center;
     flex-wrap: wrap;
-    gap: 8px;
-    margin-bottom: 1.5rem;
+    gap: 12px;
+    margin-bottom: 2.5rem;
+    padding: 1.25rem;
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: 1.25rem;
+    border: 1px solid rgba(255, 255, 255, 0.04);
+    box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.02);
+}
+
+/* Status-specific button variants */
+.adm-btn-todos {
+    background: rgba(255, 255, 255, 0.04);
+    color: #e2e2e2;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+}
+.adm-btn-todos.active, .adm-btn-todos:hover {
+    background: linear-gradient(135deg, #cc0000, #ff0000);
+    color: #fff;
+    border-color: transparent;
+    box-shadow: 0 4px 15px rgba(255, 0, 0, 0.25);
+}
+
+.adm-btn-pendiente {
+    background: rgba(234, 179, 8, 0.06);
+    color: #fde047;
+    border: 1px solid rgba(234, 179, 8, 0.15);
+}
+.adm-btn-pendiente.active, .adm-btn-pendiente:hover {
+    background: rgba(234, 179, 8, 0.15);
+    border-color: rgba(234, 179, 8, 0.4);
+    box-shadow: 0 4px 12px rgba(234, 179, 8, 0.12);
+}
+
+.adm-btn-pagado {
+    background: rgba(59, 130, 246, 0.06);
+    color: #60a5fa;
+    border: 1px solid rgba(59, 130, 246, 0.15);
+}
+.adm-btn-pagado.active, .adm-btn-pagado:hover {
+    background: rgba(59, 130, 246, 0.15);
+    border-color: rgba(59, 130, 246, 0.4);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.12);
+}
+
+.adm-btn-preparacion {
+    background: rgba(139, 92, 246, 0.06);
+    color: #a78bfa;
+    border: 1px solid rgba(139, 92, 246, 0.15);
+}
+.adm-btn-preparacion.active, .adm-btn-preparacion:hover {
+    background: rgba(139, 92, 246, 0.15);
+    border-color: rgba(139, 92, 246, 0.4);
+    box-shadow: 0 4px 12px rgba(139, 92, 246, 0.12);
+}
+
+.adm-btn-enviado {
+    background: rgba(6, 182, 212, 0.06);
+    color: #22d3ee;
+    border: 1px solid rgba(6, 182, 212, 0.15);
+}
+.adm-btn-enviado.active, .adm-btn-enviado:hover {
+    background: rgba(6, 182, 212, 0.15);
+    border-color: rgba(6, 182, 212, 0.4);
+    box-shadow: 0 4px 12px rgba(6, 182, 212, 0.12);
+}
+
+.adm-btn-entregado {
+    background: rgba(34, 197, 94, 0.06);
+    color: #4ade80;
+    border: 1px solid rgba(34, 197, 94, 0.15);
+}
+.adm-btn-entregado.active, .adm-btn-entregado:hover {
+    background: rgba(34, 197, 94, 0.15);
+    border-color: rgba(34, 197, 94, 0.4);
+    box-shadow: 0 4px 12px rgba(34, 197, 94, 0.12);
+}
+
+.adm-btn-cancelado {
+    background: rgba(239, 68, 68, 0.06);
+    color: #f87171;
+    border: 1px solid rgba(239, 68, 68, 0.15);
+}
+.adm-btn-cancelado.active, .adm-btn-cancelado:hover {
+    background: rgba(239, 68, 68, 0.15);
+    border-color: rgba(239, 68, 68, 0.4);
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.12);
 }
 
 .adm-pedido-card {
