@@ -151,3 +151,29 @@ window.addEventListener('resize', () => {
         renderer.setSize(window.innerWidth, window.innerHeight);
     }
 });
+
+// ── Anti-FOUC: ocultar canvas al navegar para evitar destello blanco ─────
+// Cuando el usuario navega fuera de esta página, el contexto WebGL se destruye
+// y puede mostrar un frame blanco. Ocultamos el canvas instantáneamente para
+// que el último frame visible sea el fondo oscuro de .hero-section.
+function hideCanvas() {
+    renderer.domElement.style.transition = 'none';
+    renderer.domElement.style.opacity = '0';
+}
+
+// Interceptar clics en links internos
+document.addEventListener('click', (e) => {
+    const link = e.target.closest('a');
+    if (!link) return;
+    const href = link.getAttribute('href');
+    if (!href) return;
+    if (link.target === '_blank' || link.target === '_new') return;
+    if (href.charAt(0) === '#' || href.startsWith('javascript:')) return;
+    if (href.startsWith('mailto:') || href.startsWith('tel:')) return;
+    if (href.startsWith('http') && !href.includes(window.location.hostname)) return;
+    hideCanvas();
+});
+
+// También al enviar formularios y al descargar la página
+window.addEventListener('beforeunload', hideCanvas);
+window.addEventListener('pagehide', hideCanvas);
