@@ -314,7 +314,7 @@ include 'includes/header.php';
                 <div id="email-verify-section" class="hidden" style="margin-top:8px;margin-bottom:12px;">
                     <div id="email-verify-send" style="margin-bottom:8px;">
                         <button type="button" id="btn-enviar-codigo-email" class="perfil-btn" style="width:100%;background:#222;border:1px solid #444;color:#ccc;font-size:13px;padding:10px;" onclick="enviarCodigoCambioEmail()">
-                            <span id="btn-codigo-text">📧 Enviar código al nuevo correo</span>
+                            <span id="btn-codigo-text"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="width:16px;height:16px;display:inline-block;vertical-align:middle;margin-right:4px;"><path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75"/></svg> Enviar código al nuevo correo</span>
                             <span id="btn-codigo-spinner" class="hidden">Enviando...</span>
                         </button>
                     </div>
@@ -549,7 +549,7 @@ async function enviarCodigoCambioEmail() {
             document.getElementById('input-codigo-email').focus();
             emailCodigoEnviado = true;
             // Cambiar botón a "Reenviar"
-            btnText.textContent = '🔄 Reenviar código';
+            btnText.innerHTML = '<svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="width:16px;height:16px;display:inline-block;vertical-align:middle;margin-right:4px;"><path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182M20.015 4.652v4.992"/></svg> Reenviar código';
         } else {
             showToast(data.msg, 'error', 5000);
         }
@@ -614,7 +614,7 @@ function enviarFormAjax(formId, btnId, msgId, onSuccess) {
                     document.getElementById('input-codigo-email').value = '';
                     document.getElementById('email-verify-section').classList.add('hidden');
                     document.getElementById('email-verify-code').classList.add('hidden');
-                    document.getElementById('btn-codigo-text').textContent = '📧 Enviar código al nuevo correo';
+                    document.getElementById('btn-codigo-text').innerHTML = '<svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="width:16px;height:16px;display:inline-block;vertical-align:middle;margin-right:4px;"><path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75"/></svg> Enviar código al nuevo correo';
                 }
             } else {
                 showToast(data.msg, 'error', 5000);
