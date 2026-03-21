@@ -17,6 +17,12 @@ if (!$usuario) {
     exit;
 }
 
+// Detectar si es usuario de Google (foto externa de Google o sin contraseña propia)
+$es_google = false;
+if (!empty($usuario['foto']) && (strpos($usuario['foto'], 'googleusercontent.com') !== false || strpos($usuario['foto'], 'googleapis.com') !== false)) {
+    $es_google = true;
+}
+
 // ── Procesar formularios AJAX ────────────────────────────────────────────
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['ajax'])) {
     header('Content-Type: application/json');
@@ -64,6 +70,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['ajax'])) {
         $stmt_check->execute([$email, $usuario_id]);
         if ($stmt_check->fetch()) {
             echo json_encode(['ok' => false, 'msg' => 'Este correo ya está en uso por otra cuenta.']); exit;
+        }
+        // Bloquear cambio de email para usuarios de Google
+        if ($es_google && strtolower($email) !== strtolower($usuario['email'])) {
+            echo json_encode(['ok' => false, 'msg' => 'No puedes cambiar el correo de una cuenta vinculada con Google.']); exit;
         }
         // Si el email cambió, exigir verificación con código
         if (strtolower($email) !== strtolower($usuario['email'])) {
@@ -298,8 +308,8 @@ include 'includes/header.php';
                 </div>
                 <label class="perfil-label">Nombre completo</label>
                 <input type="text" name="nombre" class="perfil-input" value="<?php echo htmlspecialchars($usuario['nombre']); ?>" required>
-                <label class="perfil-label">Correo electrónico</label>
-                <input type="email" name="email" id="input-email-perfil" class="perfil-input" value="<?php echo htmlspecialchars($usuario['email']); ?>" required>
+                <label class="perfil-label">Correo electrónico <?php if ($es_google): ?><span style="color:#666;font-size:11px;">(vinculado con Google)</span><?php endif; ?></label>
+                <input type="email" name="email" id="input-email-perfil" class="perfil-input" value="<?php echo htmlspecialchars($usuario['email']); ?>" required <?php echo $es_google ? 'readonly style="opacity:0.5;cursor:not-allowed;"' : ''; ?>>
                 <!-- Verificación de cambio de email -->
                 <div id="email-verify-section" class="hidden" style="margin-top:8px;margin-bottom:12px;">
                     <div id="email-verify-send" style="margin-bottom:8px;">
