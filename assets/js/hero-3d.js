@@ -77,12 +77,15 @@ scene.add(pointLight);
 function updateCameraZ() {
     const w = window.innerWidth;
     if (w < 768) {
-        camera.position.z = 120; // Alejar cámara para ver la esfera completa en celular
-        material.opacity = 0.25; // Subir opacidad para que resalte en pantalla pequeña
+        camera.position.z = 45; // De vuelta adentro de la esfera igual que en PC
+        camera.fov = 110; // Campo de visión vertical más amplio (compensa la pantalla angosta)
+        material.opacity = 0.20; // Ligeramente más evidente sin dejar de ser elegante
     } else {
         camera.position.z = 45;  // Efecto inmersivo en desktop
+        camera.fov = 75; // Campo de visión normal en PC
         material.opacity = 0.12; // Sutil en desktop
     }
+    camera.updateProjectionMatrix();
 }
 updateCameraZ();
 
