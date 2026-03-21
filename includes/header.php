@@ -141,7 +141,7 @@ if (isset($_SESSION['usuario']['id']) && isset($pdo)) {
                         <i data-lucide="chevron-down" class="w-4 h-4 md:w-5 md:h-5 text-white user-chevron" aria-hidden="true"></i>
                     </button>
                     <div id="user-menu-dropdown"
-                        class="absolute right-0 mt-2 w-48 bg-[#232323] border border-[#333] rounded-lg shadow-lg py-2 z-50 hidden">
+                        class="absolute right-0 mt-2 w-48 bg-[#232323] border border-[#333] rounded-lg shadow-lg py-2 z-[1000] hidden">
                         <div class="px-4 py-2 border-b border-[#333]">
                             <div class="font-semibold text-white user-name truncate">
                                 <?php echo htmlspecialchars($_SESSION['usuario']['nombre']); ?></div>
