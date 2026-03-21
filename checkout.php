@@ -393,14 +393,14 @@ $step_confirm = 'pending';
                                     if (result.status === 'COMPLETED') {
                                         window.location.href = 'paypal_response.php?status=' + encodeURIComponent(result.status) + '&pedido_id=<?php echo (int) $id_pedido; ?>';
                                     } else {
-                                        alert('Pago no completado. Estado: ' + (result.status || 'desconocido'));
+                                        showToast('Pago no completado. Estado: ' + (result.status || 'desconocido'), 'error', 6000);
                                     }
                                 });
                             });
                     },
                     onError: function (err) {
                         console.error('Error con PayPal:', err);
-                        alert('Ocurrió un error procesando el pago con PayPal: ' + (err && err.message ? err.message : 'ver consola'));
+                        showToast('Ocurrió un error procesando el pago con PayPal. Intenta de nuevo.', 'error', 6000);
                     }
                 }).render('#paypal-button-container');
             </script>

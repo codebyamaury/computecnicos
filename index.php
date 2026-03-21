@@ -284,7 +284,7 @@ include __DIR__ . '/includes/header.php';
             const data = await res.json();
 
             if (data.ok) {
-                alert(data.msg);
+                showToast(data.msg || 'Producto agregado al carrito.', 'success', 4000);
                 // Actualizar contador del carrito en el header si existe
                 const carritoCounter = document.querySelector('.cart-counter') || document.querySelector('.bg-red-600.text-xs');
                 if (carritoCounter) {
@@ -294,10 +294,10 @@ include __DIR__ . '/includes/header.php';
                     }
                 }
             } else {
-                alert('Error: ' + data.msg);
+                showToast(data.msg || 'No se pudo agregar al carrito.', 'error', 5000);
             }
         } catch (err) {
-            alert('Error de conexión. Intenta de nuevo.');
+            showToast('Error de conexión. Intenta de nuevo.', 'error', 5000);
         }
     }
 </script>

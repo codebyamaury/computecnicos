@@ -383,7 +383,7 @@ document.getElementById('form-eliminar-cuenta').addEventListener('submit', async
     const password = document.getElementById('eliminar-password').value;
 
     if (!password) {
-        mostrarMsg('msg-eliminar', 'Ingresa tu contraseña para confirmar.', 'error');
+        showToast('Ingresa tu contraseña para confirmar.', 'error', 4000);
         return;
     }
 
@@ -397,13 +397,14 @@ document.getElementById('form-eliminar-cuenta').addEventListener('submit', async
         const res = await fetch('api/eliminar_cuenta.php', { method: 'POST', body: fd });
         const data = await res.json();
         if (data.ok) {
-            mostrarMsg('msg-eliminar', data.msg || 'Cuenta eliminada correctamente. Redirigiendo...', 'success');
+            cerrarModal('modal-eliminar-cuenta');
+            showToast(data.msg || 'Cuenta eliminada correctamente. Redirigiendo...', 'success', 3000);
             setTimeout(() => { window.location.href = 'index.php?cuenta_eliminada=1'; }, 1500);
         } else {
-            mostrarMsg('msg-eliminar', data.msg || 'Error al eliminar la cuenta.', 'error');
+            showToast(data.msg || 'Error al eliminar la cuenta.', 'error', 5000);
         }
     } catch(err) {
-        mostrarMsg('msg-eliminar', 'Error de conexión. Intenta de nuevo.', 'error');
+        showToast('Error de conexión. Intenta de nuevo.', 'error', 5000);
     } finally {
         btn.disabled = false;
         if (textSpan) textSpan.classList.remove('hidden');
@@ -411,11 +412,14 @@ document.getElementById('form-eliminar-cuenta').addEventListener('submit', async
     }
 });
 
-// ── Mostrar mensaje en modal ─────────────────────────────────────────────
+// ── Mostrar mensaje como toast ───────────────────────────────────────────
 function mostrarMsg(id, texto, tipo) {
-    const el = document.getElementById(id);
-    el.textContent = texto;
-    el.className = 'perfil-msg ' + tipo;
+    // Usar showToast global en lugar de mensajes inline
+    const toastType = tipo === 'success' ? 'success' : 'error';
+    const duration = tipo === 'success' ? 4000 : 5000;
+    if (typeof showToast === 'function') {
+        showToast(texto, toastType, duration);
+    }
 }
 
 // ── Preview de foto ──────────────────────────────────────────────────────
@@ -454,15 +458,15 @@ function enviarFormAjax(formId, btnId, msgId, onSuccess) {
             const res  = await fetch('perfil.php', { method: 'POST', body: new FormData(form) });
             const data = await res.json();
             if (data.ok) {
-                mostrarMsg(msgId, data.msg, 'success');
+                // Cerrar modal inmediatamente y mostrar toast
+                cerrarModal(form.closest('.perfil-modal').id);
+                showToast(data.msg, 'success', 4000);
                 if (onSuccess) onSuccess(data);
-                // Cerrar modal tras 1.2s en éxito
-                setTimeout(() => cerrarModal(form.closest('.perfil-modal').id), 1200);
             } else {
-                mostrarMsg(msgId, data.msg, 'error');
+                showToast(data.msg, 'error', 5000);
             }
         } catch (err) {
-            mostrarMsg(msgId, 'Error de conexión. Intenta de nuevo.', 'error');
+            showToast('Error de conexión. Intenta de nuevo.', 'error', 5000);
         } finally {
             btn.disabled = false;
             if (textSpan)    textSpan.classList.remove('hidden');

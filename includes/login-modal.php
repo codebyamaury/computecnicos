@@ -482,11 +482,7 @@ document.addEventListener('DOMContentLoaded', function() {
       var data = await res.json();
 
       if (data.ok) {
-        if (typeof showToast === 'function') {
-          showToast(data.msg, 'success');
-        } else {
-          alert(data.msg);
-        }
+        showToast(data.msg, 'success', 4000);
         setTimeout(function() { window.location.reload(); }, 1000);
       } else {
         regShowError(data.msg || 'Error al registrarse.');
