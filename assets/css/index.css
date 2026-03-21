@@ -41,35 +41,9 @@ body {
   display: block;
 }
 
-/* Grid de fondo con perspectiva */
-.hero-section::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-image:
-    linear-gradient(var(--grid-color) 1px, transparent 1px),
-    linear-gradient(90deg, var(--grid-color) 1px, transparent 1px);
-  background-size: 40px 40px;
-  background-position: center center;
-  transform: perspective(500px) rotateX(60deg) scale(2);
-  transform-origin: center top;
-  opacity: 0.3;
-  animation: gridMove 20s linear infinite;
-  pointer-events: none;
-}
-
-@keyframes gridMove {
-  0% {
-    background-position: center 0;
-  }
-
-  100% {
-    background-position: center 40px;
-  }
-}
+/* Grid de fondo con perspectiva (Eliminado) */
+/* .hero-section::before { ... } */
+/* @keyframes gridMove { ... } */
 
 .hero-content {
   position: relative;

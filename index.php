@@ -16,8 +16,7 @@ include __DIR__ . '/includes/header.php';
 
 <!-- Hero Section -->
 <section class="hero-section w-full px-2 sm:px-4 relative">
-    <!-- Contenedor para Three.js -->
-    <div id="hero-canvas-container" class="absolute inset-0 z-0 pointer-events-none"></div>
+    <!-- Contenedor para Three.js (Eliminado a petición del usuario) -->
 
     <div class="hero-content relative z-10">
         <div class="animate-slide-up">
@@ -39,8 +38,7 @@ include __DIR__ . '/includes/header.php';
     </div>
 </section>
 
-<!-- Script 3D Background -->
-<script type="module" src="assets/js/hero-3d.js?v=<?php echo filemtime(__DIR__ . '/assets/js/hero-3d.js'); ?>"></script>
+<!-- Script 3D Background (Eliminado a petición del usuario) -->
 <!-- Ventajas eliminadas -->
 <!-- Categorías -->
 <section class="container mx-auto px-2 sm:px-4 py-8 md:py-12 w-full">
