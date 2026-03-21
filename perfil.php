@@ -324,8 +324,6 @@ include 'includes/header.php';
                     <?php else: ?>
                         <div class="perfil-modal-avatar perfil-modal-avatar-letter" id="foto-preview-letter"><?php echo strtoupper(substr($usuario['nombre'], 0, 1)); ?></div>
                     <?php endif; ?>
-                    <label for="foto-input" class="perfil-change-photo">Cambiar foto</label>
-                    <input type="file" id="foto-input" name="foto" accept="image/*" class="hidden">
                 </div>
                 <label class="perfil-label">Nombre completo</label>
                 <input type="text" name="nombre" class="perfil-input" value="<?php echo htmlspecialchars($usuario['nombre']); ?>" required>
