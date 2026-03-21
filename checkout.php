@@ -156,6 +156,16 @@ if (!$carrito_vacio && $_SERVER['REQUEST_METHOD'] === 'POST' && !isset($_POST['c
     $direccion = $_POST['direccion'] ?? '';
 
     if ($nombre && $email && $direccion) {
+        // Validar formato de email
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            $mensaje = 'El correo electrónico no tiene un formato válido.';
+        } else {
+            $email_domain = substr(strrchr($email, '@'), 1);
+            if (!checkdnsrr($email_domain, 'MX') && !checkdnsrr($email_domain, 'A')) {
+                $mensaje = 'El dominio del correo electrónico no existe.';
+            }
+        }
+        if (empty($mensaje)) {
         try {
             // Validar stock disponible antes de crear el pedido
             $sin_stock = [];
@@ -204,6 +214,7 @@ if (!$carrito_vacio && $_SERVER['REQUEST_METHOD'] === 'POST' && !isset($_POST['c
             $mensaje = 'Error procesando el pedido. Por favor intenta de nuevo.';
             error_log("Error en checkout: " . $e->getMessage());
         }
+        } // cierre de if (empty($mensaje))
     } else {
         $mensaje = 'Por favor completa todos los campos obligatorios.';
     }
@@ -690,6 +701,23 @@ document.addEventListener('DOMContentLoaded', function() {
     if (editable && editable.classList.contains('checkout-hidden')) {
         const inputs = editable.querySelectorAll('input');
         inputs.forEach(function(input) { input.disabled = true; });
+    }
+
+    // Validar email al enviar el formulario de checkout
+    const checkoutForm = document.getElementById('checkout-form');
+    if (checkoutForm) {
+        checkoutForm.addEventListener('submit', function(e) {
+            // Solo validar si los inputs editables están activos
+            const inputEmail = document.getElementById('input-email');
+            if (inputEmail && !inputEmail.disabled) {
+                if (!validarEmail(inputEmail.value)) {
+                    e.preventDefault();
+                    showToast('Ingresa un correo electrónico válido (ejemplo: nombre@gmail.com).', 'error', 5000);
+                    inputEmail.focus();
+                    return false;
+                }
+            }
+        });
     }
 });
 </script>

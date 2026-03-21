@@ -27,6 +27,11 @@ if (!$nombre || !$email || !$mensaje) {
 if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
     respuesta(false, 'Correo electrónico inválido.');
 }
+// Validar que el dominio del email exista
+$email_domain = substr(strrchr($email, '@'), 1);
+if (!checkdnsrr($email_domain, 'MX') && !checkdnsrr($email_domain, 'A')) {
+    respuesta(false, 'El dominio del correo electrónico no existe o no acepta correos.');
+}
 
 if (strlen($mensaje) < 10) {
     respuesta(false, 'El mensaje debe tener al menos 10 caracteres.');

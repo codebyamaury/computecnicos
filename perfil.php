@@ -53,6 +53,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['ajax'])) {
         if (!$nombre || !$email) {
             echo json_encode(['ok' => false, 'msg' => 'Nombre y correo son obligatorios.']); exit;
         }
+        // Validar formato de email
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            echo json_encode(['ok' => false, 'msg' => 'El correo electrónico no tiene un formato válido.']); exit;
+        }
+        // Validar dominio del email (debe tener registros MX)
+        $email_domain = substr(strrchr($email, '@'), 1);
+        if (!checkdnsrr($email_domain, 'MX') && !checkdnsrr($email_domain, 'A')) {
+            echo json_encode(['ok' => false, 'msg' => 'El dominio del correo electrónico no existe o no acepta correos.']); exit;
+        }
+        // Verificar que el email no esté en uso por otro usuario
+        $stmt_check = $pdo->prepare('SELECT id FROM usuarios WHERE email = ? AND id != ?');
+        $stmt_check->execute([$email, $usuario_id]);
+        if ($stmt_check->fetch()) {
+            echo json_encode(['ok' => false, 'msg' => 'Este correo ya está en uso por otra cuenta.']); exit;
+        }
         $foto_url = $usuario['foto'];
         if (!empty($_FILES['foto']['tmp_name'])) {
             $ext = strtolower(pathinfo($_FILES['foto']['name'], PATHINFO_EXTENSION));
@@ -73,7 +88,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['ajax'])) {
         $_SESSION['usuario']['nombre'] = $nombre;
         $_SESSION['usuario']['email']  = $email;
         $_SESSION['usuario']['foto']   = $foto_url;
-        echo json_encode(['ok' => true, 'msg' => 'Datos actualizados correctamente.', 'foto' => $foto_url, 'nombre' => $nombre, 'email' => $email]); exit;
+        echo json_encode(['ok' => true, 'msg' => 'Datos actualizados correctamente.', 'foto' => $foto_url, 'nombre' => $nombre, 'email' => $email, 'telefono' => $telefono]); exit;
 
     } elseif ($accion === 'direccion') {
         $direccion = trim($_POST['direccion'] ?? '');
@@ -485,6 +500,11 @@ enviarFormAjax('form-personal', 'btn-personal', 'msg-personal', function(data) {
     if (data.email) {
         document.getElementById('field-email').textContent  = data.email;
         document.getElementById('header-email').textContent = data.email;
+    }
+    // Actualizar teléfono
+    const fieldTel = document.getElementById('field-telefono');
+    if (fieldTel) {
+        fieldTel.textContent = data.telefono || '—';
     }
     if (data.foto) {
         const avatarContainer = document.getElementById('avatar-container');

@@ -26,6 +26,12 @@ if (empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
     echo json_encode(['ok' => false, 'msg' => 'Ingresa un correo electrónico válido.']);
     exit;
 }
+// Validar que el dominio del email exista
+$email_domain = substr(strrchr($email, '@'), 1);
+if (!checkdnsrr($email_domain, 'MX') && !checkdnsrr($email_domain, 'A')) {
+    echo json_encode(['ok' => false, 'msg' => 'El dominio del correo no existe o no acepta correos.']);
+    exit;
+}
 
 // Verificar que el email NO exista ya en la BD
 $stmt = $pdo->prepare('SELECT id FROM usuarios WHERE email = ?');

@@ -24,6 +24,11 @@ if (!$nombre || !$email || !$password || !$direccion || !$telefono) {
 if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
     respuesta(false, 'Correo electrónico inválido.');
 }
+// Validar que el dominio del email exista
+$email_domain = substr(strrchr($email, '@'), 1);
+if (!checkdnsrr($email_domain, 'MX') && !checkdnsrr($email_domain, 'A')) {
+    respuesta(false, 'El dominio del correo electrónico no existe o no acepta correos.');
+}
 if (strlen($password) < 6) {
     respuesta(false, 'La contraseña debe tener al menos 6 caracteres.');
 }

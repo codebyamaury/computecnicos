@@ -305,14 +305,33 @@ function regValidateAndNext(step) {
   }
 }
 
+// ========== VALIDACIÓN DE EMAIL GLOBAL ==========
+
+/**
+ * Valida formato de email estrictamente.
+ * Requiere: usuario@dominio.extension
+ * La extensión debe tener entre 2 y 10 caracteres (soporta .com, .co, .org, .com.co, etc.)
+ * No permite: espacios, caracteres especiales inválidos, dominios sin TLD real
+ */
+function validarEmail(email) {
+    if (!email || typeof email !== 'string') return false;
+    email = email.trim();
+    // Regex: usuario válido @ dominio con al menos un punto y TLD de 2-10 chars
+    var re = /^[a-zA-Z0-9](?:[a-zA-Z0-9._%+\-]*[a-zA-Z0-9])?@[a-zA-Z0-9](?:[a-zA-Z0-9\-]*[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9\-]*[a-zA-Z0-9])?)*\.[a-zA-Z]{2,10}$/;
+    if (!re.test(email)) return false;
+    // No permitir puntos consecutivos en la parte local
+    if (email.split('@')[0].indexOf('..') !== -1) return false;
+    return true;
+}
+
 // ========== ENVÍO Y VERIFICACIÓN DE CÓDIGO ==========
 
 async function regSendVerificationCode() {
   regHideError();
   var email = document.getElementById('register-simple-email').value.trim();
   var nombre = document.getElementById('register-simple-nombre').value.trim();
-  if (!email || email.indexOf('@') === -1 || email.indexOf('.') === -1) {
-    regShowError('Ingresa un correo electrónico válido.');
+  if (!validarEmail(email)) {
+    regShowError('Ingresa un correo electrónico válido (ejemplo: nombre@gmail.com).');
     return;
   }
 
