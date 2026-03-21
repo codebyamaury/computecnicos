@@ -317,14 +317,6 @@ include 'includes/header.php';
             <form id="form-personal" enctype="multipart/form-data">
                 <input type="hidden" name="ajax" value="1">
                 <input type="hidden" name="accion" value="personal">
-                <!-- Avatar preview -->
-                <div class="perfil-modal-avatar-area">
-                    <?php if ($usuario['foto']): ?>
-                        <img src="<?php echo htmlspecialchars($usuario['foto'] ?? ''); ?>" alt="Foto" class="perfil-modal-avatar" id="foto-preview">
-                    <?php else: ?>
-                        <div class="perfil-modal-avatar perfil-modal-avatar-letter" id="foto-preview-letter"><?php echo strtoupper(substr($usuario['nombre'], 0, 1)); ?></div>
-                    <?php endif; ?>
-                </div>
                 <label class="perfil-label">Nombre completo</label>
                 <input type="text" name="nombre" class="perfil-input" value="<?php echo htmlspecialchars($usuario['nombre']); ?>" required>
                 <label class="perfil-label">Correo electrónico <?php if ($es_google): ?><span style="color:#666;font-size:11px;">(vinculado con Google)</span><?php endif; ?></label>
