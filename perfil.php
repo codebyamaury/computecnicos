@@ -148,7 +148,7 @@ include 'includes/header.php';
         <!-- Canvas de partículas -->
         <canvas id="perfil-particles" class="absolute inset-0 w-full h-full pointer-events-none" style="z-index:0;"></canvas>
         <div class="perfil-header-inner animate-slide-up">
-            <!-- Avatar con anillo animado -->
+            <!-- Avatar con anillo animado + overlay de cámara -->
             <div class="perfil-avatar-wrapper">
                 <div class="perfil-avatar" id="avatar-container">
                     <?php if ($usuario['foto']): ?>
@@ -156,7 +156,15 @@ include 'includes/header.php';
                     <?php else: ?>
                         <span id="avatar-letter"><?php echo strtoupper(substr($usuario['nombre'], 0, 1)); ?></span>
                     <?php endif; ?>
+                    <!-- Overlay de cámara al hacer hover -->
+                    <label for="avatar-upload-input" class="perfil-avatar-overlay" title="Cambiar foto de perfil">
+                        <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M6.827 6.175A2.31 2.31 0 015.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 00-1.134-.175 2.31 2.31 0 01-1.64-1.055l-.822-1.316a2.192 2.192 0 00-1.736-1.039 48.774 48.774 0 00-5.232 0 2.192 2.192 0 00-1.736 1.039l-.821 1.316z"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 12.75a4.5 4.5 0 11-9 0 4.5 4.5 0 019 0z"/>
+                        </svg>
+                    </label>
                 </div>
+                <input type="file" id="avatar-upload-input" accept="image/jpeg,image/png,image/webp" class="hidden" style="display:none;">
             </div>
             <div class="perfil-header-info">
                 <h1 class="perfil-name" id="header-nombre"><?php echo htmlspecialchars($usuario['nombre']); ?></h1>
@@ -504,6 +512,73 @@ if (fotoInput) {
     });
 }
 
+// ── Subida directa de foto desde el avatar del header ────────────────────
+const avatarUploadInput = document.getElementById('avatar-upload-input');
+if (avatarUploadInput) {
+    avatarUploadInput.addEventListener('change', async function() {
+        const file = this.files[0];
+        if (!file) return;
+
+        // Validar tipo
+        const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
+        if (!allowedTypes.includes(file.type)) {
+            showToast('Solo se permiten imágenes JPG, PNG o WebP.', 'error', 5000);
+            this.value = '';
+            return;
+        }
+        // Validar tamaño (2MB max)
+        if (file.size > 2 * 1024 * 1024) {
+            showToast('La imagen no puede superar los 2MB.', 'error', 5000);
+            this.value = '';
+            return;
+        }
+
+        // Mostrar preview inmediata en el avatar
+        const previewUrl = URL.createObjectURL(file);
+        const avatarContainer = document.getElementById('avatar-container');
+        const existingImg = avatarContainer.querySelector('#avatar-img');
+        const existingLetter = avatarContainer.querySelector('#avatar-letter');
+        if (existingImg) {
+            existingImg.src = previewUrl;
+        } else if (existingLetter) {
+            existingLetter.outerHTML = `<img src="${previewUrl}" alt="Foto de perfil" id="avatar-img" style="width:100%;height:100%;object-fit:cover;">`;
+        }
+
+        // Subir vía AJAX
+        const fd = new FormData();
+        fd.append('ajax', '1');
+        fd.append('accion', 'personal');
+        fd.append('nombre', '<?php echo addslashes($usuario['nombre']); ?>');
+        fd.append('email', '<?php echo addslashes($usuario['email']); ?>');
+        fd.append('telefono', '<?php echo addslashes($usuario['telefono'] ?? ''); ?>');
+        fd.append('foto', file);
+
+        try {
+            const res = await fetch('perfil.php', { method: 'POST', body: fd });
+            const data = await res.json();
+            if (data.ok) {
+                showToast('Foto de perfil actualizada.', 'success', 3000);
+                // Actualizar avatar en header
+                if (data.foto) {
+                    avatarContainer.innerHTML = `<img src="${data.foto}" alt="Foto de perfil" id="avatar-img" style="width:100%;height:100%;object-fit:cover;">` +
+                        avatarContainer.querySelector('.perfil-avatar-overlay').outerHTML;
+                    // Actualizar foto en el modal de edición si existe
+                    const modalPreview = document.getElementById('foto-preview');
+                    if (modalPreview) modalPreview.src = data.foto;
+                    // Actualizar foto en el menú del header (esquina superior derecha)
+                    const headerPhoto = document.querySelector('#user-menu-button img');
+                    if (headerPhoto) headerPhoto.src = data.foto;
+                }
+            } else {
+                showToast(data.msg || 'Error al subir la foto.', 'error', 5000);
+            }
+        } catch (err) {
+            showToast('Error de conexión al subir la foto.', 'error', 5000);
+        }
+        this.value = '';
+    });
+}
+
 // ── Verificación de cambio de email ─────────────────────────────────────
 var emailOriginal = '<?php echo addslashes($usuario['email']); ?>';
 var emailCodigoEnviado = false;
@@ -647,7 +722,12 @@ enviarFormAjax('form-personal', 'btn-personal', 'msg-personal', function(data) {
     }
     if (data.foto) {
         const avatarContainer = document.getElementById('avatar-container');
-        avatarContainer.innerHTML = `<img src="${data.foto}" alt="Foto de perfil" id="avatar-img" style="width:100%;height:100%;object-fit:cover;">`;
+        const overlayHTML = avatarContainer.querySelector('.perfil-avatar-overlay');
+        avatarContainer.innerHTML = `<img src="${data.foto}" alt="Foto de perfil" id="avatar-img" style="width:100%;height:100%;object-fit:cover;">` +
+            (overlayHTML ? overlayHTML.outerHTML : '');
+        // También actualizar foto en el menú del header
+        const headerPhoto = document.querySelector('#user-menu-button img');
+        if (headerPhoto) headerPhoto.src = data.foto;
     }
 });
 
