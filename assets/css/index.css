@@ -32,6 +32,15 @@ body {
   border-bottom: 1px solid var(--neon-red-dim);
 }
 
+/* Contenedor del canvas 3D: fondo negro para evitar destello blanco durante la inicialización de WebGL */
+#hero-canvas-container {
+  background-color: #000 !important;
+}
+#hero-canvas-container canvas {
+  background-color: transparent !important;
+  display: block;
+}
+
 /* Grid de fondo con perspectiva */
 .hero-section::before {
   content: '';

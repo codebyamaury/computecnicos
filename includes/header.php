@@ -39,18 +39,6 @@ if (isset($_SESSION['usuario']['id']) && isset($pdo)) {
             display: flex !important;
             flex-direction: column !important;
         }
-        /*
-         * Anti-FOUC invisible: overlay que coincide exactamente con el fondo.
-         * Sin transiciones ni animaciones — aparece/desaparece instantáneamente.
-         * El usuario nunca lo nota; simplemente nunca ve blanco.
-         */
-        #page-transition-overlay {
-            position: fixed;
-            inset: 0;
-            z-index: 99999;
-            background-color: #050505;
-            pointer-events: none;
-        }
     </style>
 
     <!-- 1. Cargar fuentes pre-connect -->
@@ -76,34 +64,6 @@ if (isset($_SESSION['usuario']['id']) && isset($pdo)) {
 </head>
 
 <body class="min-h-screen flex flex-col" style="background-color: #050505 !important; color: #ffffff !important;">
-    <!-- Overlay anti-FOUC invisible (previene parpadeo blanco al navegar) -->
-    <div id="page-transition-overlay"></div>
-    <script>
-    (function(){
-        var ov = document.getElementById('page-transition-overlay');
-        // Quitar overlay instantáneamente cuando la página ya renderizó
-        function hide() { if (ov) ov.style.display = 'none'; }
-        // Poner overlay instantáneamente antes de navegar
-        function show() { if (ov) ov.style.display = ''; }
-        // Ocultar overlay cuando el contenido esté listo
-        if (document.readyState === 'complete') { hide(); }
-        else { window.addEventListener('load', hide); }
-        // Interceptar clics en links internos
-        document.addEventListener('click', function(e) {
-            var link = e.target.closest('a');
-            if (!link) return;
-            var href = link.getAttribute('href');
-            if (!href) return;
-            if (link.target === '_blank' || link.target === '_new') return;
-            if (href.charAt(0) === '#' || href.indexOf('javascript:') === 0) return;
-            if (href.indexOf('mailto:') === 0 || href.indexOf('tel:') === 0) return;
-            if (href.indexOf('http') === 0 && href.indexOf(window.location.hostname) === -1) return;
-            show();
-        });
-        // Botón atrás/adelante del navegador (bfcache)
-        window.addEventListener('pageshow', function(e) { if (e.persisted) hide(); });
-    })();
-    </script>
     <header class="py-4 px-4 flex justify-between items-center relative z-50">
         <!-- Logo y Menú Hamburger a la izquierda -->
         <div class="flex items-center gap-2">
