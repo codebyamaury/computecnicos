@@ -73,7 +73,18 @@ const pointLight = new THREE.PointLight(0xff0000, 2, 100);
 pointLight.position.set(10, 10, 10);
 scene.add(pointLight);
 
-camera.position.z = 45;
+// Ajuste dinámico de cámara para que la esfera se vea bien en móviles (responsivo)
+function updateCameraZ() {
+    const w = window.innerWidth;
+    if (w < 768) {
+        camera.position.z = 120; // Alejar cámara para ver la esfera completa en celular
+        material.opacity = 0.25; // Subir opacidad para que resalte en pantalla pequeña
+    } else {
+        camera.position.z = 45;  // Efecto inmersivo en desktop
+        material.opacity = 0.12; // Sutil en desktop
+    }
+}
+updateCameraZ();
 
 let mouseX = 0;
 let mouseY = 0;
@@ -151,6 +162,7 @@ window.addEventListener('resize', () => {
         camera.updateProjectionMatrix();
         renderer.setSize(window.innerWidth, window.innerHeight);
     }
+    updateCameraZ(); // Adaptar escala y opacidad al redimensionar
 });
 
 // ── Anti-FOUC: ocultar canvas al navegar para evitar destello blanco ─────
