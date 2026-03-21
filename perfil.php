@@ -103,16 +103,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['ajax'])) {
         $foto_url = $usuario['foto'];
         if (!empty($_FILES['foto']['tmp_name'])) {
             $ext = strtolower(pathinfo($_FILES['foto']['name'], PATHINFO_EXTENSION));
-            if (in_array($ext, ['jpg','jpeg','png','webp']) && $_FILES['foto']['size'] <= 2*1024*1024) {
-                if (!empty($usuario['foto']) && strpos($usuario['foto'], 'uploads/') === 0) {
-                    $old = __DIR__ . '/' . $usuario['foto'];
-                    if (is_file($old)) @unlink($old);
-                }
-                $nombre_archivo = uniqid('profile_') . '.' . $ext;
-                $destino = 'uploads/profiles/' . $nombre_archivo;
-                if (move_uploaded_file($_FILES['foto']['tmp_name'], $destino)) {
-                    $foto_url = $destino;
-                }
+            if (!in_array($ext, ['jpg','jpeg','png','webp'])) {
+                echo json_encode(['ok' => false, 'msg' => 'Solo se permiten imágenes JPG, PNG o WebP.']); exit;
+            }
+            if ($_FILES['foto']['size'] > 2*1024*1024) {
+                echo json_encode(['ok' => false, 'msg' => 'La imagen no puede superar los 2MB.']); exit;
+            }
+            // Eliminar foto anterior si era una subida local
+            if (!empty($usuario['foto']) && strpos($usuario['foto'], 'uploads/') === 0) {
+                $old = __DIR__ . '/' . $usuario['foto'];
+                if (is_file($old)) @unlink($old);
+            }
+            // Crear directorio si no existe
+            $upload_dir = __DIR__ . '/uploads/profiles';
+            if (!is_dir($upload_dir)) {
+                mkdir($upload_dir, 0755, true);
+            }
+            $nombre_archivo = uniqid('profile_') . '.' . $ext;
+            $destino_relativo = 'uploads/profiles/' . $nombre_archivo;
+            $destino_absoluto = $upload_dir . '/' . $nombre_archivo;
+            if (move_uploaded_file($_FILES['foto']['tmp_name'], $destino_absoluto)) {
+                $foto_url = $destino_relativo;
+            } else {
+                echo json_encode(['ok' => false, 'msg' => 'Error al guardar la imagen. Intenta de nuevo.']); exit;
             }
         }
         $pdo->prepare('UPDATE usuarios SET nombre=?, email=?, telefono=?, foto=? WHERE id=?')
