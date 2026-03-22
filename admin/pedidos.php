@@ -94,7 +94,105 @@ $page_title       = 'Pedidos | Computécnicos';
 $admin_page       = 'pedidos';
 $admin_title      = 'Pedidos';
 $admin_breadcrumb = [['label' => 'Pedidos']];
-$admin_header_extra = '<button id="btn-nuevo-pedido" class="adm-btn adm-btn-success"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width:14px;height:14px"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg> Nuevo pedido</button>';
+$admin_header_extra = '<button id="btn-nuevo-pedido" class="adm-btn adm-btn-primary"><i data-lucide="plus" style="width:16px;height:16px"></i> <span>Nuevo pedido</span></button>';
+
+$admin_extra_css = '
+<style>
+/* 🚀 REDISEÑO PREMIUM PARA FILTROS DE PEDIDOS — INYECTADO */
+.adm-filters-container {
+    display: flex !important;
+    justify-content: center !important;
+    width: 100% !important;
+    margin-bottom: 2rem !important;
+}
+
+.adm-pedido-filters {
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    flex-wrap: wrap !important;
+    gap: 12px !important;
+    margin: 0 !important;
+    padding: 12px 20px !important;
+    background: rgba(255, 255, 255, 0.03) !important;
+    border-radius: 50px !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    backdrop-filter: blur(15px) !important;
+    width: fit-content !important;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4), inset 0 1px 1px rgba(255, 255, 255, 0.05) !important;
+}
+
+.adm-pedido-filters .adm-btn {
+    padding: 0.65rem 1.4rem !important;
+    border-radius: 30px !important;
+    font-size: 0.8rem !important;
+    font-weight: 600 !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    text-decoration: none !important;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    background: rgba(255, 255, 255, 0.05) !important;
+    border: 1px solid rgba(255, 255, 255, 0.06) !important;
+    color: #cbd5e1 !important; /* Gris claro muy legible (slate-300) */
+}
+
+.adm-pedido-filters .adm-btn:hover {
+    background: rgba(255, 255, 255, 0.1) !important;
+    color: #fff !important;
+    transform: translateY(-2px) !important;
+}
+
+/* Botón Activo General */
+.adm-pedido-filters .adm-btn.active {
+    color: #fff !important;
+    border-color: transparent !important;
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.1) !important;
+}
+
+/* Variantes de color por estado con contraste mejorado */
+.adm-btn-todos.active, .adm-btn-todos:hover {
+    background: linear-gradient(135deg, #e11d48, #be123c) !important;
+    box-shadow: 0 0 20px rgba(225, 29, 72, 0.4) !important;
+}
+
+.adm-btn-pendiente.active, .adm-btn-pendiente:hover {
+    background: rgba(251, 191, 36, 0.25) !important;
+    color: #fbbf24 !important;
+    border-color: rgba(251, 191, 36, 0.5) !important;
+}
+
+.adm-btn-pagado.active, .adm-btn-pagado:hover {
+    background: rgba(59, 130, 246, 0.25) !important;
+    color: #60a5fa !important;
+    border-color: rgba(59, 130, 246, 0.5) !important;
+}
+
+.adm-btn-preparacion.active, .adm-btn-preparacion:hover {
+    background: rgba(168, 85, 247, 0.25) !important;
+    color: #a78bfa !important;
+    border-color: rgba(168, 85, 247, 0.5) !important;
+}
+
+.adm-btn-enviado.active, .adm-btn-enviado:hover {
+    background: rgba(6, 182, 212, 0.25) !important;
+    color: #22d3ee !important;
+    border-color: rgba(6, 182, 212, 0.5) !important;
+}
+
+.adm-btn-entregado.active, .adm-btn-entregado:hover {
+    background: rgba(34, 197, 94, 0.25) !important;
+    color: #4ade80 !important;
+    border-color: rgba(34, 197, 94, 0.5) !important;
+}
+
+.adm-btn-cancelado.active, .adm-btn-cancelado:hover {
+    background: rgba(239, 68, 68, 0.25) !important;
+    color: #f87171 !important;
+    border-color: rgba(239, 68, 68, 0.5) !important;
+}
+</style>
+';
 
 include '_layout.php';
 ?>
@@ -107,26 +205,28 @@ include '_layout.php';
     <?php endif; ?>
 
     <!-- Filtros de estado -->
-    <div class="adm-pedido-filters">
-        <?php
-        $estados_ui = [
-            'todos'       => ['label' => 'Todos',          'icon' => 'layers',        'class' => 'adm-btn-todos'],
-            'pendiente'   => ['label' => 'Pendientes',     'icon' => 'clock',         'class' => 'adm-btn-pendiente'],
-            'pagado'      => ['label' => 'Pagados',        'icon' => 'credit-card',   'class' => 'adm-btn-pagado'],
-            'preparacion' => ['label' => 'En preparación', 'icon' => 'package',       'class' => 'adm-btn-preparacion'],
-            'enviado'     => ['label' => 'Enviados',       'icon' => 'truck',         'class' => 'adm-btn-enviado'],
-            'entregado'   => ['label' => 'Entregados',     'icon' => 'check-circle',  'class' => 'adm-btn-entregado'],
-            'cancelado'   => ['label' => 'Cancelados',     'icon' => 'x-circle',      'class' => 'adm-btn-cancelado'],
-        ];
-        foreach ($estados_ui as $estado => $data):
-            $active = ($estado_filtro === $estado);
-        ?>
-        <a href="pedidos.php<?= $estado === 'todos' ? '' : ('?estado='.$estado) ?>"
-           class="adm-btn <?= $data['class'] ?> <?= $active ? 'active' : '' ?>">
-            <i data-lucide="<?= $data['icon'] ?>" style="width:16px;height:16px"></i>
-            <span><?= $data['label'] ?></span>
-        </a>
-        <?php endforeach; ?>
+    <div class="adm-filters-container">
+        <div class="adm-pedido-filters">
+            <?php
+            $estados_ui = [
+                'todos'       => ['label' => 'Todos',          'icon' => 'layers',        'class' => 'adm-btn-todos'],
+                'pendiente'   => ['label' => 'Pendientes',     'icon' => 'clock',         'class' => 'adm-btn-pendiente'],
+                'pagado'      => ['label' => 'Pagados',        'icon' => 'credit-card',   'class' => 'adm-btn-pagado'],
+                'preparacion' => ['label' => 'En preparación', 'icon' => 'package',       'class' => 'adm-btn-preparacion'],
+                'enviado'     => ['label' => 'Enviados',       'icon' => 'truck',         'class' => 'adm-btn-enviado'],
+                'entregado'   => ['label' => 'Entregados',     'icon' => 'check-circle',  'class' => 'adm-btn-entregado'],
+                'cancelado'   => ['label' => 'Cancelados',     'icon' => 'x-circle',      'class' => 'adm-btn-cancelado'],
+            ];
+            foreach ($estados_ui as $estado => $data):
+                $active = ($estado_filtro === $estado);
+            ?>
+            <a href="pedidos.php<?= $estado === 'todos' ? '' : ('?estado='.$estado) ?>"
+               class="adm-btn <?= $data['class'] ?> <?= $active ? 'active' : '' ?>">
+                <i data-lucide="<?= $data['icon'] ?>" style="width:16px;height:16px"></i>
+                <span><?= $data['label'] ?></span>
+            </a>
+            <?php endforeach; ?>
+        </div>
     </div>
 
     <?php if (!$pedidos): ?>
