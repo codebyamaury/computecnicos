@@ -26,7 +26,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['nueva_marca'])) {
 if (isset($_GET['eliminar'])) {
     $id = intval($_GET['eliminar']);
     $pdo->prepare('DELETE FROM marcas WHERE id = ?')->execute([$id]);
-    header('Location: marcas.php');
+    header('Location: marcas.php?eliminado=1');
     exit;
 }
 
@@ -53,6 +53,7 @@ include '_layout.php';
     <div class="adm-card">
         <div class="adm-card-title"><span class="adm-card-title-text">Nueva Marca</span></div>
         <form method="post">
+                    <?= csrf_field() ?>
             <div class="adm-form-row">
                 <div class="adm-form-group" style="margin-bottom:0">
                     <label class="adm-label">Nombre *</label>
@@ -124,6 +125,7 @@ include '_layout.php';
         <button class="adm-modal-close" onclick="cerrarModal()">&times;</button>
         <div class="adm-modal-title">Editar Marca</div>
         <form id="form-editar-marca" style="display:flex;flex-direction:column;gap:1rem">
+                    <?= csrf_field() ?>
             <input type="hidden" name="id" id="edit-id">
             <div>
                 <label class="adm-label">Nombre *</label>
@@ -166,7 +168,7 @@ document.getElementById('form-editar-marca').addEventListener('submit', async fu
     const res = await fetch('marca_editar.php?id=' + data.get('id'), { method: 'POST', body: data });
     const text = await res.text();
     if (text.includes('Marca actualizada correctamente')) {
-        window.location.reload();
+        window.location.href = window.location.pathname + '?editado=1';
     } else {
         const msg = document.getElementById('modal-editar-msg');
         msg.textContent = 'Error al editar marca. Revisa los datos.';
@@ -174,6 +176,5 @@ document.getElementById('form-editar-marca').addEventListener('submit', async fu
     }
 });
 </script>
-<script>initPagination('#tabla-marcas tbody','pag-marcas',10);</script>
-
 <?php include '_layout_end.php'; ?>
+<script>initPagination('#tabla-marcas tbody','pag-marcas',10);</script>

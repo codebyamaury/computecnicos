@@ -10,9 +10,55 @@ $usuario = $_SESSION['usuario'];
 if (isset($_GET['eliminar'])) {
     $id = intval($_GET['eliminar']);
     if ($id > 0 && $id !== (int)$_SESSION['usuario']['id']) {
-        $pdo->prepare('DELETE FROM usuarios WHERE id = ?')->execute([$id]);
+        if (!isset($_SESSION['usuario']['es_principal'])) {
+            $stmtUser = $pdo->prepare('SELECT es_principal FROM usuarios WHERE id = ?');
+            $stmtUser->execute([$_SESSION['usuario']['id']]);
+            $_SESSION['usuario']['es_principal'] = $stmtUser->fetchColumn() ? 1 : 0;
+        }
+        $is_main_admin = $_SESSION['usuario']['es_principal'];
+        
+        $can_delete = true;
+        if (!$is_main_admin) {
+            $stmtRole = $pdo->prepare('SELECT rol FROM usuarios WHERE id = ?');
+            $stmtRole->execute([$id]);
+            if ($stmtRole->fetchColumn() === 'admin') {
+                $can_delete = false;
+            }
+        }
+        
+        if ($can_delete) {
+            $pdo->prepare('DELETE FROM usuarios WHERE id = ?')->execute([$id]);
+        }
     }
-    header('Location: usuarios.php');
+    header('Location: usuarios.php?eliminado=1');
+    exit;
+}
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cambiar_rol'])) {
+    $id_usuario = intval($_POST['id_usuario'] ?? 0);
+    $nuevo_rol = $_POST['nuevo_rol'] ?? '';
+    if ($id_usuario > 0 && $id_usuario !== (int)$_SESSION['usuario']['id'] && in_array($nuevo_rol, ['cliente', 'admin'])) {
+        if (!isset($_SESSION['usuario']['es_principal'])) {
+            $stmtUser = $pdo->prepare('SELECT es_principal FROM usuarios WHERE id = ?');
+            $stmtUser->execute([$_SESSION['usuario']['id']]);
+            $_SESSION['usuario']['es_principal'] = $stmtUser->fetchColumn() ? 1 : 0;
+        }
+        $is_main_admin = $_SESSION['usuario']['es_principal'];
+        
+        $u_to_edit = $pdo->prepare('SELECT rol FROM usuarios WHERE id = ?');
+        $u_to_edit->execute([$id_usuario]);
+        $u_role = $u_to_edit->fetchColumn();
+        
+        $can_edit = true;
+        if (!$is_main_admin && ($u_role === 'admin' || $nuevo_rol === 'admin')) {
+            $can_edit = false; 
+        }
+        
+        if ($can_edit) {
+            $pdo->prepare('UPDATE usuarios SET rol = ? WHERE id = ?')->execute([$nuevo_rol, $id_usuario]);
+        }
+    }
+    header('Location: usuarios.php?editado=1');
     exit;
 }
 
@@ -23,6 +69,13 @@ $admin_page       = 'usuarios';
 $admin_title      = 'Usuarios';
 $admin_breadcrumb = [['label' => 'Usuarios']];
 $admin_header_extra = '<button id="btn-abrir-nuevo-usuario" class="adm-btn adm-btn-success"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width:14px;height:14px"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg> Nuevo usuario</button>';
+
+if (!isset($_SESSION['usuario']['es_principal'])) {
+    $stmtUser = $pdo->prepare('SELECT es_principal FROM usuarios WHERE id = ?');
+    $stmtUser->execute([$_SESSION['usuario']['id']]);
+    $_SESSION['usuario']['es_principal'] = $stmtUser->fetchColumn() ? 1 : 0;
+}
+$is_main_admin = $_SESSION['usuario']['es_principal'];
 
 include '_layout.php';
 ?>
@@ -37,11 +90,11 @@ include '_layout.php';
                 <span class="adm-badge adm-badge-gray"><?= count($usuarios) ?> total</span>
             </div>
         </div>
-        <div class="adm-table-wrap" style="border:none;border-radius:0">
-            <table class="adm-table" id="tabla-usuarios">
+        <div class="adm-table-wrap" style="border:none;border-radius:0;overflow-x:auto;min-width:0;">
+            <table class="adm-table" id="tabla-usuarios" style="min-width:800px;">
                 <thead>
                     <tr>
-                        <th>Nombre</th><th>Email</th><th>Teléfono</th><th>Rol</th><th>Registro</th><th>Acciones</th>
+                        <th style="min-width:180px;">Nombre</th><th style="min-width:180px;">Email</th><th style="min-width:120px;">Teléfono</th><th style="min-width:100px;">Rol</th><th style="min-width:100px;">Registro</th><th style="min-width:140px;">Acciones</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -56,20 +109,33 @@ include '_layout.php';
                     <td><?= htmlspecialchars($u['email']) ?></td>
                     <td><?= htmlspecialchars($u['telefono'] ?: '—') ?></td>
                     <td>
-                        <form method="post" style="display:inline-flex;align-items:center;gap:6px">
-                            <input type="hidden" name="id_usuario" value="<?= $u['id'] ?>">
-                            <select name="nuevo_rol" class="adm-select" style="padding:0.3rem 0.6rem;font-size:0.72rem;width:auto" <?= $u['id'] == $_SESSION['usuario']['id'] ? 'disabled' : '' ?>>
-                                <option value="cliente" <?= $u['rol'] === 'cliente' ? 'selected' : '' ?>>Cliente</option>
-                                <option value="admin"   <?= $u['rol'] === 'admin'   ? 'selected' : '' ?>>Admin</option>
+                        <?php if ($u['id'] == $_SESSION['usuario']['id']): ?>
+                            <select class="adm-select" style="padding:0.3rem 0.6rem;font-size:0.72rem;width:auto" disabled>
+                                <option><?= ucfirst(htmlspecialchars($u['rol'])) ?></option>
                             </select>
-                            <?php if ($u['id'] != $_SESSION['usuario']['id']): ?>
-                            <button type="submit" name="cambiar_rol" class="adm-btn adm-btn-blue" style="font-size:0.68rem;padding:0.25rem 0.6rem">OK</button>
-                            <?php endif; ?>
+                        <?php elseif (!$is_main_admin && $u['rol'] === 'admin'): ?>
+                            <select class="adm-select" style="padding:0.3rem 0.6rem;font-size:0.72rem;width:auto" disabled>
+                                <option>Admin</option>
+                            </select>
+                        <?php else: ?>
+                        <form method="post" style="display:inline-flex;align-items:center;gap:6px">
+                    <?= csrf_field() ?>
+                            <input type="hidden" name="id_usuario" value="<?= $u['id'] ?>">
+                            <input type="hidden" name="cambiar_rol" value="1">
+                            <select name="nuevo_rol" class="adm-select" style="padding:0.3rem 0.6rem;font-size:0.72rem;width:auto" onchange="this.form.submit()">
+                                <option value="cliente" <?= $u['rol'] === 'cliente' ? 'selected' : '' ?>>Cliente</option>
+                                <?php if ($is_main_admin): ?>
+                                <option value="admin"   <?= $u['rol'] === 'admin'   ? 'selected' : '' ?>>Admin</option>
+                                <?php endif; ?>
+                            </select>
                         </form>
+                        <?php endif; ?>
                     </td>
                     <td style="color:#555;font-size:0.75rem"><?= date('d/m/Y', strtotime($u['fecha_registro'])) ?></td>
                     <td>
-                        <?php if ($u['id'] != $_SESSION['usuario']['id']): ?>
+                        <?php if ($u['id'] == $_SESSION['usuario']['id'] || (!$is_main_admin && $u['rol'] === 'admin')): ?>
+                            <span style="color:#444;font-size:0.75rem">—</span>
+                        <?php else: ?>
                         <div style="display:flex;gap:6px;flex-wrap:wrap">
                             <button class="adm-btn adm-btn-warning btn-editar-usuario" style="font-size:0.72rem;padding:0.3rem 0.7rem"
                                 data-usuario='<?= json_encode(["id"=>$u["id"],"nombre"=>$u["nombre"],"email"=>$u["email"],"telefono"=>$u["telefono"],"direccion"=>$u["direccion"],"rol"=>$u["rol"]]) ?>'>
@@ -80,8 +146,6 @@ include '_layout.php';
                                 Eliminar
                             </button>
                         </div>
-                        <?php else: ?>
-                        <span style="color:#444;font-size:0.75rem">—</span>
                         <?php endif; ?>
                     </td>
                 </tr>
@@ -103,6 +167,7 @@ include '_layout.php';
         <button class="adm-modal-close" onclick="cerrarEditar()">&times;</button>
         <div class="adm-modal-title">Editar Usuario</div>
         <form id="form-editar-usuario" style="display:flex;flex-direction:column;gap:0.875rem">
+                    <?= csrf_field() ?>
             <input type="hidden" name="id" id="edit-id">
             <div><label class="adm-label">Nombre *</label><input type="text" name="nombre" id="edit-nombre" class="adm-input" required></div>
             <div><label class="adm-label">Email *</label><input type="email" name="email" id="edit-email" class="adm-input" required></div>
@@ -111,7 +176,9 @@ include '_layout.php';
                 <div><label class="adm-label">Rol</label>
                     <select name="rol" id="edit-rol" class="adm-select">
                         <option value="cliente">Cliente</option>
+                        <?php if ($is_main_admin): ?>
                         <option value="admin">Admin</option>
+                        <?php endif; ?>
                     </select>
                 </div>
             </div>
@@ -133,6 +200,7 @@ include '_layout.php';
         <button class="adm-modal-close" onclick="cerrarNuevo()">&times;</button>
         <div class="adm-modal-title">Nuevo Usuario</div>
         <form id="form-nuevo-usuario" style="display:flex;flex-direction:column;gap:0.875rem">
+                    <?= csrf_field() ?>
             <div><label class="adm-label">Nombre *</label><input type="text" name="nombre" class="adm-input" required></div>
             <div><label class="adm-label">Email *</label><input type="email" name="email" class="adm-input" required></div>
             <div class="adm-form-row" style="margin-bottom:0">
@@ -140,7 +208,9 @@ include '_layout.php';
                 <div><label class="adm-label">Rol</label>
                     <select name="rol" class="adm-select">
                         <option value="cliente">Cliente</option>
+                        <?php if ($is_main_admin): ?>
                         <option value="admin">Admin</option>
+                        <?php endif; ?>
                     </select>
                 </div>
             </div>
@@ -200,19 +270,15 @@ document.getElementById('form-editar-usuario').addEventListener('submit', async 
     const data = new FormData(this);
     const res = await fetch('usuario_editar.php?id=' + data.get('id'), { method: 'POST', body: data });
     const text = await res.text();
-    if (text.includes('Location: usuarios.php') || text.includes('actualizado')) { window.location.reload(); }
-    else {
-        const msg = document.getElementById('modal-editar-msg');
-        msg.textContent = 'Error al editar. Revisa los datos.';
-        msg.style.display = 'block';
-    }
+    if (text.includes('Location: usuarios.php') || text.includes('actualizado')) { window.location.href = window.location.pathname + '?editado=1'; }
+    else { document.getElementById('modal-editar-msg').innerText = text; document.getElementById('modal-editar-msg').style.display='block'; }
 });
 document.getElementById('form-nuevo-usuario').addEventListener('submit', async function(e) {
     e.preventDefault();
     const data = new FormData(this);
     const res = await fetch('usuario_nuevo.php', { method: 'POST', body: data });
     const text = await res.text();
-    if (text.includes('Location: usuarios.php') || text.includes('registrado')) { window.location.reload(); }
+    if (text.includes('Location: usuarios.php') || text.includes('registrado')) { window.location.href = window.location.pathname + '?exito=1'; }
     else {
         const msg = document.getElementById('modal-nuevo-msg');
         msg.textContent = 'Error al registrar usuario. Revisa los datos.';
@@ -220,6 +286,5 @@ document.getElementById('form-nuevo-usuario').addEventListener('submit', async f
     }
 });
 </script>
-<script>initPagination('#tabla-usuarios tbody','pag-usuarios',10);</script>
-
 <?php include '_layout_end.php'; ?>
+<script>initPagination('#tabla-usuarios tbody','pag-usuarios',10);</script>

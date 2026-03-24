@@ -20,7 +20,7 @@ if (isset($_GET['eliminar'])) {
         }
         $pdo->prepare('DELETE FROM resenas WHERE id = ?')->execute([$id]);
     }
-    header('Location: resenas.php');
+    header('Location: resenas.php?eliminado=1');
     exit;
 }
 
@@ -266,6 +266,5 @@ include '_layout.php';
 </div>
 </main>
 
-<script>initPagination('#tabla-resenas tbody','pag-resenas',10,'search-resenas');</script>
-
 <?php include '_layout_end.php'; ?>
+<script>initPagination('#tabla-resenas tbody','pag-resenas',10,'search-resenas');</script>

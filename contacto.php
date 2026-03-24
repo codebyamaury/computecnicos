@@ -74,6 +74,12 @@ include 'includes/header.php';
                         ¡Mensaje enviado con éxito! Nos pondremos en contacto pronto.
                     </div>
 
+                    <div id="form-error"
+                        class="hidden bg-red-900/30 border border-red-500/50 text-red-400 p-4 rounded-lg mt-6 text-center font-semibold shrink-0">
+                        Error al enviar el mensaje. Intenta de nuevo.
+                    </div>
+
+
                     <!-- 3D Element Container -->
                     <div id="tech-3d-container"
                         class="mt-8 w-full flex-1 min-h-[200px] rounded-lg overflow-hidden relative z-10 border border-gray-800 bg-black/20">
@@ -93,8 +99,7 @@ include 'includes/header.php';
                         </div>
                         <div class="info-content">
                             <h4>Email</h4>
-                            <p>info@computecnicos.com</p>
-                            <p>soporte@computecnicos.com</p>
+                            <p>soportecomputecnicos@yahoo.com</p>
                         </div>
                     </div>
 
@@ -104,7 +109,7 @@ include 'includes/header.php';
                         </div>
                         <div class="info-content">
                             <h4>Llámanos</h4>
-                            <p>+57 300 000 0000</p>
+                            <p>+57 316 850 0131</p>
                             <p>Lun - Vie, 9am - 6pm</p>
                         </div>
                     </div>
@@ -115,8 +120,8 @@ include 'includes/header.php';
                         </div>
                         <div class="info-content">
                             <h4>Ubicación</h4>
-                            <p>Calle 123 #45-67</p>
-                            <p>Ciudad, País</p>
+                            <p>Paseo Bolívar Cra 17 #45-20</p>
+                            <p>Cartagena de Indias, Colombia</p>
                         </div>
                     </div>
                 </div>
@@ -253,12 +258,17 @@ include 'includes/header.php';
             const errorEmail = document.getElementById('error-email');
             const errorMensaje = document.getElementById('error-mensaje');
             const formSuccess = document.getElementById('form-success');
+            const formError = document.getElementById('form-error');
             const btnEnviar = document.getElementById('btnEnviar');
             const btnText = btnEnviar.querySelector('span');
 
             form.addEventListener('submit', async function (e) {
                 e.preventDefault();
                 let valido = true;
+
+                // Ocultar mensajes previos
+                formSuccess.classList.add('hidden');
+                formError.classList.add('hidden');
 
                 // Validar nombre
                 if (!nombre.value.trim()) {
@@ -296,7 +306,7 @@ include 'includes/header.php';
                     formData.append('mensaje', mensaje.value.trim());
 
                     try {
-                        const res = await fetch('contacto_backend.php', {
+                        const res = await fetch('api/contacto_backend', {
                             method: 'POST',
                             body: formData
                         });
@@ -311,21 +321,37 @@ include 'includes/header.php';
                             email.value = '';
                             mensaje.value = '';
 
+                            // Quitar clase has-content de los inputs
+                            [nombre, email, mensaje].forEach(inp => inp.classList.remove('has-content'));
+
                             setTimeout(() => {
                                 formSuccess.classList.add('hidden');
-                            }, 5000);
+                            }, 7000);
                         } else {
-                            alert('Error: ' + data.msg);
+                            formError.textContent = data.msg || 'Error al enviar el mensaje.';
+                            formError.classList.remove('hidden');
+                            formError.classList.add('animate-slide-up');
+
+                            setTimeout(() => {
+                                formError.classList.add('hidden');
+                            }, 7000);
                         }
                     } catch (err) {
                         console.error(err);
-                        alert('Error de conexión. Intenta de nuevo.');
+                        formError.textContent = 'Error de conexión. Verifica tu internet e intenta de nuevo.';
+                        formError.classList.remove('hidden');
+                        formError.classList.add('animate-slide-up');
+
+                        setTimeout(() => {
+                            formError.classList.add('hidden');
+                        }, 7000);
                     } finally {
                         btnEnviar.disabled = false;
                         btnText.textContent = originalText;
                     }
                 }
             });
+
         });
     </script>
 
@@ -335,9 +361,9 @@ include 'includes/header.php';
             const mapContainer = document.getElementById('mapcn-container');
             if (!mapContainer || typeof maplibregl === 'undefined') return;
 
-            // Coordenadas de la ubicación (Cartagena)
-            const LNG = -75.5330901;
-            const LAT = 10.4304111;
+            // Coordenadas de la ubicación real de CompuTécnicos (Paseo Bolívar, Cartagena)
+            const LNG = -75.51047;
+            const LAT = 10.39332;
 
             // Estilo satelital con Google Satellite + etiquetas de calles
             const map = new maplibregl.Map({
@@ -427,7 +453,7 @@ include 'includes/header.php';
             }).setHTML(`
                 <div style="padding: 8px 4px;">
                     <h4 style="margin: 0 0 6px; font-size: 14px; font-weight: 700; color: #fff;">CompuTécnicos</h4>
-                    <p style="margin: 0 0 4px; font-size: 12px; color: #aaa;">📍 Calle 123 #45-67</p>
+                    <p style="margin: 0 0 4px; font-size: 12px; color: #aaa;">📍 Paseo Bolívar Cra 17 #45-20, Cartagena</p>
                     <p style="margin: 0; font-size: 12px; color: #aaa;">🕐 Lun - Vie, 9am - 6pm</p>
                 </div>
             `);

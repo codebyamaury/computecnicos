@@ -61,7 +61,7 @@ async function agregarAlCarrito(idProducto, cantidad = 1) {
         formData.append('id_producto', idProducto);
         formData.append('cantidad', cantidad);
         
-        const res = await fetch('agregar_carrito.php', {
+        const res = await fetch('api/agregar_carrito.php', {
             method: 'POST',
             headers: {
                 'X-Requested-With': 'XMLHttpRequest',

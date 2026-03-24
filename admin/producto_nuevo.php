@@ -1,6 +1,8 @@
 <?php
 // Bootstrap PRIMERO: inicia sesión desde la BD antes de verificar permisos
 require_once __DIR__ . '/../app/Core/bootstrap.php';
+require_once __DIR__ . '/../app/Core/image_helper.php';
+require_once __DIR__ . '/../app/Core/video_helper.php';
 if (!isset($_SESSION['usuario']) || $_SESSION['usuario']['rol'] !== 'admin') {
     header('Location: ../index.php?login=1');
     exit;
@@ -11,9 +13,15 @@ $marcas = $pdo->query('SELECT id, nombre FROM marcas ORDER BY nombre')->fetchAll
 
 $mensaje = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if (empty($_POST) && $_SERVER['CONTENT_LENGTH'] > 0) {
+        $mensaje = 'Error: Las imágenes seleccionadas superan el límite de tamaño del servidor. Por favor, sube menos o de menor peso.';
+    }
+
     $nombre = $_POST['nombre'] ?? '';
     $descripcion = $_POST['descripcion'] ?? '';
-    $precio = floatval($_POST['precio'] ?? 0);
+    $precio_normal = floatval($_POST['precio_normal'] ?? 0);
+    $precio_descuento = !empty($_POST['precio_descuento']) ? floatval($_POST['precio_descuento']) : null;
+    $porcentaje_descuento = !empty($_POST['porcentaje_descuento']) ? floatval($_POST['porcentaje_descuento']) : null;
     $stock = intval($_POST['stock'] ?? 0);
     $id_categoria = intval($_POST['id_categoria'] ?? 0);
     $id_marca = intval($_POST['id_marca'] ?? 0);
@@ -21,6 +29,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $destacado = isset($_POST['destacado']) ? 1 : 0;
     $nuevo_hasta = !empty($_POST['nuevo_hasta']) ? $_POST['nuevo_hasta'] : null;
     $oferta_hasta = !empty($_POST['oferta_hasta']) ? $_POST['oferta_hasta'] : null;
+
+    // Determinar precio final y descuento
+    $precio_original = null;
+    $descuento = null;
+    $precio = $precio_normal;
+
+    // Prioridad: si hay porcentaje, calcular precio con descuento
+    if ($porcentaje_descuento && $porcentaje_descuento > 0 && $porcentaje_descuento < 100 && $precio_normal > 0) {
+        $precio_descuento = round($precio_normal * (1 - $porcentaje_descuento / 100));
+    }
+
+    if ($precio_descuento && $precio_descuento > 0 && $precio_descuento < $precio_normal) {
+        $precio = $precio_descuento;
+        $precio_original = $precio_normal;
+        $descuento = round((($precio_normal - $precio_descuento) / $precio_normal) * 100, 2);
+        $oferta = 1;
+    }
 
     // Si se marca oferta pero no se pone fecha, oferta_hasta queda null (oferta permanente)
     // Si se pone fecha de oferta, se activa oferta automáticamente
@@ -30,47 +55,58 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $imagenes_urls = [];
     $error_imagen = '';
-    // Subida de imágenes múltiples
-    if (isset($_FILES['imagenes']) && count($_FILES['imagenes']['name']) > 0) {
+    $imagen_principal = '';
+
+    // Subida de imagen principal (Requerida) — solo formato PNG
+    if (isset($_FILES['imagen']) && $_FILES['imagen']['error'] === UPLOAD_ERR_OK) {
+        $upload_dir = __DIR__ . '/../uploads/productos/';
+        $result = upload_product_image($_FILES['imagen']['tmp_name'], $upload_dir, base_url(), 'main_');
+        if ($result['ok']) {
+            $imagen_principal = $result['url'];
+        } else {
+            $error_imagen = $result['error'];
+        }
+    } else if (isset($_FILES['imagen']) && $_FILES['imagen']['error'] !== UPLOAD_ERR_NO_FILE) {
+        $error_imagen = 'Error al subir la imagen principal: ' . $_FILES['imagen']['error'];
+    }
+
+    // Subida de imágenes secundarias (Opcional) — solo formato PNG
+    if (!$error_imagen && isset($_FILES['imagenes']) && count($_FILES['imagenes']['name']) > 0) {
         foreach ($_FILES['imagenes']['tmp_name'] as $idx => $tmp_name) {
             if ($_FILES['imagenes']['error'][$idx] === UPLOAD_ERR_OK) {
-                $ext = strtolower(pathinfo($_FILES['imagenes']['name'][$idx], PATHINFO_EXTENSION));
-                if (!in_array($ext, ['jpg','jpeg','png','gif','webp'])) {
-                    $error_imagen = 'Formato de imagen no permitido: ' . htmlspecialchars($ext);
-                    break;
-                }
-                // Subir a Imgur API de forma anónima para evitar fallos de Vercel (Read-Only)
-                $ch = curl_init();
-                curl_setopt($ch, CURLOPT_URL, 'https://api.imgur.com/3/image');
-                curl_setopt($ch, CURLOPT_POST, TRUE);
-                curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
-                curl_setopt($ch, CURLOPT_HTTPHEADER, ['Authorization: Client-ID 546c25a59c58ad7']);
-                curl_setopt($ch, CURLOPT_POSTFIELDS, [
-                    'image' => base64_encode(file_get_contents($tmp_name)),
-                    'type'  => 'base64'
-                ]);
-                $reply = json_decode(curl_exec($ch));
-                curl_close($ch);
-                
-                if (isset($reply->data->link)) {
-                    $imagenes_urls[] = $reply->data->link;
+                $upload_dir = __DIR__ . '/../uploads/productos/';
+                $result = upload_product_image($tmp_name, $upload_dir, base_url(), 'prod_');
+                if ($result['ok']) {
+                    $imagenes_urls[] = $result['url'];
                 } else {
-                    $error_imagen = 'Imgur Error: ' . ($reply->data->error->message ?? json_encode($reply->data->error ?? 'Desconocido'));
+                    $error_imagen = $result['error'];
                     break;
                 }
             } else if ($_FILES['imagenes']['error'][$idx] !== UPLOAD_ERR_NO_FILE) {
-                $error_imagen = 'Error al subir la imagen: ' . $_FILES['imagenes']['name'][$idx];
+                $error_imagen = 'Error al subir imagen secundaria: ' . $_FILES['imagenes']['name'][$idx];
                 break;
             }
         }
     }
-    $imagen_principal = $imagenes_urls[0] ?? '';
+    
+    // Subida de video (Opcional)
+    $video_path = null;
+    if (!$error_imagen && isset($_FILES['video']) && $_FILES['video']['error'] === UPLOAD_ERR_OK) {
+        $upload_dir = __DIR__ . '/../uploads/videos/';
+        $video_result = upload_product_video($_FILES['video'], $upload_dir, base_url());
+        if ($video_result['ok']) {
+            $video_path = $video_result['url'];
+        } else {
+            $error_imagen = $video_result['error']; // Reutilizamos error_imagen para mostrar el mensaje
+        }
+    }
+
     if ($error_imagen) {
         $mensaje = $error_imagen;
     } else if ($nombre && $precio > 0 && $id_categoria && $id_marca && $imagen_principal) {
         try {
-            $stmt = $pdo->prepare('INSERT INTO productos (nombre, descripcion, precio, stock, imagen, id_categoria, id_marca, oferta, destacado, nuevo_hasta, oferta_hasta, fecha_creacion) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())');
-            $stmt->execute([$nombre, $descripcion, $precio, $stock, $imagen_principal, $id_categoria, $id_marca, $oferta, $destacado, $nuevo_hasta, $oferta_hasta]);
+            $stmt = $pdo->prepare('INSERT INTO productos (nombre, descripcion, precio, stock, imagen, id_categoria, id_marca, oferta, destacado, nuevo_hasta, oferta_hasta, precio_original, descuento, video_url, fecha_creacion) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())');
+            $stmt->execute([$nombre, $descripcion, $precio, $stock, $imagen_principal, $id_categoria, $id_marca, $oferta, $destacado, $nuevo_hasta, $oferta_hasta, $precio_original, $descuento, $video_path]);
             $id_producto = $pdo->lastInsertId();
             // Guardar todas las imágenes en imagenes_producto
             if ($id_producto && count($imagenes_urls) > 0) {
@@ -110,6 +146,7 @@ include '_layout.php';
 
         <div class="adm-form">
             <form method="post" enctype="multipart/form-data">
+                    <?= csrf_field() ?>
                 <!-- Nombre -->
                 <div class="adm-form-group">
                     <label class="adm-label">Nombre del producto *</label>
@@ -122,15 +159,59 @@ include '_layout.php';
                     <textarea name="descripcion" class="adm-textarea" rows="3" placeholder="Descripción detallada del producto..."></textarea>
                 </div>
 
-                <!-- Precio y Stock -->
-                <div class="adm-form-row">
-                    <div>
-                        <label class="adm-label">Precio (COP) *</label>
-                        <input type="number" name="precio" min="0" step="0.01" class="adm-input" required>
+                <!-- Precio y Descuento -->
+                <div class="adm-form-group" style="padding:1rem;background:rgba(255,255,255,0.03);border-radius:0.75rem;border:1px solid var(--adm-border)">
+                    <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.75rem">
+                        <span style="width:8px;height:8px;background:#f59e0b;border-radius:50%;display:inline-block"></span>
+                        <span style="font-size:0.88rem;font-weight:600;color:#e7e7ea">💰 Precio y Descuento</span>
                     </div>
-                    <div>
-                        <label class="adm-label">Stock *</label>
-                        <input type="number" name="stock" min="0" class="adm-input" required>
+
+                    <!-- Precio Normal -->
+                    <div class="adm-form-row">
+                        <div>
+                            <label class="adm-label">Precio Normal (COP) *</label>
+                            <input type="number" name="precio_normal" id="precio_normal" min="0" step="1" class="adm-input" required placeholder="Ej: 5499900">
+                            <div style="font-size:0.7rem;color:#555;margin-top:0.35rem">El precio regular del producto</div>
+                        </div>
+                        <div>
+                            <label class="adm-label">Stock *</label>
+                            <input type="number" name="stock" min="0" class="adm-input" required>
+                        </div>
+                    </div>
+
+                    <!-- Precio con Descuento -->
+                    <div style="margin-top:1rem;padding:1rem;background:rgba(239,68,68,0.04);border:1px dashed rgba(239,68,68,0.2);border-radius:0.75rem">
+                        <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.75rem">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#f87171" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>
+                            <span style="font-size:0.85rem;font-weight:600;color:#e7e7ea">¿Tiene descuento?</span>
+                            <span style="font-size:0.7rem;color:#666">(opcional — usa porcentaje o precio)</span>
+                        </div>
+
+                        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0.75rem">
+                            <!-- Porcentaje de descuento -->
+                            <div>
+                                <label class="adm-label">% Descuento</label>
+                                <div style="position:relative">
+                                    <input type="number" name="porcentaje_descuento" id="porcentaje_descuento" min="0" max="99" step="1" class="adm-input" style="padding-right:2.5rem" placeholder="Ej: 20">
+                                    <span style="position:absolute;right:0.75rem;top:50%;transform:translateY(-50%);color:#f87171;font-weight:800;font-size:1.1rem">%</span>
+                                </div>
+                                <div style="font-size:0.7rem;color:#555;margin-top:0.35rem">Escribe el % que se le resta al precio.</div>
+                            </div>
+                            <!-- Precio con descuento -->
+                            <div>
+                                <label class="adm-label">Precio con Descuento</label>
+                                <input type="number" name="precio_descuento" id="precio_descuento" min="0" step="1" class="adm-input" placeholder="Ej: 4399920">
+                                <div style="font-size:0.7rem;color:#555;margin-top:0.35rem">Se calcula auto o ponlo manual.</div>
+                            </div>
+                            <!-- Preview del descuento -->
+                            <div>
+                                <label class="adm-label">Resultado</label>
+                                <div id="descuento_preview" style="padding:0.65rem 1rem;background:rgba(0,0,0,0.2);border:1px solid var(--adm-border);border-radius:0.5rem;font-size:1rem;font-weight:700;color:#666;min-height:42px;display:flex;align-items:center">
+                                    Sin descuento
+                                </div>
+                            </div>
+                        </div>
+                        <div id="descuento_resumen" style="margin-top:0.75rem;display:none;padding:0.75rem;background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.2);border-radius:0.5rem;align-items:center;gap:0.75rem;flex-wrap:wrap"></div>
                     </div>
                 </div>
 
@@ -156,10 +237,28 @@ include '_layout.php';
                     </div>
                 </div>
 
-                <!-- Imágenes -->
+                <!-- Imagene Principal y Galería -->
                 <div class="adm-form-group">
-                    <label class="adm-label">Imágenes (puedes seleccionar varias) *</label>
-                    <input type="file" name="imagenes[]" accept="image/*" class="adm-input" multiple required style="padding:0.5rem">
+                    <label class="adm-label">Imagen principal (Solo PNG) *</label>
+                    <input type="file" name="imagen" accept="image/png" class="adm-input" required style="padding:0.5rem">
+                    <div style="font-size:0.7rem;color:#555;margin-top:0.35rem">⚠️ Solo se permiten imágenes en formato <strong style="color:#fff">PNG</strong>. Ésta será la portada del producto.</div>
+                </div>
+
+                <div class="adm-form-group">
+                    <label class="adm-label">Agregar nuevas imágenes a la galería (Solo PNG, Opcional)</label>
+                    <input type="file" name="imagenes[]" accept="image/png" class="adm-input" multiple style="padding:0.5rem">
+                    <div style="font-size:0.7rem;color:#555;margin-top:0.35rem">Puedes seleccionar varias imágenes para la galería del producto.</div>
+                </div>
+
+                <!-- Video del Producto -->
+                <div class="adm-form-group" style="padding:1rem;background:rgba(139,92,246,0.05);border:1px dashed rgba(139,92,246,0.3);border-radius:0.75rem">
+                    <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.75rem">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
+                        <span style="font-size:0.85rem;font-weight:700;color:#fff">Video del Producto</span>
+                        <span style="font-size:0.7rem;color:#888">(mp4, webm - max 50MB)</span>
+                    </div>
+                    <input type="file" name="video" accept="video/mp4,video/webm,video/ogg" class="adm-input" style="padding:0.5rem">
+                    <div style="font-size:0.7rem;color:#555;margin-top:0.35rem">Sube un archivo de video desde tu computadora.</div>
                 </div>
 
                 <!-- Separador visual -->
@@ -173,7 +272,7 @@ include '_layout.php';
                     <div class="adm-form-group" style="display:flex;align-items:center;gap:0.75rem;padding:1rem;background:rgba(255,255,255,0.03);border-radius:0.75rem;border:1px solid var(--adm-border)">
                         <label style="position:relative;display:inline-block;width:48px;height:26px;flex-shrink:0">
                             <input type="checkbox" name="destacado" value="1" style="opacity:0;width:0;height:0" id="toggle-destacado">
-                            <span style="position:absolute;cursor:pointer;top:0;left:0;right:0;bottom:0;background:rgba(255,255,255,0.08);border-radius:13px;transition:0.3s" id="slider-destacado"></span>
+                            <span class="adm-toggle-slider"></span>
                         </label>
                         <div>
                             <div style="font-size:0.88rem;font-weight:600;color:#e7e7ea">Producto Destacado</div>
@@ -201,7 +300,7 @@ include '_layout.php';
                         <div style="display:flex;align-items:center;gap:0.75rem;margin-bottom:0.75rem">
                             <label style="position:relative;display:inline-block;width:48px;height:26px;flex-shrink:0">
                                 <input type="checkbox" name="oferta" value="1" style="opacity:0;width:0;height:0" id="toggle-oferta">
-                                <span style="position:absolute;cursor:pointer;top:0;left:0;right:0;bottom:0;background:rgba(255,255,255,0.08);border-radius:13px;transition:0.3s" id="slider-oferta"></span>
+                                <span class="adm-toggle-slider"></span>
                             </label>
                             <span style="font-size:0.85rem;color:#aaa">Activar oferta</span>
                         </div>
@@ -220,28 +319,88 @@ include '_layout.php';
     </div>
 </main>
 
-<style>
-    /* Toggle switch styling */
-    #toggle-destacado:checked + #slider-destacado,
-    #toggle-oferta:checked + #slider-oferta {
-        background: var(--adm-red) !important;
-    }
-    #toggle-destacado:checked + #slider-destacado::before,
-    #toggle-oferta:checked + #slider-oferta::before {
-        transform: translateX(22px);
-    }
-    #slider-destacado::before,
-    #slider-oferta::before {
-        position: absolute;
-        content: "";
-        height: 20px;
-        width: 20px;
-        left: 3px;
-        bottom: 3px;
-        background-color: white;
-        border-radius: 50%;
-        transition: 0.3s;
-    }
-</style>
+
 
 <?php include '_layout_end.php'; ?>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const precioNormal = document.getElementById('precio_normal');
+    const precioDescuento = document.getElementById('precio_descuento');
+    const porcentajeDescuento = document.getElementById('porcentaje_descuento');
+    const descuentoPreview = document.getElementById('descuento_preview');
+    const resumenBox = document.getElementById('descuento_resumen');
+    let lastEdited = 'none';
+
+    function formatCOP(n) {
+        return '$' + n.toLocaleString('es-CO', {minimumFractionDigits: 0, maximumFractionDigits: 0});
+    }
+
+    function onPctChange() {
+        lastEdited = 'pct';
+        const normal = parseFloat(precioNormal?.value) || 0;
+        const pct = parseFloat(porcentajeDescuento?.value) || 0;
+        if (normal > 0 && pct > 0 && pct < 100) {
+            const calculado = Math.round(normal * (1 - pct / 100));
+            if (precioDescuento) precioDescuento.value = calculado;
+        } else if (pct === 0 || !porcentajeDescuento?.value) {
+            if (precioDescuento) precioDescuento.value = '';
+        }
+        updatePreview();
+    }
+
+    function onPriceChange() {
+        lastEdited = 'price';
+        const normal = parseFloat(precioNormal?.value) || 0;
+        const dcto = parseFloat(precioDescuento?.value) || 0;
+        if (normal > 0 && dcto > 0 && dcto < normal) {
+            const pct = Math.round(((normal - dcto) / normal) * 100);
+            if (porcentajeDescuento) porcentajeDescuento.value = pct;
+        } else if (!precioDescuento?.value) {
+            if (porcentajeDescuento) porcentajeDescuento.value = '';
+        }
+        updatePreview();
+    }
+
+    function onNormalChange() {
+        if (lastEdited === 'pct') {
+            onPctChange();
+        } else if (lastEdited === 'price') {
+            onPriceChange();
+        } else {
+            updatePreview();
+        }
+    }
+
+    function updatePreview() {
+        const normal = parseFloat(precioNormal?.value) || 0;
+        const dcto = parseFloat(precioDescuento?.value) || 0;
+
+        if (normal > 0 && dcto > 0 && dcto < normal) {
+            const pct = Math.round(((normal - dcto) / normal) * 100);
+            const ahorro = normal - dcto;
+            if (descuentoPreview) {
+                descuentoPreview.innerHTML = '<span style="color:#f87171;font-size:1.2rem">-' + pct + '%</span>';
+            }
+            if (resumenBox) {
+                resumenBox.style.display = 'flex';
+                resumenBox.innerHTML = 
+                    '<span style="font-size:0.8rem;color:#999;text-decoration:line-through">' + formatCOP(normal) + '</span>' +
+                    '<span style="font-size:1.1rem;font-weight:800;color:#ff4444">' + formatCOP(dcto) + '</span>' +
+                    '<span style="font-size:0.78rem;font-weight:700;color:#4ade80;background:rgba(74,222,128,0.1);padding:0.2rem 0.5rem;border-radius:4px">Ahorras ' + formatCOP(ahorro) + '</span>';
+            }
+        } else {
+            if (descuentoPreview) {
+                descuentoPreview.innerHTML = '<span style="color:#666">Sin descuento</span>';
+            }
+            if (resumenBox) {
+                resumenBox.style.display = 'none';
+            }
+        }
+    }
+
+    if (porcentajeDescuento) porcentajeDescuento.addEventListener('input', onPctChange);
+    if (precioDescuento) precioDescuento.addEventListener('input', onPriceChange);
+    if (precioNormal) precioNormal.addEventListener('input', onNormalChange);
+});
+</script>

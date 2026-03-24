@@ -124,7 +124,7 @@ $utilidad_mes = $total_ventas_mes * 0.18; // SimulaciÃ³n utilidad (18%)
                 <div class="text-xs text-gray-400 mb-1">Usuario:</div>
                 <div class="font-semibold text-sm text-white mb-2"><?php echo htmlspecialchars($usuario['nombre']); ?>
                     (<?php echo htmlspecialchars($usuario['rol']); ?>)</div>
-                <a href="../logout.php" class="block text-red-500 hover:underline text-xs">Cerrar sesiÃ³n</a>
+                <a href="../api/logout.php" class="block text-red-500 hover:underline text-xs">Cerrar sesión</a>
             </div>
         </aside>
         <div id="admin-main-content" class="flex-1 flex flex-col min-h-screen admin-main-content with-sidebar">

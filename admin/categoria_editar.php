@@ -26,12 +26,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt = $pdo->prepare('UPDATE categorias SET nombre=?, descripcion=? WHERE id=?');
         $stmt->execute([$nombre, $descripcion, $id]);
         $mensaje = 'Categoría actualizada correctamente.';
+        
+        // Si es una petición AJAX/fetch, podemos terminar aquí con un mensaje simple
+        if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && $_SERVER['HTTP_X_REQUESTED_WITH'] === 'XMLHttpRequest' || !empty($_GET['ajax'])) {
+            echo 'actualizada';
+            exit;
+        }
+        // Para el fetch simple en categorias.php que no envía el header, 
+        // el texto de la página completa seguirá conteniendo "actualizada", 
+        // lo cual es detectado por el JS.
+
         // Refrescar datos
         $stmt = $pdo->prepare('SELECT * FROM categorias WHERE id = ?');
         $stmt->execute([$id]);
         $categoria = $stmt->fetch();
     } else {
         $mensaje = 'El nombre es obligatorio.';
+        if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && $_SERVER['HTTP_X_REQUESTED_WITH'] === 'XMLHttpRequest' || !empty($_GET['ajax'])) {
+            echo 'error: nombre obligatorio';
+            exit;
+        }
     }
 }
 ?>
@@ -53,6 +67,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <div class="mb-4 p-3 rounded text-white <?php echo strpos($mensaje, 'correctamente') !== false ? 'bg-green-600' : 'bg-red-600'; ?>"> <?php echo $mensaje; ?> </div>
         <?php endif; ?>
         <form method="post" class="space-y-5 bg-[#232323] p-6 rounded-xl border border-[#333] shadow-lg">
+                    <?= csrf_field() ?>
             <div>
                 <label class="block mb-1">Nombre *</label>
                 <input type="text" name="nombre" class="w-full bg-[#181818] border border-[#333] rounded-lg px-3 py-2 text-white focus:border-red-600 outline-none" value="<?php echo htmlspecialchars($categoria['nombre']); ?>" required>

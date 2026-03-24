@@ -137,15 +137,15 @@ include __DIR__ . '/includes/header.php';
 
         <div class="max-w-3xl mx-auto mt-12 space-y-4">
             <!-- FAQ Item 1 -->
-            <div class="tech-card !p-0 animate-slide-up" style="overflow: visible !important;">
+            <div class="tech-card !p-0 animate-slide-up !overflow-visible">
                 <button type="button"
-                    class="flex items-center justify-between w-full p-6 text-left text-white font-bold hover:bg-[#1a1a1a] transition-colors"
-                    style="position: relative; z-index: 50; cursor: pointer;" onclick="toggleServiceFaq('faq-1', this)">
+                    class="flex items-center justify-between w-full p-6 text-left text-white font-bold hover:bg-[#1a1a1a] transition-colors relative z-50 cursor-pointer"
+                    onclick="toggleServiceFaq('faq-1', this)">
                     <span>¿Cuánto tiempo demora el diagnóstico?</span>
                     <i data-lucide="chevron-down" class="w-6 h-6 transform transition-transform duration-300"></i>
                 </button>
-                <div id="faq-1" style="display: none;"
-                    class="px-6 pb-6 text-gray-400 border-t border-[#333] pt-4 relative z-40">
+                <div id="faq-1"
+                    class="hidden px-6 pb-6 text-gray-400 border-t border-[#333] pt-4 relative z-40">
                     El diagnóstico inicial suele tomar entre 24 a 48 horas hábiles, dependiendo de la complejidad del
                     problema. Te contactaremos apenas tengamos el resultado.
                 </div>
@@ -154,13 +154,13 @@ include __DIR__ . '/includes/header.php';
             <!-- FAQ Item 2 -->
             <div class="tech-card !p-0 animate-slide-up delay-100" style="overflow: visible !important;">
                 <button type="button"
-                    class="flex items-center justify-between w-full p-6 text-left text-white font-bold hover:bg-[#1a1a1a] transition-colors"
-                    style="position: relative; z-index: 50; cursor: pointer;" onclick="toggleServiceFaq('faq-2', this)">
+                    class="flex items-center justify-between w-full p-6 text-left text-white font-bold hover:bg-[#1a1a1a] transition-colors relative z-50 cursor-pointer"
+                    onclick="toggleServiceFaq('faq-2', this)">
                     <span>¿Tienen garantía las reparaciones?</span>
                     <i data-lucide="chevron-down" class="w-6 h-6 transform transition-transform duration-300"></i>
                 </button>
-                <div id="faq-2" style="display: none;"
-                    class="px-6 pb-6 text-gray-400 border-t border-[#333] pt-4 relative z-40">
+                <div id="faq-2"
+                    class="hidden px-6 pb-6 text-gray-400 border-t border-[#333] pt-4 relative z-40">
                     Sí, todas nuestras reparaciones cuentan con una garantía de 30 a 90 días, dependiendo del tipo de
                     servicio y los repuestos utilizados.
                 </div>
@@ -169,13 +169,13 @@ include __DIR__ . '/includes/header.php';
             <!-- FAQ Item 3 -->
             <div class="tech-card !p-0 animate-slide-up delay-200" style="overflow: visible !important;">
                 <button type="button"
-                    class="flex items-center justify-between w-full p-6 text-left text-white font-bold hover:bg-[#1a1a1a] transition-colors"
-                    style="position: relative; z-index: 50; cursor: pointer;" onclick="toggleServiceFaq('faq-3', this)">
+                    class="flex items-center justify-between w-full p-6 text-left text-white font-bold hover:bg-[#1a1a1a] transition-colors relative z-50 cursor-pointer"
+                    onclick="toggleServiceFaq('faq-3', this)">
                     <span>¿Compran equipos dañados?</span>
                     <i data-lucide="chevron-down" class="w-6 h-6 transform transition-transform duration-300"></i>
                 </button>
-                <div id="faq-3" style="display: none;"
-                    class="px-6 pb-6 text-gray-400 border-t border-[#333] pt-4 relative z-40">
+                <div id="faq-3"
+                    class="hidden px-6 pb-6 text-gray-400 border-t border-[#333] pt-4 relative z-40">
                     Sí, compramos equipos dañados o para repuestos. Tráelo a nuestra tienda para una valoración
                     gratuita.
                 </div>
@@ -196,11 +196,11 @@ include __DIR__ . '/includes/header.php';
             return;
         }
 
-        if (content.style.display === 'none' || content.style.display === '') {
-            content.style.display = 'block';
+        if (content.classList.contains('hidden')) {
+            content.classList.remove('hidden');
             icon.style.transform = 'rotate(180deg)';
         } else {
-            content.style.display = 'none';
+            content.classList.add('hidden');
             icon.style.transform = 'rotate(0deg)';
         }
     }

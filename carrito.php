@@ -68,7 +68,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['actualizar'])) {
         foreach ($_SESSION['carrito'] as $it) {
             $total_items += (int) $it['cantidad'];
             if (isset($productos[$it['id_producto']])) {
-                $subtotal += $productos[$it['id_producto']]['precio'] * $it['cantidad'];
+                $priceData = get_product_price_data($productos[$it['id_producto']]);
+                $subtotal += $priceData['precio'] * $it['cantidad'];
             }
         }
         $envio = $subtotal > 50000 ? 0 : 10000;
@@ -111,7 +112,8 @@ $total_items = 0;
 foreach ($_SESSION['carrito'] as $item) {
     $total_items += (int) $item['cantidad'];
     if (isset($productos[$item['id_producto']])) {
-        $subtotal += $productos[$item['id_producto']]['precio'] * $item['cantidad'];
+        $priceData = get_product_price_data($productos[$item['id_producto']]);
+        $subtotal += $priceData['precio'] * $item['cantidad'];
     }
 }
 
@@ -126,8 +128,9 @@ try {
         $cat = $productos[$pid]['categoria'];
         if (!isset($byCat[$cat]))
             $byCat[$cat] = [];
+        $priceData = get_product_price_data($productos[$pid]);
         $byCat[$cat][] = [
-            'precio' => (float) $productos[$pid]['precio'],
+            'precio' => (float) $priceData['precio'],
             'cantidad' => (int) $item['cantidad']
         ];
     }
@@ -253,7 +256,24 @@ include __DIR__ . '/includes/header.php';
 
     <!-- Contenido del Carrito -->
     <section class="container mx-auto px-4 pb-20">
-        <?php if (empty($_SESSION['carrito'])): ?>
+        <?php if (!isset($_SESSION['usuario'])): ?>
+            <!-- Requiere iniciar sesión -->
+            <div class="cart-empty animate-slide-up delay-100">
+                <div class="cart-empty-icon" style="color:#ff4444;">
+                    <i data-lucide="lock" style="width:48px;height:48px"></i>
+                </div>
+                <h2 class="cart-empty-title">Inicia sesión para ver tu carrito</h2>
+                <p class="cart-empty-text">Necesitas una cuenta para agregar productos y gestionar tu carrito de compras.</p>
+                <button type="button" onclick="if(typeof abrirModalLogin==='function'){abrirModalLogin();}else{window.location.href='index.php';}" class="cart-empty-btn">
+                    <i data-lucide="user" style="width:20px;height:20px"></i>
+                    Iniciar Sesión
+                </button>
+                <a href="productos.php" class="cart-empty-btn" style="background:transparent;border:1px solid rgba(255,255,255,0.15);color:#ccc;margin-top:0.75rem;">
+                    <i data-lucide="shopping-bag" style="width:20px;height:20px"></i>
+                    Explorar Productos
+                </a>
+            </div>
+        <?php elseif (empty($_SESSION['carrito'])): ?>
             <!-- Carrito Vacío -->
             <div class="cart-empty animate-slide-up delay-100">
                 <div class="cart-empty-icon">
@@ -289,7 +309,8 @@ include __DIR__ . '/includes/header.php';
                             if (!isset($productos[$item['id_producto']]))
                                 continue;
                             $p = $productos[$item['id_producto']];
-                            $itemSubtotal = $p['precio'] * $item['cantidad'];
+                            $priceData = get_product_price_data($p);
+                            $itemSubtotal = $priceData['precio'] * $item['cantidad'];
                             $delay_class = 'delay-' . min($delay * 100, 500);
                             ?>
                             <div class="cart-item-card animate-slide-right <?php echo $delay_class; ?>">
@@ -478,10 +499,10 @@ include __DIR__ . '/includes/header.php';
                                             </div>
                                             <div class="cart-rec-info">
                                                 <span class="cart-rec-name"><?php echo htmlspecialchars($r['nombre']); ?></span>
-                                                <span
-                                                    class="cart-rec-price">$<?php echo number_format($r['precio'], 0, ',', '.'); ?></span>
+                                                <?php $rPrice = get_product_price_data($r); ?>
+                                                <span class="cart-rec-price">$<?php echo number_format($rPrice['precio'], 0, ',', '.'); ?></span>
                                             </div>
-                                            <form method="POST" action="agregar_carrito.php">
+                                            <form method="POST" action="api/agregar_carrito.php">
                                                 <input type="hidden" name="id_producto" value="<?php echo intval($r['id']); ?>">
                                                 <input type="hidden" name="cantidad" value="1">
                                                 <button type="submit" class="cart-rec-add">Agregar</button>

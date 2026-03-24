@@ -19,21 +19,9 @@ if (isset($_POST['cambiar_estado'], $_POST['id_pedido'], $_POST['nuevo_estado'])
     $stmt = $pdo->prepare('SELECT estado FROM pedidos WHERE id = ?');
     $stmt->execute([$id_pedido]);
     $anterior = $stmt->fetchColumn();
-    $allowed_transitions = [
-        'pendiente'  => ['pagado','cancelado'],
-        'pagado'     => ['preparacion','cancelado'],
-        'preparacion'=> ['enviado','cancelado'],
-        'enviado'    => ['entregado','cancelado'],
-        'entregado'  => [],
-        'cancelado'  => []
-    ];
-    if ($nuevo_estado !== $anterior) {
-        if (!isset($allowed_transitions[$anterior]) || !in_array($nuevo_estado, $allowed_transitions[$anterior])) {
-            $_SESSION['flash_error'] = "Transición no permitida de '$anterior' a '$nuevo_estado'.";
-            header('Location: pedidos.php');
-            exit;
-        }
-    }
+    // En panel admin permitimos cualquier transición para máxima flexibilidad (corrección de errores, devoluciones, etc).
+    // La lógica de inventario abajo se encargará siempre de cuadrar el stock según el grupo de estado.
+    $estados_reservados = ['pagado', 'preparacion', 'enviado', 'entregado'];
     $pdo->beginTransaction();
     try {
         $pdo->prepare('UPDATE pedidos SET estado = ? WHERE id = ?')->execute([$nuevo_estado, $id_pedido]);
@@ -42,16 +30,23 @@ if (isset($_POST['cambiar_estado'], $_POST['id_pedido'], $_POST['nuevo_estado'])
         $stmt->execute([$id_pedido]);
         $detalles_upd = $stmt->fetchAll();
         $id_usuario   = $_SESSION['usuario']['id'];
-        if (in_array($nuevo_estado, ['entregado','pagado']) && !in_array($anterior, ['entregado','pagado'])) {
-            foreach ($detalles_upd as $d) {
-                $pdo->prepare("INSERT INTO movimientos_inventario (id_producto, tipo, cantidad, motivo, id_usuario) VALUES (?, 'salida', ?, ?, ?)")->execute([$d['id_producto'], $d['cantidad'], 'Venta/Pedido #'.$id_pedido, $id_usuario]);
-                $pdo->prepare('UPDATE productos SET stock = stock - ? WHERE id = ?')->execute([$d['cantidad'], $d['id_producto']]);
-            }
-        }
-        if ($nuevo_estado === 'cancelado' && in_array($anterior, ['entregado','pagado'])) {
-            foreach ($detalles_upd as $d) {
-                $pdo->prepare("INSERT INTO movimientos_inventario (id_producto, tipo, cantidad, motivo, id_usuario) VALUES (?, 'entrada', ?, ?, ?)")->execute([$d['id_producto'], $d['cantidad'], 'Cancelación Pedido #'.$id_pedido, $id_usuario]);
-                $pdo->prepare('UPDATE productos SET stock = stock + ? WHERE id = ?')->execute([$d['cantidad'], $d['id_producto']]);
+        if ($nuevo_estado !== $anterior) {
+            if (in_array($nuevo_estado, $estados_reservados) && !in_array($anterior, $estados_reservados)) {
+                // Pasó de no-reservado a reservado -> Restar stock
+                foreach ($detalles_upd as $d) {
+                    $pdo->prepare("INSERT INTO movimientos_inventario (id_producto, tipo, cantidad, motivo, id_usuario) VALUES (?, 'salida', ?, ?, ?)")
+                        ->execute([$d['id_producto'], $d['cantidad'], 'Reserva Pedido #'.$id_pedido, $id_usuario]);
+                    $pdo->prepare('UPDATE productos SET stock = stock - ? WHERE id = ?')
+                        ->execute([$d['cantidad'], $d['id_producto']]);
+                }
+            } elseif (!in_array($nuevo_estado, $estados_reservados) && in_array($anterior, $estados_reservados)) {
+                // Pasó de reservado a no-reservado (ej. cancelado, o devuelto a pendiente) -> Devolver stock
+                foreach ($detalles_upd as $d) {
+                    $pdo->prepare("INSERT INTO movimientos_inventario (id_producto, tipo, cantidad, motivo, id_usuario) VALUES (?, 'entrada', ?, ?, ?)")
+                        ->execute([$d['id_producto'], $d['cantidad'], 'Liberación Pedido #'.$id_pedido, $id_usuario]);
+                    $pdo->prepare('UPDATE productos SET stock = stock + ? WHERE id = ?')
+                        ->execute([$d['cantidad'], $d['id_producto']]);
+                }
             }
         }
         $pdo->commit();
@@ -99,7 +94,105 @@ $page_title       = 'Pedidos | Computécnicos';
 $admin_page       = 'pedidos';
 $admin_title      = 'Pedidos';
 $admin_breadcrumb = [['label' => 'Pedidos']];
-$admin_header_extra = '<button id="btn-nuevo-pedido" class="adm-btn adm-btn-success"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width:14px;height:14px"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg> Nuevo pedido</button>';
+$admin_header_extra = '<button id="btn-nuevo-pedido" class="adm-btn adm-btn-primary"><i data-lucide="plus" style="width:16px;height:16px"></i> <span>Nuevo pedido</span></button>';
+
+$admin_extra_css = '
+<style>
+/* 🚀 REDISEÑO PREMIUM PARA FILTROS DE PEDIDOS — INYECTADO */
+.adm-filters-container {
+    display: flex !important;
+    justify-content: center !important;
+    width: 100% !important;
+    margin-bottom: 2rem !important;
+}
+
+.adm-pedido-filters {
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    flex-wrap: wrap !important;
+    gap: 12px !important;
+    margin: 0 !important;
+    padding: 12px 20px !important;
+    background: rgba(255, 255, 255, 0.03) !important;
+    border-radius: 50px !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    backdrop-filter: blur(15px) !important;
+    width: fit-content !important;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4), inset 0 1px 1px rgba(255, 255, 255, 0.05) !important;
+}
+
+.adm-pedido-filters .adm-btn {
+    padding: 0.65rem 1.4rem !important;
+    border-radius: 30px !important;
+    font-size: 0.8rem !important;
+    font-weight: 600 !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    text-decoration: none !important;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    background: rgba(255, 255, 255, 0.05) !important;
+    border: 1px solid rgba(255, 255, 255, 0.06) !important;
+    color: #cbd5e1 !important; /* Gris claro muy legible (slate-300) */
+}
+
+.adm-pedido-filters .adm-btn:hover {
+    background: rgba(255, 255, 255, 0.1) !important;
+    color: #fff !important;
+    transform: translateY(-2px) !important;
+}
+
+/* Botón Activo General */
+.adm-pedido-filters .adm-btn.active {
+    color: #fff !important;
+    border-color: transparent !important;
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.1) !important;
+}
+
+/* Variantes de color por estado con contraste mejorado */
+.adm-btn-todos.active, .adm-btn-todos:hover {
+    background: linear-gradient(135deg, #e11d48, #be123c) !important;
+    box-shadow: 0 0 20px rgba(225, 29, 72, 0.4) !important;
+}
+
+.adm-btn-pendiente.active, .adm-btn-pendiente:hover {
+    background: rgba(251, 191, 36, 0.25) !important;
+    color: #fbbf24 !important;
+    border-color: rgba(251, 191, 36, 0.5) !important;
+}
+
+.adm-btn-pagado.active, .adm-btn-pagado:hover {
+    background: rgba(59, 130, 246, 0.25) !important;
+    color: #60a5fa !important;
+    border-color: rgba(59, 130, 246, 0.5) !important;
+}
+
+.adm-btn-preparacion.active, .adm-btn-preparacion:hover {
+    background: rgba(168, 85, 247, 0.25) !important;
+    color: #a78bfa !important;
+    border-color: rgba(168, 85, 247, 0.5) !important;
+}
+
+.adm-btn-enviado.active, .adm-btn-enviado:hover {
+    background: rgba(6, 182, 212, 0.25) !important;
+    color: #22d3ee !important;
+    border-color: rgba(6, 182, 212, 0.5) !important;
+}
+
+.adm-btn-entregado.active, .adm-btn-entregado:hover {
+    background: rgba(34, 197, 94, 0.25) !important;
+    color: #4ade80 !important;
+    border-color: rgba(34, 197, 94, 0.5) !important;
+}
+
+.adm-btn-cancelado.active, .adm-btn-cancelado:hover {
+    background: rgba(239, 68, 68, 0.25) !important;
+    color: #f87171 !important;
+    border-color: rgba(239, 68, 68, 0.5) !important;
+}
+</style>
+';
 
 include '_layout.php';
 ?>
@@ -112,38 +205,48 @@ include '_layout.php';
     <?php endif; ?>
 
     <!-- Filtros de estado -->
-    <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:1.5rem">
-        <?php
-        $estados_ui = ['todos'=>'Todos','pendiente'=>'Pendientes','pagado'=>'Pagados','preparacion'=>'En preparación','enviado'=>'Enviados','entregado'=>'Entregados','cancelado'=>'Cancelados'];
-        foreach ($estados_ui as $estado => $label):
-            $active = ($estado_filtro === $estado);
-        ?>
-        <a href="pedidos.php<?= $estado === 'todos' ? '' : ('?estado='.$estado) ?>"
-           class="adm-btn <?= $active ? 'adm-btn-primary' : '' ?>"
-           style="<?= !$active ? 'background:rgba(255,255,255,0.04);color:#aaa;border:1px solid rgba(255,255,255,0.07)' : '' ?>">
-            <?= $label ?>
-        </a>
-        <?php endforeach; ?>
+    <div class="adm-filters-container">
+        <div class="adm-pedido-filters">
+            <?php
+            $estados_ui = [
+                'todos'       => ['label' => 'Todos',          'icon' => 'layers',        'class' => 'adm-btn-todos'],
+                'pendiente'   => ['label' => 'Pendientes',     'icon' => 'clock',         'class' => 'adm-btn-pendiente'],
+                'pagado'      => ['label' => 'Pagados',        'icon' => 'credit-card',   'class' => 'adm-btn-pagado'],
+                'preparacion' => ['label' => 'En preparación', 'icon' => 'package',       'class' => 'adm-btn-preparacion'],
+                'enviado'     => ['label' => 'Enviados',       'icon' => 'truck',         'class' => 'adm-btn-enviado'],
+                'entregado'   => ['label' => 'Entregados',     'icon' => 'check-circle',  'class' => 'adm-btn-entregado'],
+                'cancelado'   => ['label' => 'Cancelados',     'icon' => 'x-circle',      'class' => 'adm-btn-cancelado'],
+            ];
+            foreach ($estados_ui as $estado => $data):
+                $active = ($estado_filtro === $estado);
+            ?>
+            <a href="pedidos.php<?= $estado === 'todos' ? '' : ('?estado='.$estado) ?>"
+               class="adm-btn <?= $data['class'] ?> <?= $active ? 'active' : '' ?>">
+                <i data-lucide="<?= $data['icon'] ?>" style="width:16px;height:16px"></i>
+                <span><?= $data['label'] ?></span>
+            </a>
+            <?php endforeach; ?>
+        </div>
     </div>
 
     <?php if (!$pedidos): ?>
     <div class="adm-card" style="text-align:center;color:#555;padding:3rem">No hay pedidos registrados.</div>
     <?php else: ?>
-    <div id="lista-pedidos" style="display:flex;flex-direction:column;gap:1.25rem">
+    <div id="lista-pedidos" class="flex flex-col gap-[1.25rem]">
         <?php foreach ($pedidos as $pedido): ?>
-        <div class="adm-card" style="padding:1.5rem">
+        <div class="adm-pedido-card">
             <!-- Cabecera del pedido -->
-            <div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;margin-bottom:0.875rem">
-                <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
-                    <span style="font-weight:700;font-size:1rem">Pedido #<?= $pedido['id'] ?></span>
+            <div class="adm-pedido-header">
+                <div class="adm-pedido-meta">
+                    <span class="adm-pedido-id">Pedido #<?= $pedido['id'] ?></span>
                     <span class="adm-badge <?= estadoBadge($pedido['estado']) ?>"><?= ucfirst($pedido['estado']) ?></span>
-                    <span style="color:#555;font-size:0.78rem"><?= date('d/m/Y H:i', strtotime($pedido['fecha'])) ?></span>
+                    <span class="adm-pedido-date"><?= date('d/m/Y H:i', strtotime($pedido['fecha'])) ?></span>
                 </div>
-                <div style="font-weight:700;font-size:1rem;color:#ef4444">$<?= number_format($pedido['total'], 0, ',', '.') ?> COP</div>
+                <div class="adm-pedido-total">$<?= number_format($pedido['total'], 0, ',', '.') ?> COP</div>
             </div>
 
             <!-- Info cliente -->
-            <div style="display:flex;flex-wrap:wrap;gap:1.25rem;margin-bottom:0.875rem;font-size:0.8rem;color:#666">
+            <div class="adm-pedido-info">
                 <span>👤 <?= htmlspecialchars($pedido['usuario_nombre'] ?: 'Invitado') ?> &mdash; <?= htmlspecialchars($pedido['email'] ?? '') ?></span>
                 <span>📍 <?= htmlspecialchars($pedido['direccion_envio']) ?></span>
                 <?php if ($col_guia_disponible && !empty($pedido['numero_guia'])): ?>
@@ -187,24 +290,33 @@ include '_layout.php';
             <?php endif; ?>
 
             <!-- Acciones -->
-            <div style="display:flex;flex-wrap:wrap;align-items:center;gap:10px">
+            <div class="adm-pedido-actions">
                 <!-- Cambiar estado -->
-                <form method="post" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+                <form method="post" class="adm-pedido-status-form">
+                    <?= csrf_field() ?>
                     <input type="hidden" name="id_pedido" value="<?= $pedido['id'] ?>">
-                    <label style="font-size:0.78rem;color:#777;font-weight:600">Estado:</label>
-                    <select name="nuevo_estado" class="adm-select" style="width:auto;padding:0.3rem 0.65rem;font-size:0.78rem">
+                    <label class="adm-pedido-status-label">Estado:</label>
+                    <input type="hidden" name="cambiar_estado" value="1">
+                    <select name="nuevo_estado" class="adm-select" style="width:auto;padding:0.3rem 0.65rem;font-size:0.78rem" onchange="this.form.submit()">
                         <?php foreach (['pendiente'=>'Pendiente','pagado'=>'Pagado','preparacion'=>'En preparación','enviado'=>'Enviado','entregado'=>'Entregado','cancelado'=>'Cancelado'] as $v=>$t): ?>
                         <option value="<?= $v ?>" <?= $pedido['estado']==$v ? 'selected':'' ?>><?= $t ?></option>
                         <?php endforeach; ?>
                     </select>
-                    <button type="submit" name="cambiar_estado" class="adm-btn adm-btn-blue" style="font-size:0.75rem;padding:0.3rem 0.75rem">Actualizar</button>
                 </form>
 
                 <!-- Factura PDF -->
-                <a href="<?= base_url() ?>/factura_pdf.php?id=<?= $pedido['id'] ?>&download=1" target="_blank"
-                   class="adm-btn" style="background:rgba(255,255,255,0.05);font-size:0.75rem;padding:0.3rem 0.75rem">
-                   📄 PDF
-                </a>
+                <?php if (in_array($pedido['estado'], ['pagado', 'preparacion', 'enviado', 'entregado'])): ?>
+                    <a href="<?= base_url() ?>/api/factura_pdf.php?id=<?= $pedido['id'] ?>&download=1" target="_blank"
+                       class="adm-btn" style="background:rgba(255,255,255,0.05);font-size:0.75rem;padding:0.3rem 0.75rem">
+                       📄 PDF
+                    </a>
+                <?php else: ?>
+                    <button type="button" class="adm-btn" 
+                            style="background:rgba(255,255,255,0.02);font-size:0.75rem;padding:0.3rem 0.75rem;opacity:0.6;cursor:not-allowed;"
+                            onclick="admToast('La factura estará disponible una vez se confirme el pago.', 'error', 4500, 'Factura no disponible')">
+                       📄 PDF
+                    </button>
+                <?php endif; ?>
 
 
                 <!-- Editar pedido -->
@@ -260,6 +372,7 @@ include '_layout.php';
         <button class="adm-modal-close" onclick="cerrarEditar()">&times;</button>
         <div class="adm-modal-title">Editar Pedido</div>
         <form id="form-editar-pedido" style="display:flex;flex-direction:column;gap:1rem">
+                    <?= csrf_field() ?>
             <input type="hidden" name="id" id="edit-id">
             <div class="adm-form-row" style="margin-bottom:0">
                 <div style="flex:2">
@@ -330,6 +443,7 @@ include '_layout.php';
         <button class="adm-modal-close" onclick="cerrarNuevo()">&times;</button>
         <div class="adm-modal-title">Nuevo Pedido</div>
         <form id="form-nuevo-pedido" style="display:flex;flex-direction:column;gap:1rem">
+                    <?= csrf_field() ?>
             <div class="adm-form-row" style="margin-bottom:0">
                 <div style="flex:2">
                     <label class="adm-label">Cliente *</label>
@@ -505,7 +619,7 @@ document.getElementById('form-nuevo-pedido').addEventListener('submit', async fu
     const data = new FormData(this);
     const res  = await fetch('pedido_nuevo.php', { method:'POST', body:data });
     const text = await res.text();
-    if (text.includes('Location: pedidos.php') || text.includes('registrado')) { window.location.reload(); }
+    if (text.includes('Location: pedidos.php') || text.includes('registrado')) { window.location.href = window.location.pathname + '?exito=1'; }
     else {
         var m = document.getElementById('modal-nuevo-msg');
         m.textContent = 'Error al registrar pedido. Revisa los datos.'; m.style.display='block';
@@ -517,7 +631,7 @@ document.getElementById('form-editar-pedido').addEventListener('submit', async f
     const data = new FormData(this);
     const res  = await fetch('pedido_editar.php?id=' + data.get('id'), { method:'POST', body:data });
     const text = await res.text();
-    if (text.includes('Location: pedidos.php') || text.includes('actualizado')) { window.location.reload(); }
+    if (text.includes('Location: pedidos.php') || text.includes('actualizado')) { window.location.href = window.location.pathname + '?editado=1'; }
     else {
         var m = document.getElementById('modal-editar-msg');
         m.textContent = 'Error al editar pedido.'; m.style.display='block';

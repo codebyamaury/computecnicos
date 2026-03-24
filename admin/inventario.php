@@ -22,15 +22,15 @@ $admin_title      = 'Inventario';
 $admin_breadcrumb = [['label' => 'Inventario']];
 $admin_header_extra = '
     <a href="limpiar_soportes.php" class="adm-btn adm-btn-warning">🗑️ Limpiar Soportes</a>
-    <button id="btn-nuevo-movimiento" class="adm-btn adm-btn-success"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width:14px;height:14px"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg> Nuevo movimiento</button>';
+    <button id="btn-nuevo-movimiento" class="adm-btn adm-btn-success" onclick="abrirModalMovimiento(event)"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width:14px;height:14px"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg> Nuevo movimiento</button>';
 
 include '_layout.php';
 ?>
 
-<main class="admin-content" style="padding:1.25rem 1.5rem;display:flex;flex-direction:column;overflow:hidden;height:calc(100vh - 60px)">
-
+<main class="admin-content">
+<div class="admin-content-inner">
     <!-- Card estática con scroll interno -->
-    <div class="adm-card" style="padding:0;overflow:hidden;display:flex;flex-direction:column;flex:1;min-height:0">
+    <div class="adm-card" style="padding:0;overflow:hidden">
         <!-- Header de la card (estático) -->
         <div style="padding:1.25rem 1.5rem;border-bottom:1px solid rgba(255,255,255,0.04);flex-shrink:0">
             <div class="adm-card-title" style="margin-bottom:0">
@@ -38,29 +38,14 @@ include '_layout.php';
                 <span class="adm-badge adm-badge-gray"><?= count($movimientos) ?> registros</span>
             </div>
         </div>
-        <!-- Zona scrolleable (solo vertical) -->
-        <div style="flex:1;overflow-y:auto;overflow-x:hidden;min-height:0">
-            <table class="adm-table" id="tabla-inventario" style="font-size:0.7rem;table-layout:fixed;width:100%">
-                <colgroup>
-                    <col style="width:12%"><!-- Producto -->
-                    <col style="width:6%"><!-- Tipo -->
-                    <col style="width:4%"><!-- Cant -->
-                    <col style="width:9%"><!-- Proveedor -->
-                    <col style="width:7%"><!-- Factura -->
-                    <col style="width:7%"><!-- Precio -->
-                    <col style="width:6%"><!-- IVA -->
-                    <col style="width:6%"><!-- Ret -->
-                    <col style="width:13%"><!-- Motivo -->
-                    <col style="width:7%"><!-- Usuario -->
-                    <col style="width:9%"><!-- Fecha -->
-                    <col style="width:5%"><!-- Soporte -->
-                    <col style="width:6%"><!-- Acciones -->
-                </colgroup>
-                <thead style="position:sticky;top:0;z-index:2">
+        <!-- Zona scrolleable (con scroll horizontal en móvil) -->
+        <div class="adm-table-wrap" style="border:none;border-radius:0;overflow-x:auto;min-width:0;">
+            <table class="adm-table" id="tabla-inventario" style="min-width:1200px;">
+                <thead style="position:sticky;top:0;z-index:2;background:rgba(18,18,18,0.95);backdrop-filter:blur(8px);">
                     <tr>
-                        <th style="padding:.5rem .4rem">Producto</th><th style="padding:.5rem .4rem">Tipo</th><th style="padding:.5rem .4rem">Cant.</th><th style="padding:.5rem .4rem">Proveedor</th>
-                        <th style="padding:.5rem .4rem">Factura</th><th style="padding:.5rem .4rem">Precio U.</th><th style="padding:.5rem .4rem">IVA</th><th style="padding:.5rem .4rem">Ret.</th>
-                        <th style="padding:.5rem .4rem">Motivo</th><th style="padding:.5rem .4rem">Usuario</th><th style="padding:.5rem .4rem">Fecha</th><th style="padding:.5rem .4rem">Sop.</th><th style="padding:.5rem .4rem">Acc.</th>
+                        <th style="padding:.5rem .75rem;min-width:140px;">Producto</th><th style="padding:.5rem .75rem;min-width:70px;">Tipo</th><th style="padding:.5rem .75rem;min-width:60px;">Cant.</th><th style="padding:.5rem .75rem;min-width:120px;">Proveedor</th>
+                        <th style="padding:.5rem .75rem;min-width:90px;">Factura</th><th style="padding:.5rem .75rem;min-width:100px;">Precio U.</th><th style="padding:.5rem .75rem;min-width:90px;">IVA</th><th style="padding:.5rem .75rem;min-width:90px;">Ret.</th>
+                        <th style="padding:.5rem .75rem;min-width:160px;">Motivo</th><th style="padding:.5rem .75rem;min-width:100px;">Usuario</th><th style="padding:.5rem .75rem;min-width:120px;">Fecha</th><th style="padding:.5rem .75rem;min-width:60px;">Sop.</th><th style="padding:.5rem .75rem;min-width:80px;">Acc.</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -69,34 +54,34 @@ include '_layout.php';
                 <?php else: ?>
                 <?php foreach ($movimientos as $m): ?>
                 <tr>
-                    <td style="padding:.45rem .4rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="<?= htmlspecialchars($m['producto']) ?>"><strong><?= htmlspecialchars($m['producto']) ?></strong></td>
-                    <td style="padding:.45rem .4rem">
+                    <td style="padding:.6rem .75rem;"><strong><?= htmlspecialchars($m['producto']) ?></strong></td>
+                    <td style="padding:.6rem .75rem">
                         <?php if ($m['tipo'] === 'entrada'): ?>
-                        <span class="adm-badge adm-badge-green" style="font-size:.6rem;padding:.15rem .4rem">Entrada</span>
+                        <span class="adm-badge adm-badge-green" style="font-size:.65rem;padding:.15rem .4rem">Entrada</span>
                         <?php elseif ($m['tipo'] === 'salida'): ?>
-                        <span class="adm-badge adm-badge-red" style="font-size:.6rem;padding:.15rem .4rem">Salida</span>
+                        <span class="adm-badge adm-badge-red" style="font-size:.65rem;padding:.15rem .4rem">Salida</span>
                         <?php else: ?>
-                        <span class="adm-badge adm-badge-yellow" style="font-size:.6rem;padding:.15rem .4rem">Ajuste</span>
+                        <span class="adm-badge adm-badge-yellow" style="font-size:.65rem;padding:.15rem .4rem">Ajuste</span>
                         <?php endif; ?>
                     </td>
-                    <td style="padding:.45rem .4rem"><?= $m['cantidad'] ?></td>
-                    <td style="padding:.45rem .4rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"><?= htmlspecialchars($m['proveedor'] ?? '—') ?></td>
-                    <td style="padding:.45rem .4rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"><?= htmlspecialchars($m['numero_factura'] ?? '—') ?></td>
-                    <td style="padding:.45rem .4rem;white-space:nowrap"><?= $m['precio_unitario'] ? '$' . number_format($m['precio_unitario'], 0, ',', '.') : '—' ?></td>
-                    <td style="padding:.45rem .4rem;white-space:nowrap"><?= $m['iva'] ? '$' . number_format($m['iva'], 0, ',', '.') : '—' ?></td>
-                    <td style="padding:.45rem .4rem;white-space:nowrap"><?= $m['retencion'] ? '$' . number_format($m['retencion'], 0, ',', '.') : '—' ?></td>
-                    <td style="padding:.45rem .4rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="<?= htmlspecialchars($m['motivo'] ?? '') ?>"><?= htmlspecialchars($m['motivo'] ?? '—') ?></td>
-                    <td style="padding:.45rem .4rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"><?= htmlspecialchars($m['usuario'] ?? '—') ?></td>
-                    <td style="padding:.45rem .4rem;color:#555;white-space:nowrap"><?= date('d/m/Y H:i', strtotime($m['fecha'])) ?></td>
-                    <td style="padding:.45rem .4rem">
+                    <td style="padding:.6rem .75rem"><?= $m['cantidad'] ?></td>
+                    <td style="padding:.6rem .75rem;white-space:nowrap"><?= htmlspecialchars($m['proveedor'] ?? '—') ?></td>
+                    <td style="padding:.6rem .75rem;white-space:nowrap"><?= htmlspecialchars($m['numero_factura'] ?? '—') ?></td>
+                    <td style="padding:.6rem .75rem;white-space:nowrap"><?= $m['precio_unitario'] ? '$' . number_format($m['precio_unitario'], 0, ',', '.') : '—' ?></td>
+                    <td style="padding:.6rem .75rem;white-space:nowrap"><?= $m['iva'] ? '$' . number_format($m['iva'], 0, ',', '.') : '—' ?></td>
+                    <td style="padding:.6rem .75rem;white-space:nowrap"><?= $m['retencion'] ? '$' . number_format($m['retencion'], 0, ',', '.') : '—' ?></td>
+                    <td style="padding:.6rem .75rem;max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="<?= htmlspecialchars($m['motivo'] ?? '') ?>"><?= htmlspecialchars($m['motivo'] ?? '—') ?></td>
+                    <td style="padding:.6rem .75rem;white-space:nowrap"><?= htmlspecialchars($m['usuario'] ?? '—') ?></td>
+                    <td style="padding:.6rem .75rem;color:#555;white-space:nowrap"><?= date('d/m/Y H:i', strtotime($m['fecha'])) ?></td>
+                    <td style="padding:.6rem .75rem">
                         <?php if (!empty($m['soporte_documental'])): ?>
-                        <a href="../<?= htmlspecialchars($m['soporte_documental']) ?>" target="_blank" class="adm-badge adm-badge-blue" style="text-decoration:none;font-size:.6rem;padding:.15rem .35rem">Ver</a>
+                        <a href="../<?= htmlspecialchars($m['soporte_documental']) ?>" target="_blank" class="adm-badge adm-badge-blue" style="text-decoration:none;font-size:.65rem;padding:.15rem .35rem">Ver</a>
                         <?php else: ?>
                         <span style="color:#444">—</span>
                         <?php endif; ?>
                     </td>
-                    <td style="padding:.45rem .4rem">
-                        <button onclick="eliminarMovimiento(<?= $m['id'] ?>)" class="adm-btn adm-btn-danger" style="font-size:.6rem;padding:.2rem .45rem">Eliminar</button>
+                    <td style="padding:.6rem .75rem">
+                        <button onclick="eliminarMovimiento(<?= $m['id'] ?>)" class="adm-btn adm-btn-danger" style="font-size:.65rem;padding:.3rem .5rem">Eliminar</button>
                     </td>
                 </tr>
                 <?php endforeach; ?>
@@ -104,87 +89,16 @@ include '_layout.php';
                 </tbody>
             </table>
         </div>
+
+        <div id="pag-inventario" style="display:flex;align-items:center;justify-content:center;gap:8px;margin:1rem 0;flex-wrap:wrap;"></div>
     </div>
-
-    <div id="pag-inventario" style="display:flex;align-items:center;justify-content:center;gap:8px;margin-top:0.75rem;flex-wrap:wrap"></div>
-
+</div>
 </main>
 
 
-<!-- Modal Nuevo movimiento -->
-<div id="modal-nuevo-bg" class="adm-modal-overlay"></div>
-<div id="modal-nuevo-movimiento" class="adm-modal hidden">
-    <div class="adm-modal-box">
-        <button class="adm-modal-close" onclick="cerrarModal()">&times;</button>
-        <div class="adm-modal-title">Nuevo Movimiento</div>
-        <form id="form-nuevo-movimiento" method="post" enctype="multipart/form-data" style="display:flex;flex-direction:column;gap:0.875rem">
-            <div>
-                <label class="adm-label">Producto *</label>
-                <select name="id_producto" class="adm-select" required>
-                    <option value="">Selecciona un producto</option>
-                    <?php foreach ($pdo->query('SELECT id, nombre, stock FROM productos ORDER BY nombre') as $p): ?>
-                    <option value="<?= $p['id'] ?>"><?= htmlspecialchars($p['nombre']) ?> (Stock: <?= $p['stock'] ?>)</option>
-                    <?php endforeach; ?>
-                </select>
-            </div>
-            <div>
-                <label class="adm-label">Tipo *</label>
-                <select name="tipo" id="nuevo-tipo" class="adm-select" required onchange="mostrarCamposEntrada()">
-                    <option value="">Selecciona tipo</option>
-                    <option value="entrada">Entrada (compra)</option>
-                    <option value="salida">Salida (venta/ajuste)</option>
-                    <option value="ajuste">Ajuste</option>
-                </select>
-            </div>
-            <div id="campos-entrada" style="display:none;display:flex;flex-direction:column;gap:0.875rem">
-                <div>
-                    <label class="adm-label">Proveedor</label>
-                    <select name="id_proveedor" class="adm-select">
-                        <option value="">Selecciona un proveedor</option>
-                        <?php foreach ($pdo->query('SELECT id, nombre FROM proveedores ORDER BY nombre') as $prov): ?>
-                        <option value="<?= $prov['id'] ?>"><?= htmlspecialchars($prov['nombre']) ?></option>
-                        <?php endforeach; ?>
-                    </select>
-                </div>
-                <div><label class="adm-label">Número de factura/soporte</label><input type="text" name="numero_factura" class="adm-input"></div>
-                <div class="adm-form-row" style="margin-bottom:0">
-                    <div><label class="adm-label">Precio unitario</label><input type="number" name="precio_unitario" min="0" step="0.01" class="adm-input"></div>
-                    <div><label class="adm-label">IVA (valor)</label><input type="number" name="iva" min="0" step="0.01" class="adm-input"></div>
-                </div>
-                <div class="adm-form-row" style="margin-bottom:0">
-                    <div><label class="adm-label">Retención (valor)</label><input type="number" name="retencion" min="0" step="0.01" class="adm-input"></div>
-                    <div><label class="adm-label">Soporte (PDF/JPG)</label><input type="file" name="soporte" accept=".pdf,image/*" class="adm-input" style="padding:0.35rem"></div>
-                </div>
-            </div>
-            <div class="adm-form-row" style="margin-bottom:0">
-                <div><label class="adm-label">Cantidad *</label><input type="number" name="cantidad" min="1" class="adm-input" required></div>
-                <div><label class="adm-label">Motivo</label><input type="text" name="motivo" class="adm-input"></div>
-            </div>
-            <button type="submit" class="adm-btn adm-btn-primary" style="width:100%;justify-content:center;margin-top:0.25rem">Registrar movimiento</button>
-        </form>
-        <div id="modal-nuevo-msg" style="display:none;margin-top:0.75rem;text-align:center;color:#ef4444;font-size:0.8rem"></div>
-    </div>
-</div>
+<?php include '_modal_movimiento.php'; ?>
 
 <script>
-function abrirModal() {
-    document.getElementById('modal-nuevo-bg').classList.add('show');
-    document.getElementById('modal-nuevo-movimiento').classList.remove('hidden');
-    document.getElementById('modal-nuevo-movimiento').classList.add('show');
-    document.getElementById('form-nuevo-movimiento').reset();
-    document.getElementById('campos-entrada').style.display='none';
-    document.body.style.overflow='hidden';
-}
-function cerrarModal() {
-    document.getElementById('modal-nuevo-bg').classList.remove('show');
-    document.getElementById('modal-nuevo-movimiento').classList.add('hidden');
-    document.getElementById('modal-nuevo-movimiento').classList.remove('show');
-    document.body.style.overflow='';
-}
-function mostrarCamposEntrada() {
-    var tipo = document.getElementById('nuevo-tipo').value;
-    document.getElementById('campos-entrada').style.display = (tipo === 'entrada') ? 'flex' : 'none';
-}
 async function eliminarMovimiento(id) {
     // Abrir modal de confirmación
     document.getElementById('del-mov-href').dataset.id = id;
@@ -203,9 +117,14 @@ function cerrarDelMov() {
 async function confirmarEliminarMov() {
     var id = document.getElementById('del-mov-href').dataset.id;
     cerrarDelMov();
-    const res = await fetch('eliminar_movimiento.php', { method: 'POST', headers: {'Content-Type':'application/x-www-form-urlencoded'}, body: 'id=' + id });
+    const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+    const res = await fetch('eliminar_movimiento.php', { 
+        method: 'POST', 
+        headers: {'Content-Type':'application/x-www-form-urlencoded'}, 
+        body: 'id=' + id + '&csrf_token=' + csrfToken 
+    });
     const text = await res.text();
-    if (text === 'success') { window.location.reload(); }
+    if (text === 'success') { window.location.href = window.location.pathname + '?exito=1'; }
     else {
         // Mostrar toast de error
         var t = document.createElement('div');
@@ -216,20 +135,7 @@ async function confirmarEliminarMov() {
         setTimeout(function(){ if(document.getElementById('err-toast')) document.getElementById('err-toast').remove(); }, 5000);
     }
 }
-document.getElementById('modal-nuevo-bg').addEventListener('click', cerrarModal);
 document.getElementById('modal-del-mov-bg').addEventListener('click', cerrarDelMov);
-document.getElementById('btn-nuevo-movimiento').addEventListener('click', abrirModal);
-document.getElementById('form-nuevo-movimiento').addEventListener('submit', async function(e) {
-    e.preventDefault();
-    const data = new FormData(this);
-    const res = await fetch('inventario_nuevo.php', { method: 'POST', body: data });
-    const text = await res.text();
-    if (text.includes('Location: inventario.php') || text.includes('registrado')) { window.location.reload(); }
-    else {
-        const m = document.getElementById('modal-nuevo-msg');
-        m.textContent='Error al registrar movimiento. Revisa los datos.'; m.style.display='block';
-    }
-});
 </script>
 
 <!-- Modal Confirmar Eliminar Movimiento -->

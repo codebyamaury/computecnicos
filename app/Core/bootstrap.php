@@ -1,9 +1,5 @@
 <?php
-// Bootstrap central del proyecto (no rompe rutas existentes)
-
-// NO iniciar sesión aún — se hace después de conectar a la BD
-// para poder usar el handler de sesiones en base de datos.
-
+// Bootstrap central del proyecto — optimizado para VPS
 // Zona horaria por defecto
 date_default_timezone_set('America/Bogota');
 
@@ -35,29 +31,35 @@ if (!defined('APP_ENV')) {
     }
 }
 
-// Helper simple para construir URLs públicas basadas en el path del script
+// Helper para construir URLs públicas (resultado cacheado por request)
 function base_url(): string {
+    static $cached = null;
+    if ($cached !== null) return $cached;
+
     $host = $_SERVER['HTTP_HOST'] ?? 'localhost';
-    $isLocal = strpos($host, 'localhost') !== false || strpos($host, '127.0.0.1') !== false;
-    $scheme = $isLocal ? 'http' : 'https';
-    $host = $_SERVER['HTTP_HOST'] ?? 'localhost';
-    // Normalizar rutas de servidor
+
+    // Detectar protocolo REAL de la petición actual
+    $isSecure = false;
+    if (!empty($_SERVER['HTTPS']) && strtolower($_SERVER['HTTPS']) !== 'off') {
+        $isSecure = true;
+    } elseif (!empty($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https') {
+        $isSecure = true;
+    } elseif (isset($_SERVER['SERVER_PORT']) && $_SERVER['SERVER_PORT'] == 443) {
+        $isSecure = true;
+    }
+    $scheme = $isSecure ? 'https' : 'http';
+
+    // Calcular subcarpeta (solo aplica en XAMPP local)
     $docRoot = isset($_SERVER['DOCUMENT_ROOT']) ? str_replace('\\', '/', rtrim($_SERVER['DOCUMENT_ROOT'], '/')) : '';
     $basePath = str_replace('\\', '/', rtrim(BASE_PATH, '/'));
-    // Calcular subcarpeta del proyecto respecto al DOCUMENT_ROOT
     $projectSubdir = '';
     if ($docRoot && strpos($basePath, $docRoot) === 0) {
         $sub = trim(substr($basePath, strlen($docRoot)), '/');
         if ($sub !== '') { $projectSubdir = '/' . $sub; }
     }
-    // Si es entorno de producción, forzar el dominio oficial para que los Redirect URIs de Google Oauth siempre coincidan
-    // sin importar si Vercel cargó la página desde un subdominio generado aleatoriamente.
-    if ($scheme === 'https' && strpos($host, 'vercel.app') !== false) {
-        return "https://computecnicos-kappa.vercel.app";
-    }
 
-    // Retornar siempre la raíz del proyecto, independiente del directorio del script en local
-    return "$scheme://$host$projectSubdir";
+    $cached = "$scheme://$host$projectSubdir";
+    return $cached;
 }
 
 // Helpers de rutas públicas (ajustables cuando migremos assets/storage)
@@ -83,37 +85,16 @@ if (APP_ENV === 'dev') {
     header('Expires: 0');
 }
 
-// Conexión a base de datos (mantiene el archivo actual para no romper)
-// Archivo de configuración de base de datos movido a config/
+// Conexión a base de datos
 require_once BASE_PATH . '/config/database.php';
 
-// ─── Sesiones persistentes en base de datos ───
-// En Vercel (serverless) el sistema de archivos no persiste entre requests,
-// por lo tanto las sesiones PHP normales se pierden inmediatamente.
-// Solución: guardar las sesiones en MySQL usando un handler personalizado.
+// ─── Sesiones ───
+// En VPS: usar sesiones nativas de PHP (rápido, filesystem persistente)
+
 if (session_status() === PHP_SESSION_NONE) {
-    // Crear la tabla de sesiones automáticamente si no existe
-    try {
-        $pdo->exec('CREATE TABLE IF NOT EXISTS sessions (
-            id VARCHAR(128) NOT NULL PRIMARY KEY,
-            data TEXT NOT NULL,
-            expires_at DATETIME NOT NULL,
-            INDEX idx_expires (expires_at)
-        )');
-    } catch (Throwable $e) {
-        // No bloquear si ya existe o hay error menor
-        log_event('Aviso tabla sessions: ' . $e->getMessage());
-    }
-
-    // Registrar el handler de sesiones en base de datos
-    require_once BASE_PATH . '/app/Core/DatabaseSessionHandler.php';
-    $dbSessionHandler = new DatabaseSessionHandler($pdo);
-    session_set_save_handler($dbSessionHandler, true);
-
-    // Configurar cookie de sesión para que funcione correctamente
     $isSecure = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off');
     session_set_cookie_params([
-        'lifetime' => 86400, // 24 horas
+        'lifetime' => 86400,
         'path'     => '/',
         'domain'   => '',
         'secure'   => $isSecure,
@@ -124,50 +105,110 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-// ─── Sistema Remember Me (sesion persistente con cookie) ───
-// Mantiene al usuario logueado entre sesiones del navegador.
-// Los tokens se invalidan al cambiar contraseña o por expiracion (30 dias).
-require_once BASE_PATH . '/app/Core/RememberMe.php';
-$rememberMe = new RememberMe($pdo);
-$rememberMe->ensureTable();
-$rememberMe->tryRestore();
-
-// Ajuste de esquema: asegurar estado 'preparacion' en ENUM de pedidos y pedido_estados
-try {
-    // Chequear columna pedidos.estado
-    $col = $pdo->query("SHOW COLUMNS FROM pedidos LIKE 'estado'")->fetch();
-    if ($col && isset($col['Type']) && strpos($col['Type'], "'preparacion'") === false) {
-        $pdo->exec("ALTER TABLE pedidos MODIFY estado ENUM('pendiente','pagado','preparacion','enviado','entregado','cancelado') DEFAULT 'pendiente'");
-        log_event('Esquema actualizado: agregado estado "preparacion" a pedidos.estado');
-    }
-    // Chequear columna pedido_estados.estado
-    $col2 = $pdo->query("SHOW COLUMNS FROM pedido_estados LIKE 'estado'")->fetch();
-    if ($col2 && isset($col2['Type']) && strpos($col2['Type'], "'preparacion'") === false) {
-        $pdo->exec("ALTER TABLE pedido_estados MODIFY estado ENUM('pendiente','pagado','preparacion','enviado','entregado','cancelado') NOT NULL");
-        log_event('Esquema actualizado: agregado estado "preparacion" a pedido_estados.estado');
-    }
-} catch (Throwable $e) {
-    // No bloquear la app por errores de ALTER; registrar y continuar
-    log_event('Error ajustando esquema ENUM estados: ' . $e->getMessage());
+// ─── CSRF Protection ───
+require_once BASE_PATH . '/app/Core/csrf_helper.php';
+// Interceptar peticiones POST de la ruta /admin/ automáticamente
+if (session_status() === PHP_SESSION_ACTIVE) {
+    auto_protect_admin_csrf();
 }
 
-// Migración: columnas destacado, nuevo_hasta, oferta_hasta en productos
-try {
-    $cols = $pdo->query("SHOW COLUMNS FROM productos")->fetchAll(PDO::FETCH_COLUMN, 0);
-    if (!in_array('destacado', $cols)) {
-        $pdo->exec("ALTER TABLE productos ADD COLUMN destacado TINYINT(1) NOT NULL DEFAULT 0");
-        log_event('Esquema actualizado: agregada columna destacado a productos');
+// ─── Remember Me ───
+require_once BASE_PATH . '/app/Core/RememberMe.php';
+$rememberMe = new RememberMe($pdo);
+$rememberMe->tryRestore();
+
+// ─── Validación de Usuario Activo (Auto-logout si fue eliminado) ───
+if (isset($_SESSION['usuario']['id'])) {
+    $stmtCheckUser = $pdo->prepare("SELECT id FROM usuarios WHERE id = ?");
+    $stmtCheckUser->execute([$_SESSION['usuario']['id']]);
+    if (!$stmtCheckUser->fetch()) {
+        // El usuario ya no existe en la BD (fue eliminado por un administrador)
+        $deletedUserId = $_SESSION['usuario']['id'];
+        
+        // Destruir sesión y cookies de "Recordarme"
+        session_unset();
+        session_destroy();
+        $rememberMe->invalidateAllTokens($deletedUserId);
+        
+        // Iniciar una sesión nueva temporal solo para mostrar el mensaje
+        session_start();
+        $_SESSION['error_google'] = 'Tu cuenta ha sido eliminada por el administrador. Se ha cerrado la sesión.';
+        
+        header('Location: ' . base_url() . '/index.php?error=account_deleted');
+        exit;
     }
-    if (!in_array('nuevo_hasta', $cols)) {
-        $pdo->exec("ALTER TABLE productos ADD COLUMN nuevo_hasta DATE NULL DEFAULT NULL");
-        log_event('Esquema actualizado: agregada columna nuevo_hasta a productos');
+}
+
+// ─── Migraciones de esquema (se ejecutan UNA SOLA VEZ) ───
+    // Usa un archivo bandera para evitar consultas de esquema en cada request
+    $migrationFlag = BASE_PATH . '/logs/.schema_migrated_v8';
+    if (!file_exists($migrationFlag)) {
+        try {
+            // Crear tabla de sesiones si no existe
+            $pdo->exec('CREATE TABLE IF NOT EXISTS sessions (
+                id VARCHAR(128) NOT NULL PRIMARY KEY,
+                data TEXT NOT NULL,
+                expires_at DATETIME NOT NULL,
+                INDEX idx_expires (expires_at)
+            )');
+
+            // Crear tabla de remember_tokens si no existe
+            $rememberMe->ensureTable();
+
+            // Ajustar ENUM de estados en pedidos
+            $col = $pdo->query("SHOW COLUMNS FROM pedidos LIKE 'estado'")->fetch();
+            if ($col && isset($col['Type']) && strpos($col['Type'], "'preparacion'") === false) {
+                $pdo->exec("ALTER TABLE pedidos MODIFY estado ENUM('pendiente','pagado','preparacion','enviado','entregado','cancelado') DEFAULT 'pendiente'");
+            }
+            $col2 = $pdo->query("SHOW COLUMNS FROM pedido_estados LIKE 'estado'")->fetch();
+            if ($col2 && isset($col2['Type']) && strpos($col2['Type'], "'preparacion'") === false) {
+                $pdo->exec("ALTER TABLE pedido_estados MODIFY estado ENUM('pendiente','pagado','preparacion','enviado','entregado','cancelado') NOT NULL");
+            }
+
+            // Agregar columna notificado_admin a pedidos
+            $colsPed = $pdo->query("SHOW COLUMNS FROM pedidos")->fetchAll(PDO::FETCH_COLUMN, 0);
+            if (!in_array('notificado_admin', $colsPed)) {
+                $pdo->exec("ALTER TABLE pedidos ADD COLUMN notificado_admin TINYINT(1) NOT NULL DEFAULT 0");
+            }
+
+            // Agregar columnas a productos si faltan
+            $cols = $pdo->query("SHOW COLUMNS FROM productos")->fetchAll(PDO::FETCH_COLUMN, 0);
+            if (!in_array('destacado', $cols))
+                $pdo->exec("ALTER TABLE productos ADD COLUMN destacado TINYINT(1) NOT NULL DEFAULT 0");
+            if (!in_array('nuevo_hasta', $cols))
+                $pdo->exec("ALTER TABLE productos ADD COLUMN nuevo_hasta DATE NULL DEFAULT NULL");
+            if (!in_array('oferta_hasta', $cols))
+                $pdo->exec("ALTER TABLE productos ADD COLUMN oferta_hasta DATE NULL DEFAULT NULL");
+            if (!in_array('precio_original', $cols))
+                $pdo->exec("ALTER TABLE productos ADD COLUMN precio_original DECIMAL(12,2) NULL DEFAULT NULL");
+            if (!in_array('descuento', $cols))
+                $pdo->exec("ALTER TABLE productos ADD COLUMN descuento DECIMAL(5,2) NULL DEFAULT NULL");
+            if (!in_array('video_url', $cols))
+                $pdo->exec("ALTER TABLE productos ADD COLUMN video_url VARCHAR(500) NULL DEFAULT NULL");
+
+            // v7: Auto-populate precio_original para productos con oferta activa que no lo tienen
+            // Esto hace que los productos existentes muestren el precio original tachado
+            $pdo->exec("UPDATE productos SET 
+                precio_original = ROUND(precio * 1.15, 2), 
+                descuento = 13.04 
+                WHERE oferta = 1 
+                AND (precio_original IS NULL OR precio_original = 0)
+                AND precio > 0");
+
+            // Migrar usuarios es_principal
+            $colsUsers = $pdo->query("SHOW COLUMNS FROM usuarios")->fetchAll(PDO::FETCH_COLUMN, 0);
+            if (!in_array('es_principal', $colsUsers)) {
+                $pdo->exec("ALTER TABLE usuarios ADD COLUMN es_principal TINYINT(1) NOT NULL DEFAULT 0");
+                $pdo->exec("UPDATE usuarios SET es_principal = 1 ORDER BY id ASC LIMIT 1");
+            }
+
+        // Marcar migraciones como completadas
+        @mkdir(BASE_PATH . '/logs', 0775, true);
+        @file_put_contents($migrationFlag, date('Y-m-d H:i:s') . ' - Schema migrations v8 completed');
+        log_event('Migraciones de esquema v8 completadas exitosamente');
+    } catch (Throwable $e) {
+        log_event('Error en migraciones: ' . $e->getMessage());
     }
-    if (!in_array('oferta_hasta', $cols)) {
-        $pdo->exec("ALTER TABLE productos ADD COLUMN oferta_hasta DATE NULL DEFAULT NULL");
-        log_event('Esquema actualizado: agregada columna oferta_hasta a productos');
-    }
-} catch (Throwable $e) {
-    log_event('Error migrando columnas productos: ' . $e->getMessage());
 }
 
 // Logging sencillo a archivo local (opcional)
@@ -204,6 +245,50 @@ function require_admin(): void {
 // Helper pequeño para limpiar texto
 function e(?string $text): string { return htmlspecialchars($text ?? '', ENT_QUOTES, 'UTF-8'); }
 
-// Nota: Este bootstrap no cambia rutas ni includes en páginas existentes.
-// Podemos ir incorporándolo gradualmente con: require_once __DIR__ . '/bootstrap.php';
+/**
+ * Calcula el precio efectivo y el estado del descuento de un producto.
+ * @param array $p Datos del producto de la BD
+ * @return array [precio, tiene_descuento, precio_original, porcentaje, ahorro]
+ */
+function get_product_price_data(array $p): array {
+    $now = strtotime('today');
+    $enOferta = !empty($p['oferta']) && (empty($p['oferta_hasta']) || strtotime($p['oferta_hasta']) >= $now);
+    
+    // Si tiene precio_original configurado
+    if (!empty($p['precio_original']) && $p['precio_original'] > 0) {
+        if ($enOferta) {
+            // El precio de venta (p['precio']) es el descuento
+            $porcentaje = !empty($p['descuento']) && $p['descuento'] > 0 
+                ? $p['descuento'] 
+                : round((($p['precio_original'] - $p['precio']) / $p['precio_original']) * 100);
+            
+            return [
+                'precio' => (float)$p['precio'],
+                'tiene_descuento' => true,
+                'precio_original' => (float)$p['precio_original'],
+                'porcentaje' => (float)$porcentaje,
+                'ahorro' => (float)($p['precio_original'] - $p['precio'])
+            ];
+        } else {
+            // La oferta venció o no está activa: el precio vuelve al original
+            return [
+                'precio' => (float)$p['precio_original'],
+                'tiene_descuento' => false,
+                'precio_original' => (float)$p['precio_original'],
+                'porcentaje' => 0,
+                'ahorro' => 0
+            ];
+        }
+    }
+
+    // Sin descuento configurado o precio_original vacío
+    return [
+        'precio' => (float)$p['precio'],
+        'tiene_descuento' => false,
+        'precio_original' => (float)$p['precio'],
+        'porcentaje' => 0,
+        'ahorro' => 0
+    ];
+}
+
 ?>

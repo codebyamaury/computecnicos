@@ -50,6 +50,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
         <?php endif; ?>
         <form method="post" class="space-y-5 bg-[#232323] p-8 rounded-lg shadow">
+                    <?= csrf_field() ?>
             <div>
                 <label class="block mb-1 font-semibold">Nombre *</label>
                 <input type="text" name="nombre" class="w-full bg-[#181818] border border-[#333] rounded px-3 py-2 text-white" required value="<?php echo htmlspecialchars($_POST['nombre'] ?? ''); ?>">

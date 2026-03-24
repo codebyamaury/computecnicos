@@ -16,25 +16,45 @@ if (isset($_SESSION['usuario']['id']) && isset($pdo)) {
 }
 ?>
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" style="background-color: #050505 !important;">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo isset($page_title) ? $page_title . ' | ' : ''; ?>Computecnicos</title>
-    <link rel="icon" type="image/svg+xml" href="<?= asset('img/favicon.svg') ?>">
-    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="icon" type="image/svg+xml" href="<?= asset('images/favicon.svg') ?>">
+    <meta name="color-scheme" content="dark">
+    <meta name="theme-color" content="#050505">
+    <!-- Bloqueo para Brave "Force Dark Mode" / DarkReader. Evita que el navegador invierta colores e inyecte fondos blancos temporales -->
+    <meta name="darkreader-lock">
+    
+    <!-- CSS CRÍTICO INLINE: Se coloca aquí profesionalmente y NO en el main.css para que el navegador pinte la pantalla negra en el ms cero, ANTES de hacer la petición de red (Network Event) y evitar el destello blanco FOUC en monitores de 1920x1080 o más -->
+    <style>
+        html { background-color: #050505 !important; }
+        body {
+            background-color: #050505 !important;
+            color: #ffffff !important;
+            margin: 0 !important;
+            min-height: 100vh !important;
+            display: flex !important;
+            flex-direction: column !important;
+        }
+    </style>
+
+    <!-- 1. Cargar fuentes pre-connect -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Orbitron:wght@400;500;700;900&display=swap"
-        rel="stylesheet">
-    <link rel="stylesheet" href="<?= base_url() ?>/assets/css/main.css?v=<?= time() ?>_2">
-    <?php if (isset($extra_css))
-        echo $extra_css; ?>
-    <link rel="stylesheet" href="<?= base_url() ?>/assets/css/theme.css?v=<?= time() ?>_1">
-    <link rel="stylesheet" href="<?= base_url() ?>/assets/css/responsive.css?v=<?= time() ?>_3">
-    <link rel="stylesheet" href="<?= base_url() ?>/assets/css/large-screens.css?v=<?= time() ?>_1">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Orbitron:wght@400;500;700;900&display=swap" rel="stylesheet">
+
+    <!-- 2. Cargar CSS base propio primero (previene flash blanco o FOUC inmediatamente) -->
+    <link rel="stylesheet" href="<?= base_url() ?>/assets/css/main.css?v=<?= filemtime(__DIR__ . '/../assets/css/main.css') ?>">
+    <link rel="stylesheet" href="<?= base_url() ?>/assets/css/theme.css?v=<?= filemtime(__DIR__ . '/../assets/css/theme.css') ?>">
+    <link rel="stylesheet" href="<?= base_url() ?>/assets/css/responsive.css?v=<?= filemtime(__DIR__ . '/../assets/css/responsive.css') ?>">
+    <link rel="stylesheet" href="<?= base_url() ?>/assets/css/large-screens.css?v=<?= filemtime(__DIR__ . '/../assets/css/large-screens.css') ?>">
+    <?php if (isset($extra_css)) echo $extra_css; ?>
+
+    <!-- 3. Cargar Scripts -> Tailwind, Lucide, AOS -->
+    <script src="https://cdn.tailwindcss.com"></script>
     <script src="<?= asset('js/cart.js') ?>"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <!-- AOS (Animate On Scroll) -->
@@ -43,7 +63,7 @@ if (isset($_SESSION['usuario']['id']) && isset($pdo)) {
     <script>document.addEventListener('DOMContentLoaded', function(){ AOS.init({ duration: 800, once: true }); });</script>
 </head>
 
-<body class="min-h-screen flex flex-col">
+<body class="min-h-screen flex flex-col" style="background-color: #050505 !important; color: #ffffff !important;">
     <header class="py-4 px-4 flex justify-between items-center relative z-50">
         <!-- Logo y Menú Hamburger a la izquierda -->
         <div class="flex items-center gap-2">
@@ -53,7 +73,7 @@ if (isset($_SESSION['usuario']['id']) && isset($pdo)) {
             <a href="index.php"
                 class="flex items-center justify-center p-2 rounded-full hover:bg-white/5 transition-all group"
                 aria-label="Inicio">
-                <span class="text-3xl text-red-600 group-hover:scale-110 transition-transform">
+                <span class="text-3xl text-red-800 group-hover:scale-110 transition-transform">
                     <i data-lucide="power" class="w-8 h-8 md:w-10 md:h-10"></i>
                 </span>
             </a>
@@ -143,7 +163,7 @@ if (isset($_SESSION['usuario']['id']) && isset($pdo)) {
                             </a>
                         <?php endif; ?>
                         <div class="border-t border-[#333] mt-2 pt-2">
-                            <a href="logout.php" class="block px-4 py-2 hover:bg-[#181818] transition text-white">
+                            <a href="api/logout.php" class="block px-4 py-2 hover:bg-[#181818] transition text-white">
                                 <i data-lucide="log-out" class="w-4 h-4 inline mr-2"></i>
                                 Cerrar sesión
                             </a>
@@ -174,106 +194,6 @@ if (isset($_SESSION['usuario']['id']) && isset($pdo)) {
             <button class="review-notif-close" id="review-notif-close" aria-label="Cerrar">×</button>
         </div>
     </div>
-    <style>
-        #review-notification-banner {
-            position: fixed;
-            bottom: 1.5rem;
-            right: 1.5rem;
-            z-index: 9998;
-            max-width: 400px;
-            width: calc(100% - 2rem);
-            animation: reviewNotifIn 0.4s cubic-bezier(0.21, 1.02, 0.73, 1) forwards;
-        }
-        @keyframes reviewNotifIn {
-            from { opacity: 0; transform: translateY(20px) scale(0.96); }
-            to { opacity: 1; transform: none; }
-        }
-        #review-notification-banner.hiding {
-            animation: reviewNotifOut 0.3s ease forwards;
-        }
-        @keyframes reviewNotifOut {
-            to { opacity: 0; transform: translateY(16px) scale(0.96); }
-        }
-        .review-notif-inner {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            background: #1a1a1a;
-            border: 1px solid rgba(250, 204, 21, 0.25);
-            border-left: 4px solid #facc15;
-            border-radius: 12px;
-            padding: 0.9rem 1rem;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.55);
-        }
-        .review-notif-icon {
-            flex-shrink: 0;
-            width: 40px;
-            height: 40px;
-            background: rgba(250, 204, 21, 0.1);
-            border: 1px solid rgba(250, 204, 21, 0.2);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #facc15;
-        }
-        .review-notif-content {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-        }
-        .review-notif-text {
-            font-size: 0.82rem;
-            color: #ccc;
-            line-height: 1.4;
-        }
-        .review-notif-text strong {
-            color: #fff;
-            font-weight: 700;
-        }
-        .review-notif-btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-            background: linear-gradient(135deg, #cc0000, #ff0000);
-            color: #fff;
-            font-weight: 700;
-            font-size: 0.75rem;
-            padding: 0.35rem 0.9rem;
-            border-radius: 6px;
-            text-decoration: none;
-            width: fit-content;
-            transition: all 0.2s;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-        .review-notif-btn:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(255,0,0,0.35);
-        }
-        .review-notif-close {
-            flex-shrink: 0;
-            background: none;
-            border: none;
-            color: #555;
-            font-size: 1.3rem;
-            cursor: pointer;
-            padding: 4px;
-            line-height: 1;
-            transition: color 0.15s;
-        }
-        .review-notif-close:hover {
-            color: #ff4444;
-        }
-        @media (max-width: 480px) {
-            #review-notification-banner {
-                bottom: 1rem;
-                right: 0.5rem;
-                width: calc(100% - 1rem);
-            }
-        }
-    </style>
     <script>
     document.addEventListener('DOMContentLoaded', function() {
         // No mostrar si ya se cerró en esta sesión

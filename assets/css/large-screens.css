@@ -771,9 +771,10 @@
     font-size: 1rem;
   }
 
-  footer .flex.gap-3 a {
-    width: 45px;
-    height: 45px;
+  .footer-social-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 14px;
   }
 
   footer .text-center.text-gray-500 {

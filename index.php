@@ -8,7 +8,7 @@ $productos_destacados = $stmt->fetchAll();
 
 // Título y CSS extra para esta página (Flowbite + index.css)
 $page_title = 'Inicio';
-    $extra_css = '<link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.1/flowbite.min.css" rel="stylesheet" />' . "\n" . '<link rel="stylesheet" href="' . base_url() . '/assets/css/index.css?v=' . time() . '_16">' . "\n" . '<link rel="stylesheet" href="' . base_url() . '/assets/css/productos.css?v=' . time() . '_8">';
+    $extra_css = '<link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.1/flowbite.min.css" rel="stylesheet" />' . "\n" . '<link rel="stylesheet" href="' . base_url() . '/assets/css/index.css?v=' . filemtime(__DIR__ . '/assets/css/index.css') . '">' . "\n" . '<link rel="stylesheet" href="' . base_url() . '/assets/css/productos.css?v=' . filemtime(__DIR__ . '/assets/css/productos.css') . '">';
 
 // Incluir header común
 include __DIR__ . '/includes/header.php';
@@ -40,7 +40,7 @@ include __DIR__ . '/includes/header.php';
 </section>
 
 <!-- Script 3D Background -->
-<script type="module" src="assets/js/hero-3d.js?v=<?php echo time(); ?>_6"></script>
+<script type="module" src="assets/js/hero-3d.js?v=<?php echo filemtime(__DIR__ . '/assets/js/hero-3d.js'); ?>"></script>
 <!-- Ventajas eliminadas -->
 <!-- Categorías -->
 <section class="container mx-auto px-2 sm:px-4 py-8 md:py-12 w-full">
@@ -122,8 +122,9 @@ include __DIR__ . '/includes/header.php';
     <div class="carousel-destacados-wrap" style="position:relative;margin-top:3rem">
         <div class="carousel-destacados" id="carousel-destacados">
             <?php foreach ($productos_destacados as $p):
+                $priceData = get_product_price_data($p);
                 $esNuevo = !empty($p['nuevo_hasta']) && strtotime($p['nuevo_hasta']) >= strtotime('today');
-                $enOferta = !empty($p['oferta']) && (empty($p['oferta_hasta']) || strtotime($p['oferta_hasta']) >= strtotime('today'));
+                $enOferta = $priceData['tiene_descuento'];
             ?>
                 <article class="product-card carousel-dest-card" onclick="window.location.href='producto.php?id=<?php echo intval($p['id']); ?>'">
                     <div class="product-image-container">
@@ -133,9 +134,8 @@ include __DIR__ . '/includes/header.php';
                             <?php if ($esNuevo): ?>
                                 <span class="tech-badge tech-badge-new">NUEVO</span>
                             <?php endif; ?>
-                            <?php if ($enOferta): ?>
-                                <span class="tech-badge tech-badge-offer">OFERTA</span>
-                            <?php endif; ?>
+
+
                         </div>
                         <div class="product-overlay">
                             <span class="view-product-btn">Ver detalles</span>
@@ -153,7 +153,17 @@ include __DIR__ . '/includes/header.php';
                             <?php endif; ?>
                         </div>
                         <div class="product-footer">
-                            <div class="product-price">$<?php echo number_format($p['precio'], 0, ',', '.'); ?></div>
+                            <?php if ($priceData['tiene_descuento']): ?>
+                                <div class="product-price-container">
+                                    <span class="product-price-old">$<?php echo number_format($priceData['precio_original'], 0, ',', '.'); ?></span>
+                                    <div class="product-price-row">
+                                        <div class="product-price">$<?php echo number_format($priceData['precio'], 0, ',', '.'); ?></div>
+                                        <span class="product-discount-badge-small">-<?php echo number_format($priceData['porcentaje'], 0); ?>%</span>
+                                    </div>
+                                </div>
+                            <?php else: ?>
+                                <div class="product-price">$<?php echo number_format($priceData['precio'], 0, ',', '.'); ?></div>
+                            <?php endif; ?>
                         </div>
                     </div>
                 </article>
@@ -163,39 +173,6 @@ include __DIR__ . '/includes/header.php';
     <?php endif; ?>
 </section>
 
-<style>
-/* Carrusel Productos Destacados */
-.carousel-destacados-wrap {
-    position: relative;
-    overflow: visible;
-}
-.carousel-destacados {
-    display: flex;
-    gap: 1.25rem;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    padding: 0.5rem 0 1.5rem;
-    scrollbar-width: none;
-}
-.carousel-destacados::-webkit-scrollbar { display: none; }
-.carousel-dest-card {
-    flex: 0 0 calc(25% - 0.94rem);
-    min-width: 260px;
-}
-
-/* Responsive */
-@media (max-width: 1200px) {
-    .carousel-dest-card { flex: 0 0 calc(33.333% - 0.84rem); }
-}
-@media (max-width: 900px) {
-    .carousel-dest-card { flex: 0 0 calc(50% - 0.625rem); }
-    .carousel-dest-prev { left: 6px; }
-    .carousel-dest-next { right: 6px; }
-}
-@media (max-width: 600px) {
-    .carousel-dest-card { flex: 0 0 85%; min-width: 240px; }
-}
-</style>
 
 <script>
 (function(){
@@ -242,7 +219,7 @@ include __DIR__ . '/includes/header.php';
 </script>
 
 <!-- Creadores -->
-<section class="container mx-auto px-2 sm:px-4 py-8 md:py-16 w-full relative z-10 border-t border-gray-800 mt-12">
+<section class="container mx-auto px-2 sm:px-4 py-8 md:py-16 w-full relative z-10 section-divider-top">
     <h2 class="section-title">Creadores</h2>
     <div class="team-grid mt-8">
         <!-- Amaury -->
@@ -282,7 +259,7 @@ include __DIR__ . '/includes/header.php';
             <div class="team-img-wrapper">
                 <img src="assets/images/Luis.jpg" onerror="this.onerror=null;this.src='https://ui-avatars.com/api/?name=Luis+Perez&background=0a0a0a&color=dc2626&size=200&bold=true';" alt="Luis David Perez Coa">
             </div>
-            <h3 class="team-name">Luis David<br>Perez Coa</h3>
+            <h3 class="team-name">Luis Daniel<br>Perez Coa</h3>
             <p class="team-role">Tester</p>
         </div>
     </div>
@@ -296,7 +273,7 @@ include __DIR__ . '/includes/header.php';
             formData.append('id_producto', idProducto);
             formData.append('cantidad', 1);
 
-            const res = await fetch('agregar_carrito.php', {
+            const res = await fetch('api/agregar_carrito.php', {
                 method: 'POST',
                 headers: {
                     'X-Requested-With': 'XMLHttpRequest',
@@ -307,7 +284,7 @@ include __DIR__ . '/includes/header.php';
             const data = await res.json();
 
             if (data.ok) {
-                alert(data.msg);
+                showToast(data.msg || 'Producto agregado al carrito.', 'success', 4000);
                 // Actualizar contador del carrito en el header si existe
                 const carritoCounter = document.querySelector('.cart-counter') || document.querySelector('.bg-red-600.text-xs');
                 if (carritoCounter) {
@@ -317,10 +294,10 @@ include __DIR__ . '/includes/header.php';
                     }
                 }
             } else {
-                alert('Error: ' + data.msg);
+                showToast(data.msg || 'No se pudo agregar al carrito.', 'error', 5000);
             }
         } catch (err) {
-            alert('Error de conexión. Intenta de nuevo.');
+            showToast('Error de conexión. Intenta de nuevo.', 'error', 5000);
         }
     }
 </script>

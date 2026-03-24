@@ -25,6 +25,18 @@ if (!isset($admin_head_scripts))
 if (!isset($usuario))
     $usuario = $_SESSION['usuario'] ?? ['nombre' => 'Admin', 'rol' => 'admin'];
 
+// Chequear rol real en base de datos para expulsar en tiempo real si fue degradado a cliente
+if (isset($usuario['id'])) {
+    $stmtRoleCheck = $pdo->prepare('SELECT rol FROM usuarios WHERE id = ?');
+    $stmtRoleCheck->execute([$usuario['id']]);
+    $realRole = $stmtRoleCheck->fetchColumn();
+    if ($realRole !== 'admin') {
+        $_SESSION['usuario']['rol'] = $realRole;
+        header('Location: ../index.php');
+        exit;
+    }
+}
+
 
 $nav_items = [
     ['href' => 'dashboard.php', 'label' => 'Dashboard', 'key' => 'dashboard', 'icon' => 'layout-dashboard'],
@@ -45,7 +57,7 @@ $nav_items = [
 <head>
     <meta charset="UTF-8">
     <title><?= htmlspecialchars($page_title) ?></title>
-    <link rel="icon" type="image/svg+xml" href="<?= asset('img/favicon.svg') ?>">
+    <link rel="icon" type="image/svg+xml" href="<?= asset('images/favicon.svg') ?>">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -56,6 +68,9 @@ $nav_items = [
     <script src="https://unpkg.com/lucide@latest"></script>
     <?= $admin_extra_css ?>
     <?= $admin_head_scripts ?>
+
+
+    <meta name="csrf-token" content="<?= csrf_token() ?>">
 </head>
 
 <body>
@@ -63,16 +78,17 @@ $nav_items = [
     <!-- Particle Background -->
     <canvas class="admin-particles-canvas"></canvas>
 
-    <!-- OVERLAY -->
-    <div id="admin-overlay" class="admin-overlay"></div>
-
     <div class="admin-layout">
+        <!-- OVERLAY -->
+        <div id="admin-overlay" class="admin-overlay"></div>
+
         <!-- ═══ SIDEBAR ═══ -->
-        <aside id="admin-sidebar" class="admin-sidebar drawer open">
+        <aside id="admin-sidebar" class="admin-sidebar drawer">
             <div class="sidebar-inner">
                 <a href="dashboard.php" class="admin-logo">
-                    <i data-lucide="power" class="admin-logo-icon" style="width:28px;height:28px"></i>
-                    <span class="admin-logo-text">COMPU<em>TECNICOS</em></span>
+                    <span class="admin-logo-power-wrap">
+                        <i data-lucide="power" class="admin-logo-icon" style="width:32px;height:32px"></i>
+                    </span>
                 </a>
 
                 <nav class="admin-nav">
@@ -93,7 +109,7 @@ $nav_items = [
                 <div class="admin-user">
                     <div class="admin-user-name"><?= htmlspecialchars($usuario['nombre']) ?></div>
                     <div class="admin-user-role"><?= htmlspecialchars($usuario['rol']) ?></div>
-                    <a href="../logout.php" class="admin-logout">
+                    <a href="../api/logout.php" class="admin-logout">
                         <i data-lucide="log-out" style="width:12px;height:12px"></i>
                         Cerrar sesión
                     </a>

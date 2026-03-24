@@ -19,11 +19,13 @@
         /* ── Mobile drawer (hamburger) ── */
         function openDrawer() {
             sidebar.classList.add('open');
+            overlay.classList.add('show');
             sidebar.classList.remove('closed');
         }
 
         function closeDrawer() {
             sidebar.classList.remove('open');
+            overlay.classList.remove('show');
             sidebar.classList.add('closed');
         }
 
@@ -75,19 +77,13 @@
         if (btnHamburger) btnHamburger.addEventListener('click', toggleDrawer);
         if (btnCollapse) btnCollapse.addEventListener('click', toggleCollapse);
 
-        /* Close drawer on mobile when clicking a nav link */
-        sidebar.querySelectorAll('.admin-nav-link').forEach(function (link) {
-            link.addEventListener('click', function () {
-                if (window.innerWidth < 1024) closeDrawer();
-            });
-        });
+        /* On mobile, nav links just navigate normally (page reloads).
+           No need to close the drawer — the new page will load fresh. */
 
-        /* Close drawer on mobile when clicking the main content area */
-        if (mainContent) {
-            mainContent.addEventListener('click', function (e) {
-                if (window.innerWidth < 1024 && sidebar.classList.contains('open')) {
-                    /* Don't close if clicking the hamburger button itself */
-                    if (btnHamburger && (btnHamburger === e.target || btnHamburger.contains(e.target))) return;
+        /* Close drawer when clicking overlay */
+        if (overlay) {
+            overlay.addEventListener('click', function (e) {
+                if (window.innerWidth < 1024) {
                     closeDrawer();
                 }
             });
@@ -97,150 +93,6 @@
         document.addEventListener('DOMContentLoaded', initSidebar);
     })();
 </script>
-
-<?php if (!empty($_SESSION['factura_error'])): ?>
-    <?php $factura_err = htmlspecialchars($_SESSION['factura_error']);
-    unset($_SESSION['factura_error']); ?>
-    <style>
-        #factura-toast {
-            position: fixed;
-            bottom: 1.5rem;
-            right: 1.5rem;
-            z-index: 9999;
-            display: flex;
-            align-items: flex-start;
-            gap: 12px;
-            background: #1e1e1e;
-            border: 1px solid rgba(239, 68, 68, .35);
-            border-left: 4px solid #ef4444;
-            border-radius: 12px;
-            padding: 1rem 1.1rem 1rem 1rem;
-            min-width: 280px;
-            max-width: 360px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, .55);
-            animation: toastIn .35s cubic-bezier(.21, 1.02, .73, 1) forwards;
-            overflow: hidden;
-        }
-
-        #factura-toast.hide {
-            animation: toastOut .3s ease forwards;
-        }
-
-        @keyframes toastIn {
-            from {
-                opacity: 0;
-                transform: translateY(20px) scale(.96);
-            }
-
-            to {
-                opacity: 1;
-                transform: none;
-            }
-        }
-
-        @keyframes toastOut {
-            to {
-                opacity: 0;
-                transform: translateY(16px) scale(.96);
-            }
-        }
-
-        #factura-toast .t-icon {
-            flex-shrink: 0;
-            width: 36px;
-            height: 36px;
-            background: rgba(239, 68, 68, .12);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        #factura-toast .t-icon svg {
-            width: 18px;
-            height: 18px;
-            stroke: #ef4444;
-        }
-
-        #factura-toast .t-body {
-            flex: 1;
-        }
-
-        #factura-toast .t-title {
-            font-weight: 700;
-            font-size: .85rem;
-            color: #fff;
-            margin-bottom: .2rem;
-        }
-
-        #factura-toast .t-msg {
-            font-size: .78rem;
-            color: #999;
-            line-height: 1.45;
-        }
-
-        #factura-toast .t-close {
-            flex-shrink: 0;
-            background: none;
-            border: none;
-            cursor: pointer;
-            color: #555;
-            font-size: 1.1rem;
-            line-height: 1;
-            padding: 0;
-            margin-top: 1px;
-            transition: color .15s;
-        }
-
-        #factura-toast .t-close:hover {
-            color: #ef4444;
-        }
-
-        #factura-toast .t-bar {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            height: 3px;
-            background: #ef4444;
-            border-radius: 0 0 0 12px;
-            animation: barShrink 5s linear forwards;
-        }
-
-        @keyframes barShrink {
-            from {
-                width: 100%;
-            }
-
-            to {
-                width: 0%;
-            }
-        }
-    </style>
-    <div id="factura-toast">
-        <div class="t-icon">
-            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                stroke-linejoin="round">
-                <path
-                    d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
-            </svg>
-        </div>
-        <div class="t-body">
-            <div class="t-title">Factura no disponible</div>
-            <div class="t-msg"><?= $factura_err ?></div>
-        </div>
-        <button class="t-close" onclick="closeToast()">&#x2715;</button>
-        <div class="t-bar"></div>
-    </div>
-    <script>
-        function closeToast() {
-            var t = document.getElementById('factura-toast');
-            if (!t) return;
-            t.classList.add('hide');
-            setTimeout(function () { t.remove(); }, 320);
-        }
-        setTimeout(closeToast, 5000);
-    </script>
-<?php endif; ?>
 
 <!-- Utilidad de paginación universal -->
 <script>
@@ -263,13 +115,23 @@
             allItems.forEach(function (r) { r.style.display = 'none'; });
             filtered.slice(s, e).forEach(function (r) { r.style.display = ''; });
             var h = '';
-            h += '<button onclick="pagNav_' + uid + '(\'prev\')" class="adm-btn" style="font-size:.72rem;padding:.3rem .7rem' + (page <= 1 ? ';opacity:.4;pointer-events:none' : '') + '">← Anterior</button>';
+            
+            // Botón Anterior
+            h += '<button onclick="pagNav_' + uid + '(\'prev\')" class="adm-pag-btn ' + (page <= 1 ? 'disabled' : '') + '" title="Anterior">';
+            h += '<svg style="width:16px;height:16px" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/></svg></button>';
+
             for (var i = 1; i <= total; i++) {
-                if (total > 7 && i > 2 && i < total - 1 && Math.abs(i - page) > 1) { if (i === 3 || i === total - 2) h += '<span style="color:#555;font-size:.8rem">…</span>'; continue; }
-                h += '<button onclick="pagNav_' + uid + '(' + i + ')" class="adm-btn' + (i === page ? ' adm-btn-primary' : '') + '" style="font-size:.72rem;padding:.3rem .65rem;min-width:30px">' + i + '</button>';
+                if (total > 7 && i > 2 && i < total - 1 && Math.abs(i - page) > 1) {
+                    if (i === 3 || i === total - 2) h += '<span style="color:#444;margin:0 4px">…</span>'; 
+                    continue; 
+                }
+                h += '<button onclick="pagNav_' + uid + '(' + i + ')" class="adm-pag-btn ' + (i === page ? 'active' : '') + '">' + i + '</button>';
             }
-            h += '<button onclick="pagNav_' + uid + '(\'next\')" class="adm-btn" style="font-size:.72rem;padding:.3rem .7rem' + (page >= total ? ';opacity:.4;pointer-events:none' : '') + '">Siguiente →</button>';
-            h += '<span style="color:#555;font-size:.72rem;margin-left:8px">Mostrando ' + (filtered.length ? s + 1 : 0) + '-' + Math.min(e, filtered.length) + ' de ' + filtered.length + '</span>';
+
+            // Botón Siguiente
+            h += '<button onclick="pagNav_' + uid + '(\'next\')" class="adm-pag-btn ' + (page >= total ? 'disabled' : '') + '" title="Siguiente">';
+            h += '<svg style="width:16px;height:16px" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/></svg></button>';
+            
             pagDiv.innerHTML = h;
         }
 
@@ -322,7 +184,15 @@
         tipo = tipo || 'elemento';
         document.getElementById('confirm-del-title').textContent = '¿Eliminar ' + tipo + '?';
         document.getElementById('confirm-del-msg').textContent = '«' + nombre + '» será eliminado permanentemente. Esta acción no se puede deshacer.';
-        document.getElementById('confirm-del-href').href = href;
+        
+        // Agregar CSRF Token a la URL de eliminación
+        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+        let finalHref = href;
+        if(csrfToken) {
+            finalHref += (finalHref.includes('?') ? '&' : '?') + 'csrf_token=' + csrfToken;
+        }
+        
+        document.getElementById('confirm-del-href').href = finalHref;
         document.getElementById('modal-confirm-del-bg').classList.add('show');
         document.getElementById('modal-confirm-del').classList.remove('hidden');
         document.getElementById('modal-confirm-del').classList.add('show');
@@ -340,71 +210,10 @@
 <script>if (typeof lucide !== 'undefined') lucide.createIcons();</script>
 
 <!-- Sistema de Toast Admin (reutilizable) -->
-<style>
-    .adm-toast {
-        position: fixed;
-        top: 1.5rem;
-        right: 1.5rem;
-        z-index: 9999;
-        display: flex;
-        align-items: flex-start;
-        gap: 12px;
-        background: #1e1e1e;
-        border-radius: 12px;
-        padding: 1rem 1.1rem 1rem 1rem;
-        min-width: 300px;
-        max-width: 400px;
-        box-shadow: 0 8px 32px rgba(0,0,0,.55);
-        animation: admToastIn .35s cubic-bezier(.21,1.02,.73,1) forwards;
-        overflow: hidden;
-    }
-    .adm-toast.adm-toast-success {
-        border: 1px solid rgba(74,222,128,.35);
-        border-left: 4px solid #4ade80;
-    }
-    .adm-toast.adm-toast-error {
-        border: 1px solid rgba(239,68,68,.35);
-        border-left: 4px solid #ef4444;
-    }
-    .adm-toast.adm-toast-hide {
-        animation: admToastOut .3s ease forwards;
-    }
-    @keyframes admToastIn {
-        from { opacity:0; transform:translateY(20px) scale(.96); }
-        to   { opacity:1; transform:none; }
-    }
-    @keyframes admToastOut {
-        to { opacity:0; transform:translateY(16px) scale(.96); }
-    }
-    .adm-toast .at-icon {
-        flex-shrink: 0;
-        width: 36px; height: 36px;
-        border-radius: 50%;
-        display: flex; align-items: center; justify-content: center;
-    }
-    .adm-toast-success .at-icon { background: rgba(74,222,128,.12); }
-    .adm-toast-error   .at-icon { background: rgba(239,68,68,.12); }
-    .adm-toast .at-icon svg { width:18px; height:18px; }
-    .adm-toast-success .at-icon svg { stroke:#4ade80; }
-    .adm-toast-error   .at-icon svg { stroke:#ef4444; }
-    .adm-toast .at-body { flex:1; }
-    .adm-toast .at-title { font-weight:700; font-size:.85rem; color:#fff; margin-bottom:.2rem; }
-    .adm-toast .at-msg   { font-size:.78rem; color:#999; line-height:1.45; }
-    .adm-toast .at-close {
-        flex-shrink:0; background:none; border:none;
-        cursor:pointer; color:#555; font-size:1.1rem;
-        line-height:1; padding:0; margin-top:1px; transition:color .15s;
-    }
-    .adm-toast .at-close:hover { color:#ef4444; }
-    .adm-toast .at-bar {
-        position:absolute; bottom:0; left:0; height:3px;
-        border-radius:0 0 0 12px;
-    }
-    .adm-toast-success .at-bar { background:#4ade80; }
-    .adm-toast-error   .at-bar { background:#ef4444; }
-</style>
+
+
 <script>
-function admToast(message, type, duration) {
+function admToast(message, type, duration, customTitle) {
     type = type || 'success';
     duration = duration || 4500;
     // Eliminar toasts anteriores
@@ -413,7 +222,7 @@ function admToast(message, type, duration) {
     var iconSvg = type === 'success'
         ? '<svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>'
         : '<svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg>';
-    var title = type === 'success' ? 'Acción completada' : 'Ocurrió un error';
+    var title = customTitle ? customTitle : (type === 'success' ? 'Acción completada' : 'Ocurrió un error');
 
     var toast = document.createElement('div');
     toast.className = 'adm-toast adm-toast-' + type;
@@ -433,17 +242,151 @@ function admToast(message, type, duration) {
 }
 </script>
 
+<script>
+// Funciones globales para Editar Producto en Modal
+async function abrirModalEditarProducto(id, event) {
+    if (event) event.preventDefault();
+    try {
+        const res = await fetch('modal_producto_editar?id=' + id);
+        const html = await res.text();
+        let container = document.getElementById('modal-editar-producto-container');
+        if (!container) {
+            container = document.createElement('div');
+            container.id = 'modal-editar-producto-container';
+            document.body.appendChild(container);
+        }
+        container.innerHTML = html;
+        // Ejecutar scripts inyectados (innerHTML no ejecuta <script> automáticamente)
+        container.querySelectorAll('script').forEach(function(oldScript) {
+            const newScript = document.createElement('script');
+            if (oldScript.src) {
+                newScript.src = oldScript.src;
+            } else {
+                newScript.textContent = oldScript.textContent;
+            }
+            oldScript.parentNode.replaceChild(newScript, oldScript);
+        });
+        document.getElementById('modal-edit-bg').classList.add('show');
+        document.getElementById('modal-edit-producto').classList.remove('hidden');
+        document.getElementById('modal-edit-producto').classList.add('show');
+        document.body.style.overflow = 'hidden';
+    } catch (e) {
+        admToast('Error al cargar formulario de edición.', 'error');
+    }
+}
+
+function cerrarModalEditarProducto() {
+    const bg = document.getElementById('modal-edit-bg');
+    const modal = document.getElementById('modal-edit-producto');
+    if (bg) bg.classList.remove('show');
+    if (modal) {
+        modal.classList.add('hidden');
+        modal.classList.remove('show');
+    }
+    document.body.style.overflow = '';
+}
+
+async function guardarEdicionProducto(e, id) {
+    e.preventDefault();
+    const data = new FormData(e.target);
+    try {
+        const res = await fetch('modal_producto_editar?id=' + id, { method: 'POST', body: data });
+        const result = await res.text();
+        if (result.trim() === 'success') {
+            window.location.href = window.location.pathname + '?editado=1';
+        } else {
+            const m = document.getElementById('modal-edit-msg');
+            if (m) {
+                m.innerHTML = result || 'Error crítico al guardar. Revisa los datos.';
+                m.style.display = 'block';
+            } else {
+                admToast(result || 'Error crítico al guardar.', 'error');
+            }
+        }
+    } catch (err) {
+        admToast('Error de conexión persistente.', 'error');
+    }
+}
+</script>
+
 <?php if (!empty($_SESSION['admin_toast'])): ?>
 <script>
 document.addEventListener('DOMContentLoaded', function(){
     admToast(
         '<?= addslashes($_SESSION['admin_toast']['msg']) ?>',
         '<?= $_SESSION['admin_toast']['type'] ?? 'success' ?>',
-        <?= intval($_SESSION['admin_toast']['duration'] ?? 4500) ?>
+        <?= intval($_SESSION['admin_toast']['duration'] ?? 4500) ?>,
+        <?= !empty($_SESSION['admin_toast']['title']) ? "'" . addslashes($_SESSION['admin_toast']['title']) . "'" : 'null' ?>
     );
 });
 </script>
 <?php unset($_SESSION['admin_toast']); endif; ?>
+
+<!-- Toast universal por URL params (aplica a TODAS las páginas admin) -->
+<script>
+document.addEventListener('DOMContentLoaded', function(){
+    var params = new URLSearchParams(window.location.search);
+    if (params.has('exito')) {
+        admToast('Acción realizada exitosamente.', 'success', 5000);
+    }
+    if (params.has('editado')) {
+        admToast('Registro editado exitosamente.', 'success', 5000);
+    }
+    if (params.has('eliminado')) {
+        admToast('Registro eliminado exitosamente.', 'success', 5000);
+    }
+    if (params.has('error')) {
+        var errorMsg = params.get('error') || 'Ocurrió un error procesando la solicitud.';
+        admToast(decodeURIComponent(errorMsg), 'error', 6000);
+    }
+    // Limpiar la URL después de mostrar el toast (quita los params sin recargar)
+    if (params.has('exito') || params.has('editado') || params.has('eliminado') || params.has('error')) {
+        var cleanUrl = window.location.pathname;
+        // Preservar params que NO son de toast (ej: estado=pagado)
+        var keepParams = new URLSearchParams();
+        params.forEach(function(val, key){
+            if (!['exito','editado','eliminado','error'].includes(key)) {
+                keepParams.set(key, val);
+            }
+        });
+        var qs = keepParams.toString();
+        history.replaceState(null, '', cleanUrl + (qs ? '?' + qs : ''));
+    }
+});
+</script>
+
+<!-- Notificaciones en vivo de pedidos nuevos -->
+<script>
+    (function () {
+        // Solo corre si estamos en el panel de admin (asegurado por PHP pero no esta de mas
+        function checkNewOrders() {
+            fetch('api_check_orders.php')
+                .then(res => res.json())
+                .then(data => {
+                    if (data && data.nuevos && data.nuevos.length > 0) {
+                        data.nuevos.forEach(pedido => {
+                            admToast(
+                                `¡A las armas! Nuevo pedido de ${pedido.nombre} por $${Number(pedido.total).toLocaleString('es-CO')} COP`,
+                                'success',
+                                8000
+                            );
+                            // Opcionalmente recargar la página si estamos en pedidos.php
+                            if (window.location.pathname.includes('pedidos.php')) {
+                                setTimeout(() => window.location.reload(), 2000);
+                            }
+                        });
+                    }
+                })
+                .catch(err => console.error('Error revisando pedidos:', err));
+        }
+
+        // Revisar cada 15 segundos
+        setInterval(checkNewOrders, 15000);
+        
+        // Primera revision al cargar la página a los 3 segundos
+        setTimeout(checkNewOrders, 3000);
+    })();
+</script>
 
 <!-- Admin Particle Background -->
 <script>
@@ -532,6 +475,7 @@ document.addEventListener('DOMContentLoaded', function(){
         draw();
     })();
 </script>
+
 </body>
 
 </html>

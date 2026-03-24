@@ -4,6 +4,12 @@ require_once __DIR__ . '/app/Core/bootstrap.php';
 // Configuración de PayPal
 $paypal_config = require __DIR__ . '/config/paypal_config.php';
 
+// Verificar que el usuario esté logueado
+if (!isset($_SESSION['usuario'])) {
+    header('Location: index.php');
+    exit;
+}
+
 // ── Compra directa: recibir producto desde "Comprar Ahora" ──
 $es_compra_directa = false;
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST['compra_directa'])) {
@@ -150,6 +156,13 @@ if (!$carrito_vacio && $_SERVER['REQUEST_METHOD'] === 'POST' && !isset($_POST['c
     $direccion = $_POST['direccion'] ?? '';
 
     if ($nombre && $email && $direccion) {
+        // Validar email completo (formato + DNS + detección de typos)
+        require_once __DIR__ . '/app/Core/email_validator.php';
+        $email_check = validar_email_completo($email);
+        if (!$email_check['ok']) {
+            $mensaje = $email_check['msg'];
+        }
+        if (empty($mensaje)) {
         try {
             // Validar stock disponible antes de crear el pedido
             $sin_stock = [];
@@ -198,6 +211,7 @@ if (!$carrito_vacio && $_SERVER['REQUEST_METHOD'] === 'POST' && !isset($_POST['c
             $mensaje = 'Error procesando el pedido. Por favor intenta de nuevo.';
             error_log("Error en checkout: " . $e->getMessage());
         }
+        } // cierre de if (empty($mensaje))
     } else {
         $mensaje = 'Por favor completa todos los campos obligatorios.';
     }
@@ -357,7 +371,7 @@ $step_confirm = 'pending';
             <script>
                 paypal.Buttons({
                     createOrder: function (data, actions) {
-                        return fetch('paypal_create_order.php', {
+                        return fetch('api/paypal_create_order.php', {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({ pedido_id: <?php echo (int) $id_pedido; ?> })
@@ -373,7 +387,7 @@ $step_confirm = 'pending';
                             });
                     },
                     onApprove: function (data, actions) {
-                        return fetch('paypal_capture_order.php', {
+                        return fetch('api/paypal_capture_order.php', {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({ orderID: data.orderID, pedido_id: <?php echo (int) $id_pedido; ?> })
@@ -387,43 +401,124 @@ $step_confirm = 'pending';
                                     if (result.status === 'COMPLETED') {
                                         window.location.href = 'paypal_response.php?status=' + encodeURIComponent(result.status) + '&pedido_id=<?php echo (int) $id_pedido; ?>';
                                     } else {
-                                        alert('Pago no completado. Estado: ' + (result.status || 'desconocido'));
+                                        showToast('Pago no completado. Estado: ' + (result.status || 'desconocido'), 'error', 6000);
                                     }
                                 });
                             });
                     },
                     onError: function (err) {
                         console.error('Error con PayPal:', err);
-                        alert('Ocurrió un error procesando el pago con PayPal: ' + (err && err.message ? err.message : 'ver consola'));
+                        showToast('Ocurrió un error procesando el pago con PayPal. Intenta de nuevo.', 'error', 6000);
                     }
                 }).render('#paypal-button-container');
             </script>
         <?php else: ?>
+            <?php
+            // Determinar si el usuario ya tiene todos los datos de contacto completos
+            $datos_completos = !empty($nombre) && !empty($email) && !empty($direccion) && !empty($telefono);
+            ?>
             <div class="checkout-layout">
                 <div class="checkout-form animate-slide-up">
-                    <form method="post" class="space-y-6">
+                    <form method="post" class="space-y-6" id="checkout-form">
                         <div class="checkout-form-section">
-                            <h3 class="checkout-form-subtitle">Datos de contacto</h3>
-                            <div class="checkout-form-grid">
+                            <div class="checkout-form-subtitle-row">
+                                <h3 class="checkout-form-subtitle">Datos de contacto</h3>
+                                <?php if ($datos_completos): ?>
+                                    <button type="button" class="checkout-edit-btn" id="btn-editar-datos" onclick="toggleEditarDatos()">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                                        </svg>
+                                        Editar datos
+                                    </button>
+                                <?php endif; ?>
+                            </div>
+
+                            <?php if ($datos_completos): ?>
+                                <!-- Vista previa de datos (solo lectura) -->
+                                <div class="checkout-datos-preview" id="datos-preview">
+                                    <div class="checkout-datos-card">
+                                        <div class="checkout-datos-row">
+                                            <div class="checkout-datos-item">
+                                                <div class="checkout-datos-icon">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                                                        <circle cx="12" cy="7" r="4"/>
+                                                    </svg>
+                                                </div>
+                                                <div>
+                                                    <span class="checkout-datos-label">Nombre</span>
+                                                    <span class="checkout-datos-value"><?php echo e($nombre); ?></span>
+                                                </div>
+                                            </div>
+                                            <div class="checkout-datos-item">
+                                                <div class="checkout-datos-icon">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                                                        <polyline points="22,6 12,13 2,6"/>
+                                                    </svg>
+                                                </div>
+                                                <div>
+                                                    <span class="checkout-datos-label">Correo</span>
+                                                    <span class="checkout-datos-value"><?php echo e($email); ?></span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="checkout-datos-row">
+                                            <div class="checkout-datos-item">
+                                                <div class="checkout-datos-icon">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                        <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+                                                    </svg>
+                                                </div>
+                                                <div>
+                                                    <span class="checkout-datos-label">Teléfono</span>
+                                                    <span class="checkout-datos-value"><?php echo e($telefono); ?></span>
+                                                </div>
+                                            </div>
+                                            <div class="checkout-datos-item full-width">
+                                                <div class="checkout-datos-icon">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+                                                        <circle cx="12" cy="10" r="3"/>
+                                                    </svg>
+                                                </div>
+                                                <div>
+                                                    <span class="checkout-datos-label">Dirección de envío</span>
+                                                    <span class="checkout-datos-value"><?php echo e($direccion); ?></span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- Hidden inputs para enviar los datos cuando no se edita -->
+                                    <input type="hidden" name="nombre" value="<?php echo e($nombre); ?>" id="hidden-nombre">
+                                    <input type="hidden" name="email" value="<?php echo e($email); ?>" id="hidden-email">
+                                    <input type="hidden" name="telefono" value="<?php echo e($telefono); ?>" id="hidden-telefono">
+                                    <input type="hidden" name="direccion" value="<?php echo e($direccion); ?>" id="hidden-direccion">
+                                </div>
+                            <?php endif; ?>
+
+                            <!-- Formulario editable (visible si no tiene datos completos, oculto si los tiene) -->
+                            <div class="checkout-form-grid <?php echo $datos_completos ? 'checkout-hidden' : ''; ?>" id="datos-editable">
                                 <div class="checkout-form-group">
                                     <label class="checkout-form-label">Nombre completo *</label>
                                     <input type="text" name="nombre" class="checkout-form-input"
-                                        value="<?php echo e($nombre); ?>" required>
+                                        value="<?php echo e($nombre); ?>" <?php echo $datos_completos ? '' : 'required'; ?> id="input-nombre">
                                 </div>
                                 <div class="checkout-form-group">
                                     <label class="checkout-form-label">Correo electrónico *</label>
                                     <input type="email" name="email" class="checkout-form-input"
-                                        value="<?php echo e($email); ?>" required>
+                                        value="<?php echo e($email); ?>" <?php echo $datos_completos ? '' : 'required'; ?> id="input-email">
                                 </div>
                                 <div class="checkout-form-group">
                                     <label class="checkout-form-label">Teléfono</label>
                                     <input type="text" name="telefono" class="checkout-form-input"
-                                        value="<?php echo e($telefono); ?>">
+                                        value="<?php echo e($telefono); ?>" id="input-telefono">
                                 </div>
                                 <div class="checkout-form-group full-width">
                                     <label class="checkout-form-label">Dirección de envío *</label>
                                     <input type="text" name="direccion" class="checkout-form-input"
-                                        value="<?php echo e($direccion); ?>" required>
+                                        value="<?php echo e($direccion); ?>" <?php echo $datos_completos ? '' : 'required'; ?> id="input-direccion">
                                 </div>
                             </div>
                         </div>
@@ -506,11 +601,124 @@ $step_confirm = 'pending';
 <?php if ($es_compra_directa && !$id_pedido): ?>
 <script>
 // Limpiar compra directa si el usuario sale sin completar
+let isSubmitting = false;
+const forms = document.querySelectorAll('form');
+forms.forEach(form => {
+    form.addEventListener('submit', () => {
+        isSubmitting = true;
+    });
+});
+
 window.addEventListener('beforeunload', function () {
-    navigator.sendBeacon('limpiar_compra_directa.php');
+    if (!isSubmitting) {
+        navigator.sendBeacon('api/limpiar_compra_directa.php');
+    }
 });
 </script>
 <?php endif; ?>
+
+<script>
+function toggleEditarDatos() {
+    const preview = document.getElementById('datos-preview');
+    const editable = document.getElementById('datos-editable');
+    const btn = document.getElementById('btn-editar-datos');
+
+    if (!preview || !editable || !btn) return;
+
+    const isEditing = !editable.classList.contains('checkout-hidden');
+
+    if (isEditing) {
+        // Volver a modo vista previa
+        editable.classList.add('checkout-hidden');
+        preview.classList.remove('checkout-hidden');
+        btn.innerHTML = `
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+            </svg>
+            Editar datos`;
+
+        // Restaurar hidden inputs y quitar required de los inputs editables
+        const hiddenNombre = document.getElementById('hidden-nombre');
+        const hiddenEmail = document.getElementById('hidden-email');
+        const hiddenTelefono = document.getElementById('hidden-telefono');
+        const hiddenDireccion = document.getElementById('hidden-direccion');
+        if (hiddenNombre) hiddenNombre.disabled = false;
+        if (hiddenEmail) hiddenEmail.disabled = false;
+        if (hiddenTelefono) hiddenTelefono.disabled = false;
+        if (hiddenDireccion) hiddenDireccion.disabled = false;
+
+        // Desactivar inputs editables para que no se envíen duplicados
+        document.getElementById('input-nombre').disabled = true;
+        document.getElementById('input-email').disabled = true;
+        document.getElementById('input-telefono').disabled = true;
+        document.getElementById('input-direccion').disabled = true;
+    } else {
+        // Modo edición
+        preview.classList.add('checkout-hidden');
+        editable.classList.remove('checkout-hidden');
+        btn.innerHTML = `
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M9 12l2 2 4-4"/>
+                <circle cx="12" cy="12" r="10"/>
+            </svg>
+            Usar datos guardados`;
+
+        // Desactivar hidden inputs para evitar duplicados
+        const hiddenNombre = document.getElementById('hidden-nombre');
+        const hiddenEmail = document.getElementById('hidden-email');
+        const hiddenTelefono = document.getElementById('hidden-telefono');
+        const hiddenDireccion = document.getElementById('hidden-direccion');
+        if (hiddenNombre) hiddenNombre.disabled = true;
+        if (hiddenEmail) hiddenEmail.disabled = true;
+        if (hiddenTelefono) hiddenTelefono.disabled = true;
+        if (hiddenDireccion) hiddenDireccion.disabled = true;
+
+        // Activar inputs editables
+        const inputNombre = document.getElementById('input-nombre');
+        const inputEmail = document.getElementById('input-email');
+        const inputTelefono = document.getElementById('input-telefono');
+        const inputDireccion = document.getElementById('input-direccion');
+        inputNombre.disabled = false;
+        inputEmail.disabled = false;
+        inputTelefono.disabled = false;
+        inputDireccion.disabled = false;
+        inputNombre.required = true;
+        inputEmail.required = true;
+        inputDireccion.required = true;
+
+        // Enfocar el primer campo
+        inputNombre.focus();
+    }
+}
+
+// Al cargar: si datos completos, desactivar inputs editables para evitar duplicados
+document.addEventListener('DOMContentLoaded', function() {
+    const editable = document.getElementById('datos-editable');
+    if (editable && editable.classList.contains('checkout-hidden')) {
+        const inputs = editable.querySelectorAll('input');
+        inputs.forEach(function(input) { input.disabled = true; });
+    }
+
+    // Validar email al enviar el formulario de checkout
+    const checkoutForm = document.getElementById('checkout-form');
+    if (checkoutForm) {
+        checkoutForm.addEventListener('submit', function(e) {
+            // Solo validar si los inputs editables están activos
+            const inputEmail = document.getElementById('input-email');
+            if (inputEmail && !inputEmail.disabled) {
+                var emailCheck = validarEmail(inputEmail.value);
+                if (!emailCheck.ok) {
+                    e.preventDefault();
+                    showToast(emailCheck.msg, 'error', 5000);
+                    inputEmail.focus();
+                    return false;
+                }
+            }
+        });
+    }
+});
+</script>
 
 <?php include 'includes/footer.php'; ?>
 </body>

@@ -415,7 +415,7 @@
     justify-content: center;
     transition: all 0.25s ease;
     color: #777;
-    padding: 6px;
+    flex-shrink: 0;
 }
 
 .status-step.completed .icon {

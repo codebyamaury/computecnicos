@@ -32,35 +32,18 @@ body {
   border-bottom: 1px solid var(--neon-red-dim);
 }
 
-/* Grid de fondo con perspectiva */
-.hero-section::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-image:
-    linear-gradient(var(--grid-color) 1px, transparent 1px),
-    linear-gradient(90deg, var(--grid-color) 1px, transparent 1px);
-  background-size: 40px 40px;
-  background-position: center center;
-  transform: perspective(500px) rotateX(60deg) scale(2);
-  transform-origin: center top;
-  opacity: 0.3;
-  animation: gridMove 20s linear infinite;
-  pointer-events: none;
+/* Contenedor del canvas 3D: fondo negro para evitar destello blanco durante la inicialización de WebGL */
+#hero-canvas-container {
+  background-color: #000 !important;
+}
+#hero-canvas-container canvas {
+  background-color: transparent !important;
+  display: block;
 }
 
-@keyframes gridMove {
-  0% {
-    background-position: center 0;
-  }
-
-  100% {
-    background-position: center 40px;
-  }
-}
+/* Grid de fondo con perspectiva (Eliminado) */
+/* .hero-section::before { ... } */
+/* @keyframes gridMove { ... } */
 
 .hero-content {
   position: relative;
@@ -77,18 +60,16 @@ body {
   margin-bottom: 1.5rem;
   position: relative;
   display: inline-block;
-  background: linear-gradient(
-    90deg,
-    #cc0000 0%,
-    #ff1a1a 15%,
-    #ff4422 30%,
-    #ff6633 42%,
-    #ffffff 50%,
-    #ff6633 58%,
-    #ff4422 70%,
-    #ff1a1a 85%,
-    #cc0000 100%
-  );
+  background: linear-gradient(90deg,
+      #cc0000 0%,
+      #ff1a1a 15%,
+      #ff4422 30%,
+      #ff6633 42%,
+      #ffffff 50%,
+      #ff6633 58%,
+      #ff4422 70%,
+      #ff1a1a 85%,
+      #cc0000 100%);
   background-size: 200% 100%;
   -webkit-background-clip: text;
   background-clip: text;
@@ -103,8 +84,13 @@ body {
 
 /* Flujo de energía continuo */
 @keyframes energy-flow {
-  0% { background-position: 100% 50%; }
-  100% { background-position: -100% 50%; }
+  0% {
+    background-position: 100% 50%;
+  }
+
+  100% {
+    background-position: -100% 50%;
+  }
 }
 
 /* Línea inferior que se expande desde el centro */
@@ -123,11 +109,14 @@ body {
 }
 
 @keyframes line-expand {
-  0%, 100% {
+
+  0%,
+  100% {
     width: 30%;
     opacity: 0.3;
     box-shadow: none;
   }
+
   50% {
     width: 100%;
     opacity: 0.7;
@@ -144,7 +133,7 @@ body {
   border-left: 3px solid var(--neon-red);
   padding-left: 1rem;
   background: rgba(0, 0, 0, 0.5);
-  
+
   /* Mantener altura para evitar saltos de línea molestos */
   display: inline-block;
   min-height: 3em;
@@ -247,7 +236,7 @@ body {
   border: 1px solid #333;
   position: relative;
   transition: all 0.3s ease;
-  overflow: hidden;
+  overflow: visible;
 }
 
 /* Esquinas Tech */
@@ -290,7 +279,7 @@ body {
 
 /* Imágenes en Cards */
 .card-image-container {
-  background: #ffffff;
+  background: #1a1a1a;
   height: 200px;
   display: flex;
   align-items: center;
@@ -1138,27 +1127,149 @@ footer a:hover {
   padding-left: 5px;
 }
 
-/* Redes Sociales */
-footer .flex.gap-3 a {
-  background: rgba(20, 20, 20, 0.8);
-  border: 1px solid #333;
-  color: var(--neon-red);
-  transition: all 0.3s ease;
+/* Redes Sociales — Premium */
+.footer-social-links {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 1.25rem;
+}
+
+.footer-social-icon {
+  position: relative;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  /* Mantener circular o cambiar a cuadrado si se prefiere */
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: #888;
+  transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+  overflow: hidden;
+  cursor: pointer;
+  z-index: 1;
 }
 
-footer .flex.gap-3 a:hover {
-  background: var(--neon-red);
-  color: #000;
-  box-shadow: 0 0 15px var(--neon-red);
-  transform: translateY(-3px) rotate(360deg);
-  border-color: var(--neon-red);
+.footer-social-icon svg {
+  width: 20px;
+  height: 20px;
+  position: relative;
+  z-index: 2;
+  transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+/* Glow ring element */
+.footer-social-glow {
+  position: absolute;
+  inset: -2px;
+  border-radius: 14px;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* Shine sweep effect */
+.footer-social-icon::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg,
+      transparent,
+      rgba(255, 255, 255, 0.12),
+      transparent);
+  transition: left 0.5s ease;
+  z-index: 1;
+}
+
+.footer-social-icon:hover::after {
+  left: 100%;
+}
+
+/* ── Facebook ── */
+.footer-social-fb:hover {
+  background: rgba(24, 119, 242, 0.15);
+  border-color: rgba(24, 119, 242, 0.4);
+  color: #1877F2;
+  transform: translateY(-4px) scale(1.05);
+  box-shadow: 0 8px 25px rgba(24, 119, 242, 0.3),
+    0 0 0 1px rgba(24, 119, 242, 0.2);
+  padding-left: 0;
+}
+
+.footer-social-fb:hover svg {
+  filter: drop-shadow(0 0 6px rgba(24, 119, 242, 0.6));
+  transform: scale(1.1);
+}
+
+.footer-social-fb:hover .footer-social-glow {
+  opacity: 1;
+  background: rgba(24, 119, 242, 0.12);
+  box-shadow: 0 0 20px rgba(24, 119, 242, 0.25);
+  animation: socialPulse-fb 2s ease-in-out infinite;
+}
+
+@keyframes socialPulse-fb {
+
+  0%,
+  100% {
+    box-shadow: 0 0 10px rgba(24, 119, 242, 0.15);
+  }
+
+  50% {
+    box-shadow: 0 0 25px rgba(24, 119, 242, 0.35);
+  }
+}
+
+/* ── Instagram ── */
+.footer-social-ig:hover {
+  background: linear-gradient(135deg,
+      rgba(253, 29, 29, 0.12),
+      rgba(131, 58, 180, 0.12),
+      rgba(252, 176, 69, 0.12));
+  border-color: rgba(225, 48, 108, 0.4);
+  color: #E1306C;
+  transform: translateY(-4px) scale(1.05);
+  box-shadow: 0 8px 25px rgba(225, 48, 108, 0.3),
+    0 0 0 1px rgba(225, 48, 108, 0.2);
+  padding-left: 0;
+}
+
+.footer-social-ig:hover svg {
+  filter: drop-shadow(0 0 6px rgba(225, 48, 108, 0.6));
+  transform: scale(1.1);
+}
+
+.footer-social-ig:hover .footer-social-glow {
+  opacity: 1;
+  background: linear-gradient(135deg,
+      rgba(253, 29, 29, 0.1),
+      rgba(131, 58, 180, 0.1),
+      rgba(252, 176, 69, 0.1));
+  box-shadow: 0 0 20px rgba(225, 48, 108, 0.25);
+  animation: socialPulse-ig 2s ease-in-out infinite;
+}
+
+@keyframes socialPulse-ig {
+
+  0%,
+  100% {
+    box-shadow: 0 0 10px rgba(225, 48, 108, 0.15);
+  }
+
+  50% {
+    box-shadow: 0 0 25px rgba(225, 48, 108, 0.35);
+  }
+}
+
+/* Active/pressed state */
+.footer-social-icon:active {
+  transform: translateY(-1px) scale(0.97);
+  transition-duration: 0.1s;
 }
 
 /* Copyright */
@@ -1596,6 +1707,18 @@ footer .text-center.text-gray-500 {
   padding-bottom: 1rem;
 }
 
+.product-card {
+    background: rgba(20, 20, 20, 0.6);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 1rem;
+    overflow: visible;
+    cursor: pointer;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+}
 
 .team-card {
   background: rgba(20, 20, 20, 0.8);
@@ -1697,9 +1820,117 @@ footer .text-center.text-gray-500 {
   .team-grid {
     gap: 0.75rem;
   }
+
   .team-img-wrapper {
     width: 80px;
     height: 80px;
   }
 }
-
+
+/* ========================================
+   SEPARADORES DE SECCIÓN CON DEGRADADO
+   ======================================== */
+
+/* Reemplaza el border-t gris duro con un degradado suave central */
+.section-divider-top {
+  position: relative;
+  margin-top: 2rem;
+}
+
+.section-divider-top::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60%;
+  max-width: 800px;
+  height: 1px;
+  background: linear-gradient(90deg,
+      transparent 0%,
+      rgba(255, 0, 0, 0.25) 20%,
+      rgba(255, 0, 0, 0.45) 50%,
+      rgba(255, 0, 0, 0.25) 80%,
+      transparent 100%);
+}
+
+/* ========================================
+   DEGRADADOS LATERALES DEL CARRUSEL
+   ======================================== */
+
+/* Fade de las tarjetas en los bordes laterales del carrusel */
+.carousel-destacados-wrap::before,
+.carousel-destacados-wrap::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 60px;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.carousel-destacados-wrap::before {
+  left: 0;
+  background: linear-gradient(90deg, var(--tech-black) 0%, transparent 100%);
+}
+
+.carousel-destacados-wrap::after {
+  right: 0;
+  background: linear-gradient(270deg, var(--tech-black) 0%, transparent 100%);
+}
+
+/* ========================================
+   CARRUSEL PRODUCTOS DESTACADOS
+   (Movido desde index.php inline <style>)
+   ======================================== */
+
+.carousel-destacados-wrap {
+  position: relative;
+  overflow: visible;
+}
+
+.carousel-destacados {
+  display: flex;
+  gap: 1.25rem;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 0.5rem 0 1.5rem;
+  scrollbar-width: none;
+}
+
+.carousel-destacados::-webkit-scrollbar {
+  display: none;
+}
+
+.carousel-dest-card {
+  flex: 0 0 calc(25% - 0.94rem);
+  min-width: 260px;
+}
+
+@media (max-width: 1200px) {
+  .carousel-dest-card {
+    flex: 0 0 calc(33.333% - 0.84rem);
+  }
+}
+
+@media (max-width: 900px) {
+  .carousel-dest-card {
+    flex: 0 0 calc(50% - 0.625rem);
+  }
+
+  .carousel-dest-prev {
+    left: 6px;
+  }
+
+  .carousel-dest-next {
+    right: 6px;
+  }
+}
+
+@media (max-width: 600px) {
+  .carousel-dest-card {
+    flex: 0 0 85%;
+    min-width: 240px;
+  }
+}

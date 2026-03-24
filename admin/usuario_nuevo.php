@@ -6,6 +6,13 @@ if (!isset($_SESSION['usuario']) || $_SESSION['usuario']['rol'] !== 'admin') {
     exit;
 }
 
+if (!isset($_SESSION['usuario']['es_principal'])) {
+    $stmtUser = $pdo->prepare('SELECT es_principal FROM usuarios WHERE id = ?');
+    $stmtUser->execute([$_SESSION['usuario']['id']]);
+    $_SESSION['usuario']['es_principal'] = $stmtUser->fetchColumn() ? 1 : 0;
+}
+$is_main_admin = $_SESSION['usuario']['es_principal'];
+
 $errores = [];
 $exito = false;
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -14,6 +21,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $telefono = trim($_POST['telefono'] ?? '');
     $direccion = trim($_POST['direccion'] ?? '');
     $rol = $_POST['rol'] ?? 'cliente';
+    if (!$is_main_admin && $rol === 'admin') { $rol = 'cliente'; }
     $password = $_POST['password'] ?? '';
     $password2 = $_POST['password2'] ?? '';
 
@@ -67,6 +75,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
         <?php endif; ?>
         <form method="post" class="space-y-5 bg-[#232323] p-8 rounded-lg shadow">
+                    <?= csrf_field() ?>
             <div>
                 <label class="block mb-1 font-semibold">Nombre *</label>
                 <input type="text" name="nombre" class="w-full bg-[#181818] border border-[#333] rounded px-3 py-2 text-white" required value="<?php echo htmlspecialchars($_POST['nombre'] ?? ''); ?>">
@@ -87,7 +96,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <label class="block mb-1 font-semibold">Rol *</label>
                 <select name="rol" class="w-full bg-[#181818] border border-[#333] rounded px-3 py-2 text-white">
                     <option value="cliente" <?php if(($_POST['rol'] ?? '')==='cliente') echo 'selected'; ?>>Cliente</option>
+                    <?php if ($is_main_admin): ?>
                     <option value="admin" <?php if(($_POST['rol'] ?? '')==='admin') echo 'selected'; ?>>Admin</option>
+                    <?php endif; ?>
                 </select>
             </div>
             <div>

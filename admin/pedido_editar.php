@@ -61,42 +61,37 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($id_usuario <= 0) $errores[] = 'Selecciona un cliente.';
     if ($direccion_envio === '') $errores[] = 'La dirección de envío es obligatoria.';
     if (empty($detalles_nuevos)) $errores[] = 'Agrega al menos un producto.';
-    // Validar stock suficiente para cada producto si el estado es pagado/entregado
-    if (empty($errores) && in_array($estado, ['pagado','entregado'])) {
+    // Obtener estado anterior
+    $stmt = $pdo->prepare('SELECT estado FROM pedidos WHERE id = ?');
+    $stmt->execute([$id]);
+    $estado_anterior = $stmt->fetchColumn();
+    $estados_reservados = ['pagado', 'preparacion', 'enviado', 'entregado'];
+
+    // Validar stock suficiente para cada producto si el nuevo estado reservará stock
+    if (empty($errores) && in_array($estado, $estados_reservados)) {
         foreach ($detalles_nuevos as $d) {
             $stmt = $pdo->prepare('SELECT stock FROM productos WHERE id = ?');
             $stmt->execute([$d['id_producto']]);
             $stock_actual = $stmt->fetchColumn();
-            // Si el pedido ya era pagado/entregado, sumar la cantidad anterior para ese producto (se va a restar después)
-            $stmt = $pdo->prepare('SELECT cantidad FROM detalle_pedido WHERE id_pedido = ? AND id_producto = ?');
-            $stmt->execute([$id, $d['id_producto']]);
-            $cant_ant = $stmt->fetchColumn();
-            $cant_ant = $cant_ant ? intval($cant_ant) : 0;
+            
+            // Si el pedido YÁ estaba reservando stock, se lo sumamos devolviéndolo temporalmente para el cálculo
+            $cant_ant = 0;
+            if (in_array($estado_anterior, $estados_reservados)) {
+                $stmt = $pdo->prepare('SELECT cantidad FROM detalle_pedido WHERE id_pedido = ? AND id_producto = ?');
+                $stmt->execute([$id, $d['id_producto']]);
+                $c = $stmt->fetchColumn();
+                if ($c) $cant_ant = intval($c);
+            }
+            
             $stock_disponible = $stock_actual + $cant_ant;
             if ($stock_disponible < $d['cantidad']) {
                 $errores[] = 'Stock insuficiente para el producto ID ' . $d['id_producto'] . '. Disponible: ' . $stock_disponible . ', solicitado: ' . $d['cantidad'];
             }
         }
     }
+
     if (empty($errores)) {
-        // Obtener estado anterior y detalles anteriores
-        $stmt = $pdo->prepare('SELECT estado FROM pedidos WHERE id = ?');
-        $stmt->execute([$id]);
-        $estado_anterior = $stmt->fetchColumn();
-        // Validar transiciones permitidas
-        $allowed_transitions = [
-            'pendiente' => ['pagado','cancelado'],
-            'pagado' => ['preparacion','cancelado'],
-            'preparacion' => ['enviado','cancelado'],
-            'enviado' => ['entregado','cancelado'],
-            'entregado' => [],
-            'cancelado' => []
-        ];
-        if ($estado !== $estado_anterior) {
-            if (!isset($allowed_transitions[$estado_anterior]) || !in_array($estado, $allowed_transitions[$estado_anterior])) {
-                $errores[] = 'Transición no permitida de ' . $estado_anterior . ' a ' . $estado;
-            }
-        }
+        // En admin panel permitimos cualquier salto de estado (flexibilidad operativa)
         $stmt = $pdo->prepare('SELECT * FROM detalle_pedido WHERE id_pedido = ?');
         $stmt->execute([$id]);
         $detalles_anteriores = $stmt->fetchAll();
@@ -125,6 +120,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 }
                 $id_admin = $_SESSION['usuario']['id'];
                 // --- Automatización de inventario ---
+                $era_reservado = in_array($estado_anterior, $estados_reservados);
+                $ahora_reservado = in_array($estado, $estados_reservados);
+
                 // Mapear cantidades anteriores y nuevas por producto
                 $mapa_ant = [];
                 foreach ($detalles_anteriores as $d) {
@@ -134,49 +132,45 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 foreach ($detalles_nuevos as $d) {
                     $mapa_nuevo[$d['id_producto']] = $d['cantidad'];
                 }
-                // Si pasa a pagado/entregado y antes no lo era
-                if (in_array($estado, ['pagado','entregado']) && !in_array($estado_anterior, ['pagado','entregado'])) {
-                    foreach ($detalles_nuevos as $d) {
-                        $pdo->prepare('INSERT INTO movimientos_inventario (id_producto, tipo, cantidad, motivo, id_usuario) VALUES (?, "salida", ?, ?, ?)')
-                            ->execute([$d['id_producto'], $d['cantidad'], 'Venta/Pedido #' . $id, $id_admin]);
+
+                if ($ahora_reservado && !$era_reservado) {
+                    // Restar stock completo de los nuevos detalles
+                    foreach ($mapa_nuevo as $idp => $cant_nuevo) {
+                        $pdo->prepare("INSERT INTO movimientos_inventario (id_producto, tipo, cantidad, motivo, id_usuario) VALUES (?, 'salida', ?, ?, ?)")
+                            ->execute([$idp, $cant_nuevo, 'Reserva Pedido #' . $id, $id_admin]);
                         $pdo->prepare('UPDATE productos SET stock = stock - ? WHERE id = ?')
-                            ->execute([$d['cantidad'], $d['id_producto']]);
+                            ->execute([$cant_nuevo, $idp]);
                     }
-                }
-                // Si pasa a cancelado y antes era pagado/entregado
-                if ($estado === 'cancelado' && in_array($estado_anterior, ['pagado','entregado'])) {
-                    foreach ($detalles_anteriores as $d) {
-                        $pdo->prepare('INSERT INTO movimientos_inventario (id_producto, tipo, cantidad, motivo, id_usuario) VALUES (?, "entrada", ?, ?, ?)')
-                            ->execute([$d['id_producto'], $d['cantidad'], 'Cancelación Pedido #' . $id, $id_admin]);
+                } elseif (!$ahora_reservado && $era_reservado) {
+                    // Devolver stock completo de los anteriores detalles (porque ya no está reservado)
+                    foreach ($mapa_ant as $idp => $cant_ant) {
+                        $pdo->prepare("INSERT INTO movimientos_inventario (id_producto, tipo, cantidad, motivo, id_usuario) VALUES (?, 'entrada', ?, ?, ?)")
+                            ->execute([$idp, $cant_ant, 'Liberación Pedido #' . $id, $id_admin]);
                         $pdo->prepare('UPDATE productos SET stock = stock + ? WHERE id = ?')
-                            ->execute([$d['cantidad'], $d['id_producto']]);
+                            ->execute([$cant_ant, $idp]);
                     }
-                }
-                // Si ya era pagado/entregado y se cambian productos/cantidades
-                if (in_array($estado, ['pagado','entregado']) && in_array($estado_anterior, ['pagado','entregado'])) {
+                } elseif ($ahora_reservado && $era_reservado) {
                     // Ajustar diferencias
                     foreach ($mapa_ant as $idp => $cant_ant) {
                         $cant_nuevo = $mapa_nuevo[$idp] ?? 0;
                         if ($cant_nuevo < $cant_ant) {
-                            // Devolver stock
                             $diff = $cant_ant - $cant_nuevo;
-                            $pdo->prepare('INSERT INTO movimientos_inventario (id_producto, tipo, cantidad, motivo, id_usuario) VALUES (?, "entrada", ?, ?, ?)')
+                            $pdo->prepare("INSERT INTO movimientos_inventario (id_producto, tipo, cantidad, motivo, id_usuario) VALUES (?, 'entrada', ?, ?, ?)")
                                 ->execute([$idp, $diff, 'Ajuste edición Pedido #' . $id, $id_admin]);
                             $pdo->prepare('UPDATE productos SET stock = stock + ? WHERE id = ?')
                                 ->execute([$diff, $idp]);
                         } elseif ($cant_nuevo > $cant_ant) {
-                            // Descontar stock extra
                             $diff = $cant_nuevo - $cant_ant;
-                            $pdo->prepare('INSERT INTO movimientos_inventario (id_producto, tipo, cantidad, motivo, id_usuario) VALUES (?, "salida", ?, ?, ?)')
+                            $pdo->prepare("INSERT INTO movimientos_inventario (id_producto, tipo, cantidad, motivo, id_usuario) VALUES (?, 'salida', ?, ?, ?)")
                                 ->execute([$idp, $diff, 'Ajuste edición Pedido #' . $id, $id_admin]);
                             $pdo->prepare('UPDATE productos SET stock = stock - ? WHERE id = ?')
                                 ->execute([$diff, $idp]);
                         }
                     }
-                    // Si hay productos nuevos
+                    // Productos nuevos que no existían antes
                     foreach ($mapa_nuevo as $idp => $cant_nuevo) {
                         if (!isset($mapa_ant[$idp])) {
-                            $pdo->prepare('INSERT INTO movimientos_inventario (id_producto, tipo, cantidad, motivo, id_usuario) VALUES (?, "salida", ?, ?, ?)')
+                            $pdo->prepare("INSERT INTO movimientos_inventario (id_producto, tipo, cantidad, motivo, id_usuario) VALUES (?, 'salida', ?, ?, ?)")
                                 ->execute([$idp, $cant_nuevo, 'Ajuste edición Pedido #' . $id, $id_admin]);
                             $pdo->prepare('UPDATE productos SET stock = stock - ? WHERE id = ?')
                                 ->execute([$cant_nuevo, $idp]);
@@ -236,6 +230,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
         <?php endif; ?>
         <form method="post" class="space-y-6 bg-[#232323] p-8 rounded-lg shadow">
+                    <?= csrf_field() ?>
             <div>
                 <label class="block mb-1 font-semibold">Cliente *</label>
                 <select name="id_usuario" class="w-full bg-[#181818] border border-[#333] rounded px-3 py-2 text-white" required>

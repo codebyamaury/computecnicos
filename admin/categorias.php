@@ -33,7 +33,7 @@ if (isset($_GET['eliminar'])) {
         $mensaje_tipo = 'error';
     } else {
         $pdo->prepare('DELETE FROM categorias WHERE id = ?')->execute([$id]);
-        header('Location: categorias.php');
+        header('Location: categorias.php?eliminado=1');
         exit;
     }
 }
@@ -61,6 +61,7 @@ include '_layout.php';
     <div class="adm-card">
         <div class="adm-card-title"><span class="adm-card-title-text">Nueva Categoría</span></div>
         <form method="post">
+                    <?= csrf_field() ?>
             <div class="adm-form-row">
                 <div class="adm-form-group" style="margin-bottom:0">
                     <label class="adm-label">Nombre *</label>
@@ -131,6 +132,7 @@ include '_layout.php';
         <button class="adm-modal-close" onclick="cerrarModal()">&times;</button>
         <div class="adm-modal-title">Editar Categoría</div>
         <form id="form-editar-categoria" method="post" style="display:flex;flex-direction:column;gap:1rem">
+                    <?= csrf_field() ?>
             <input type="hidden" name="id" id="edit-id">
             <div>
                 <label class="adm-label">Nombre *</label>
@@ -170,10 +172,10 @@ document.querySelectorAll('.btn-editar-categoria').forEach(btn => {
 document.getElementById('form-editar-categoria').addEventListener('submit', async function(e) {
     e.preventDefault();
     const data = new FormData(this);
-    const res = await fetch('categoria_editar.php?id=' + data.get('id'), { method: 'POST', body: data });
+    const res = await fetch('categoria_editar.php?ajax=1&id=' + data.get('id'), { method: 'POST', body: data });
     const text = await res.text();
-    if (text.includes('actualizada correctamente')) {
-        window.location.reload();
+    if (text.includes('Location: categorias.php') || text.includes('actualizada') || text.includes('actualizado')) { 
+        window.location.href = window.location.pathname + '?editado=1'; 
     } else {
         const msg = document.getElementById('modal-editar-msg');
         msg.textContent = 'Error al editar. Revisa los datos.';

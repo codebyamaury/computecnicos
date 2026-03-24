@@ -23,5 +23,5 @@ if ($id > 0) {
     $stmt->execute([$id]);
 }
 
-header('Location: productos.php');
+header('Location: productos.php?eliminado=1');
 exit;

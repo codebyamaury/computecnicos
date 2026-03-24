@@ -36,25 +36,6 @@ include '_layout.php';
 ?>
 
 <main class="admin-content">
-    <style>
-        .admin-content::before {
-            content: '';
-            position: fixed;
-            top: 0;
-            left: var(--adm-sidebar-w, 220px);
-            right: 0;
-            bottom: 0;
-            background:
-                radial-gradient(ellipse 60% 40% at 50% 0%, rgba(224, 0, 0, 0.045) 0%, transparent 60%);
-            pointer-events: none;
-            z-index: 0;
-        }
-
-        .admin-content>* {
-            position: relative;
-            z-index: 1;
-        }
-    </style>
     <div class="admin-content-inner">
 
         <!-- ── KPI Cards ── -->
@@ -105,69 +86,6 @@ include '_layout.php';
             </div>
         </div>
 
-        <!-- ── Accesos Rápidos ── -->
-        <div class="adm-quick-grid" style="margin-bottom:1.75rem">
-            <a href="productos.php" class="adm-quick-card">
-                <div class="adm-quick-icon">
-                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
-                    </svg>
-                </div>
-                <div class="adm-quick-name">Productos</div>
-                <div class="adm-quick-desc">Gestión de catálogo</div>
-            </a>
-            <a href="pedidos.php" class="adm-quick-card">
-                <div class="adm-quick-icon">
-                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
-                    </svg>
-                </div>
-                <div class="adm-quick-name">Pedidos</div>
-                <div class="adm-quick-desc">Facturación y ventas</div>
-            </a>
-            <a href="inventario.php" class="adm-quick-card">
-                <div class="adm-quick-icon">
-                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4" />
-                    </svg>
-                </div>
-                <div class="adm-quick-name">Inventario</div>
-                <div class="adm-quick-desc">Movimientos y stock</div>
-            </a>
-            <a href="usuarios.php" class="adm-quick-card">
-                <div class="adm-quick-icon">
-                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
-                    </svg>
-                </div>
-                <div class="adm-quick-name">Usuarios</div>
-                <div class="adm-quick-desc">Gestión de cuentas</div>
-            </a>
-            <a href="proveedores.php" class="adm-quick-card">
-                <div class="adm-quick-icon">
-                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                    </svg>
-                </div>
-                <div class="adm-quick-name">Proveedores</div>
-                <div class="adm-quick-desc">Gestión de proveedores</div>
-            </a>
-            <a href="reporte_contable.php" class="adm-quick-card">
-                <div class="adm-quick-icon">
-                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                    </svg>
-                </div>
-                <div class="adm-quick-name">Reportes</div>
-                <div class="adm-quick-desc">Legal y contable</div>
-            </a>
-        </div>
 
         <!-- ── Gráficas ── -->
         <div class="adm-chart-grid">
@@ -194,7 +112,7 @@ include '_layout.php';
         <div class="adm-card">
             <div class="adm-card-title">
                 <span class="adm-card-title-text">Productos con stock bajo (≤ 5 unidades)</span>
-                <a href="inventario_nuevo.php" class="adm-btn adm-btn-warning"
+                <a href="#" onclick="abrirModalMovimiento(event)" class="adm-btn adm-btn-warning"
                     style="font-size:0.75rem;padding:0.4rem 0.85rem">+ Reponer stock</a>
             </div>
             <?php if (!$productos_bajo): ?>
@@ -224,8 +142,8 @@ include '_layout.php';
                                     <td><?= htmlspecialchars($p['categoria']) ?></td>
                                     <td><?= htmlspecialchars($p['marca']) ?></td>
                                     <td>
-                                        <a href="producto_editar.php?id=<?= $p['id'] ?>" class="adm-btn adm-btn-warning"
-                                            style="font-size:0.72rem;padding:0.35rem 0.75rem">Editar</a>
+                                        <button type="button" onclick="abrirModalEditarProducto(<?= $p['id'] ?>, event)" class="adm-btn adm-btn-warning"
+                                            style="font-size:0.72rem;padding:0.35rem 0.75rem">Editar</button>
                                     </td>
                                 </tr>
                             <?php endforeach; ?>
@@ -329,4 +247,5 @@ include '_layout.php';
     });
 </script>
 
+<?php include '_modal_movimiento.php'; ?>
 <?php include '_layout_end.php'; ?>
