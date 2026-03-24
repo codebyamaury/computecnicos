@@ -173,7 +173,13 @@ $labels = [
                                     foreach ($historial as $h) { if ($h['estado'] === $clave) { $fecha_etapa = date('d/m/Y H:i', strtotime($h['fecha'])); break; } }
                                 ?>
                                 <button class="<?= $step_class ?>" type="button" onclick="toggleDetails('<?= $pedido['id'] ?>')">
+<<<<<<< HEAD
                                     <svg class="icon" viewBox="0 0 20 20" fill="currentColor"><path d="<?= $etapas[$clave]['icon'] ?>"/></svg>
+=======
+                                    <span class="icon">
+                                        <svg viewBox="0 0 20 20" fill="currentColor" style="width:16px;height:16px;display:block;"><path d="<?= $etapas[$clave]['icon'] ?>"/></svg>
+                                    </span>
+>>>>>>> samu-branch
                                     <span class="step-title"><?= $etapas[$clave]['titulo'] ?></span>
                                     <span class="step-date"><?= $fecha_etapa ?: '—' ?></span>
                                 </button>

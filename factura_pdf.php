@@ -1,8 +1,8 @@
 <?php
 // Sesión manejada por bootstrap (DB handler)
-require_once __DIR__ . '/../app/Core/bootstrap.php';
+require_once __DIR__ . '/app/Core/bootstrap.php';
 
-require_once __DIR__ . '/../vendor/autoload.php'; // dompdf
+require_once __DIR__ . '/vendor/autoload.php'; // dompdf
 use Dompdf\Dompdf;
 use Dompdf\Options;
 
@@ -50,9 +50,9 @@ try {
 
     // Datos de la tienda (personalizables)
     $tienda_nombre = "COMPUTÉCNICOS";
-    $tienda_direccion = "Paseo Bolívar Cra 17 #45-20, Cartagena";
+    $tienda_direccion = "Cra. 1 #2-3, Ciudad";
     $tienda_nit = "NIT 900000000-1";
-    $tienda_tel = "Tel: 316 850 0131";
+    $tienda_tel = "Tel: 300 000 0000";
 
     // Calcular totales con casting seguro
     $subtotal = 0; $total_descuentos = 0;
@@ -110,11 +110,7 @@ try {
     $html .= '<div class="bold center" style="font-size:22px;">TOTAL: $' . number_format($total, 0, ',', '.') . '</div>';
     $html .= '<div>----------------------</div>';
     $html .= '<div class="small" style="font-size:16px;">Gracias por su compra</div>';
-<<<<<<< HEAD
     $html .= '<div class="small" style="font-size:16px;">www.computecnicos.com</div>';
-=======
-    $html .= '<div class="small" style="font-size:16px;">computecnicos.duckdns.org</div>';
->>>>>>> samu-branch
     $html .= '<div>----------------------</div>';
     $html .= '</div>';
 
@@ -128,12 +124,8 @@ try {
     exit;
 } catch (Throwable $e) {
     log_event('Error factura_pdf: ' . $e->getMessage());
-    $_SESSION['admin_toast'] = [
-        'msg' => $e->getMessage(),
-        'type' => 'error',
-        'title' => 'Factura no disponible'
-    ];
-    $back = $_SERVER['HTTP_REFERER'] ?? 'pedidos.php';
+    $_SESSION['factura_error'] = $e->getMessage();
+    $back = $_SERVER['HTTP_REFERER'] ?? '../pedidos.php';
     header('Location: ' . $back);
     exit;
 }

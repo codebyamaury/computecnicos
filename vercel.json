@@ -1,0 +1,27 @@
+{
+    "version": 2,
+    "builds": [
+        {
+            "src": "api/index.php",
+            "use": "vercel-php@0.7.4"
+        },
+        {
+            "src": "assets/**",
+            "use": "@vercel/static"
+        }
+    ],
+    "routes": [
+        {
+            "src": "/assets/(.*)",
+            "dest": "/assets/$1"
+        },
+        {
+            "src": "/uploads/(.*)",
+            "dest": "/uploads/$1"
+        },
+        {
+            "src": "/(.*)",
+            "dest": "/api/index.php"
+        }
+    ]
+}

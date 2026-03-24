@@ -415,7 +415,11 @@
     justify-content: center;
     transition: all 0.25s ease;
     color: #777;
+<<<<<<< HEAD
     padding: 6px;
+=======
+    flex-shrink: 0;
+>>>>>>> samu-branch
 }
 
 .status-step.completed .icon {
