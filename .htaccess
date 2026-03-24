@@ -7,7 +7,6 @@
 RewriteEngine On
 
 # Forzar HTTPS en producción (descomenta en producción)
-<<<<<<< HEAD
 RewriteCond %{HTTPS} off
 RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
 
@@ -29,10 +28,6 @@ RewriteRule ^google-callback(\.php)?$ api/google-callback.php [L,QSA]
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteCond %{REQUEST_FILENAME}.php -f
 RewriteRule ^(.*)$ $1.php [L]
-=======
-# RewriteCond %{HTTPS} off
-# RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
->>>>>>> samu-branch
 
 # Denegar acceso a archivos sensibles
 <FilesMatch "\.(env|ini|log|sh|sql)$">
@@ -42,11 +37,7 @@ RewriteRule ^(.*)$ $1.php [L]
 
 # Denegar acceso a directorios sensibles
 <IfModule mod_rewrite.c>
-<<<<<<< HEAD
 
-=======
-    RewriteRule ^docker/ - [F,L]
->>>>>>> samu-branch
     RewriteRule ^config/ - [F,L]
     RewriteRule ^logs/ - [F,L]
     RewriteRule ^database/ - [F,L]

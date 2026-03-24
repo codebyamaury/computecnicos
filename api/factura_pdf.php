@@ -110,11 +110,7 @@ try {
     $html .= '<div class="bold center" style="font-size:22px;">TOTAL: $' . number_format($total, 0, ',', '.') . '</div>';
     $html .= '<div>----------------------</div>';
     $html .= '<div class="small" style="font-size:16px;">Gracias por su compra</div>';
-<<<<<<< HEAD
     $html .= '<div class="small" style="font-size:16px;">www.computecnicos.com</div>';
-=======
-    $html .= '<div class="small" style="font-size:16px;">computecnicos.duckdns.org</div>';
->>>>>>> samu-branch
     $html .= '<div>----------------------</div>';
     $html .= '</div>';
 
