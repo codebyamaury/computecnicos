@@ -118,11 +118,11 @@ $tieneVideo = !empty($videoEmbedUrl);
                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
             </span>
             <a href="/productos?categoria=<?php echo urlencode($producto['categoria']); ?>"><?php echo htmlspecialchars($producto['categoria']); ?></a>
-            <?php if (!empty($producto['marca'])): ?>
+            <?php if (!empty($producto['marca']) && !empty($producto['id_marca'])): ?>
             <span class="prod-breadcrumb-sep">
                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
             </span>
-            <a href="/productos?marca=<?php echo urlencode($producto['marca']); ?>"><?php echo htmlspecialchars($producto['marca']); ?></a>
+            <a href="/productos?marca=<?php echo intval($producto['id_marca']); ?>"><?php echo htmlspecialchars($producto['marca']); ?></a>
             <?php endif; ?>
             <span class="prod-breadcrumb-sep">
                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
