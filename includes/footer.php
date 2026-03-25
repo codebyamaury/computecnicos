@@ -65,4 +65,18 @@
 // Incluir modal de login global
 include __DIR__ . '/login-modal.php';
 ?>
-<script>if (typeof lucide !== 'undefined') lucide.createIcons();</script>
+<script>
+// Asegurar que Lucide procese TODOS los iconos después de que el DOM esté completo
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function() {
+        if (typeof lucide !== 'undefined') lucide.createIcons();
+    });
+} else {
+    // DOM ya está listo (script cargó tarde)
+    if (typeof lucide !== 'undefined') lucide.createIcons();
+}
+// Fallback: re-procesar iconos después de 500ms por si Lucide cargó tarde desde CDN
+setTimeout(function() {
+    if (typeof lucide !== 'undefined') lucide.createIcons();
+}, 500);
+</script>

@@ -149,14 +149,14 @@ if (isset($_SESSION['usuario']['id']) && isset($pdo)) {
     <link rel="stylesheet" href="<?= base_url() ?>/assets/css/large-screens.css?v=<?= filemtime(__DIR__ . '/../assets/css/large-screens.css') ?>">
     <?php if (isset($extra_css)) echo $extra_css; ?>
 
-    <!-- 3. Cargar Scripts -> Tailwind, Lucide, AOS (con defer para no bloquear renderizado) -->
-    <script src="https://cdn.tailwindcss.com" defer></script>
-    <script src="<?= asset('js/cart.js') ?>" defer></script>
-    <script src="https://unpkg.com/lucide@latest" defer></script>
+    <!-- 3. Cargar Scripts -> Tailwind, Lucide, AOS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="<?= asset('js/cart.js') ?>"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
     <!-- AOS (Animate On Scroll) -->
-    <link rel="stylesheet" href="https://unpkg.com/aos@2.3.1/dist/aos.css" media="print" onload="this.media='all'" />
-    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js" defer></script>
-    <script>document.addEventListener('DOMContentLoaded', function(){ if(typeof AOS!=='undefined') AOS.init({ duration: 800, once: true }); });</script>
+    <link rel="stylesheet" href="https://unpkg.com/aos@2.3.1/dist/aos.css" />
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>document.addEventListener('DOMContentLoaded', function(){ AOS.init({ duration: 800, once: true }); });</script>
 </head>
 
 <body class="min-h-screen flex flex-col" style="background-color: #050505 !important; color: #ffffff !important;">
