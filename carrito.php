@@ -182,47 +182,7 @@ $avanceEnvioGratis = min(100, max(0, floor(($subtotal / $envioGratisMin) * 100))
 // Cupón por entrega tardía
 $lateDeliveryCouponCop = 4000;
 
-// Recomendaciones inteligentes basadas en categorías del carrito
-$recomendados_cart = [];
-try {
-    $ids_en_carrito = array_column($_SESSION['carrito'], 'id_producto');
-    $cats = [];
-    foreach ($_SESSION['carrito'] as $it) {
-        if (isset($productos[$it['id_producto']])) {
-            $cats[] = (int) $productos[$it['id_producto']]['id_categoria'];
-        }
-    }
-    $cats = array_values(array_unique(array_filter($cats)));
-    if (!empty($cats)) {
-        $placeCats = implode(',', array_fill(0, count($cats), '?'));
-        $sql = "SELECT p.*, c.nombre AS categoria, m.nombre AS marca FROM productos p LEFT JOIN categorias c ON p.id_categoria = c.id LEFT JOIN marcas m ON p.id_marca = m.id WHERE p.id_categoria IN ($placeCats)";
-        if (!empty($ids_en_carrito)) {
-            $placeIds = implode(',', array_fill(0, count($ids_en_carrito), '?'));
-            $sql .= " AND p.id NOT IN ($placeIds)";
-        }
-        $sql .= " ORDER BY p.oferta DESC, p.fecha_creacion DESC LIMIT 4";
-        $stmtRec = $pdo->prepare($sql);
-        $params = $cats;
-        if (!empty($ids_en_carrito)) {
-            $params = array_merge($params, $ids_en_carrito);
-        }
-        $stmtRec->execute($params);
-        $recomendados_cart = $stmtRec->fetchAll();
-    }
-    if (empty($recomendados_cart)) {
-        $sqlF = "SELECT p.*, c.nombre AS categoria, m.nombre AS marca FROM productos p LEFT JOIN categorias c ON p.id_categoria = c.id LEFT JOIN marcas m ON p.id_marca = m.id WHERE 1=1";
-        if (!empty($ids_en_carrito)) {
-            $placeIds = implode(',', array_fill(0, count($ids_en_carrito), '?'));
-            $sqlF .= " AND p.id NOT IN ($placeIds)";
-        }
-        $sqlF .= " ORDER BY p.oferta DESC, p.fecha_creacion DESC LIMIT 4";
-        $stmtF = $pdo->prepare($sqlF);
-        $stmtF->execute(!empty($ids_en_carrito) ? $ids_en_carrito : []);
-        $recomendados_cart = $stmtF->fetchAll();
-    }
-} catch (Exception $e) {
-    $recomendados_cart = [];
-}
+
 
 include __DIR__ . '/includes/header.php';
 ?>
@@ -482,37 +442,7 @@ include __DIR__ . '/includes/header.php';
                         </div>
                     </div>
 
-                    <?php if (!empty($recomendados_cart)): ?>
-                        <!-- Recomendaciones -->
-                        <div class="cart-recommendations">
-                            <div class="cart-recommendations-card">
-                                <div class="cart-recommendations-header">
-                                    <i data-lucide="zap" style="width:20px;height:20px"></i>
-                                    <h3 class="cart-recommendations-title">Completa tu compra</h3>
-                                </div>
-                                <div class="cart-recommendations-grid">
-                                    <?php foreach ($recomendados_cart as $r): ?>
-                                        <div class="cart-rec-item">
-                                            <div class="cart-rec-image">
-                                                <img src="<?php echo htmlspecialchars($r['imagen'] ?: 'https://via.placeholder.com/120x120?text=Sin+Imagen'); ?>"
-                                                    alt="<?php echo htmlspecialchars($r['nombre']); ?>">
-                                            </div>
-                                            <div class="cart-rec-info">
-                                                <span class="cart-rec-name"><?php echo htmlspecialchars($r['nombre']); ?></span>
-                                                <?php $rPrice = get_product_price_data($r); ?>
-                                                <span class="cart-rec-price">$<?php echo number_format($rPrice['precio'], 0, ',', '.'); ?></span>
-                                            </div>
-                                            <form method="POST" action="api/agregar_carrito.php">
-                                                <input type="hidden" name="id_producto" value="<?php echo intval($r['id']); ?>">
-                                                <input type="hidden" name="cantidad" value="1">
-                                                <button type="submit" class="cart-rec-add">Agregar</button>
-                                            </form>
-                                        </div>
-                                    <?php endforeach; ?>
-                                </div>
-                            </div>
-                        </div>
-                    <?php endif; ?>
+
                 </div>
             </div>
         <?php endif; ?>
