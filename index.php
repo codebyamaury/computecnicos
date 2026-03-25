@@ -7,7 +7,7 @@ $stmt->execute();
 $productos_destacados = $stmt->fetchAll();
 
 // Título y CSS extra para esta página (Flowbite + index.css)
-$page_title = 'Inicio';
+$page_title = 'Tienda de Tecnología y Mantenimiento';
     $extra_css = '<link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.1/flowbite.min.css" rel="stylesheet" />' . "\n" . '<link rel="stylesheet" href="' . base_url() . '/assets/css/index.css?v=' . filemtime(__DIR__ . '/assets/css/index.css') . '">' . "\n" . '<link rel="stylesheet" href="' . base_url() . '/assets/css/productos.css?v=' . filemtime(__DIR__ . '/assets/css/productos.css') . '">';
 
 // Incluir header común
@@ -30,7 +30,7 @@ include __DIR__ . '/includes/header.php';
 
         <p
             class="max-w-xl sm:max-w-2xl text-base sm:text-lg md:text-xl text-gray-400 mb-8 px-2 mx-auto animate-slide-up delay-200">
-            Accede a la mejor tecnología del futuro. Componentes de alto rendimiento y sistemas avanzados.
+            Computecnicos es tu tienda de tecnología ideal. Encuentra computadoras, componentes de alto rendimiento, accesorios y nuestro servicio de mantenimiento especializado.
         </p>
         <div class="hero-buttons animate-slide-up delay-300">
             <a href="productos.php" class="hero-btn primary">Ver Productos</a>

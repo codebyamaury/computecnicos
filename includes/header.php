@@ -21,6 +21,15 @@ if (isset($_SESSION['usuario']['id']) && isset($pdo)) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="<?php echo isset($page_description) ? htmlspecialchars($page_description) : 'Computecnicos - Tu tienda de tecnología, accesorios y servicios de mantenimiento de computadoras. Encuentra los mejores componentes y equipos informáticos.'; ?>">
+    <meta name="keywords" content="computecnicos, computadoras, mantenimiento pc, componentes pc, accesorios, tecnología, tienda de informática, reparacion pc">
+    <meta name="author" content="Computecnicos">
+    <meta name="robots" content="index, follow">
+    <meta property="og:title" content="<?php echo isset($page_title) ? $page_title . ' | ' : ''; ?>Computecnicos">
+    <meta property="og:description" content="<?php echo isset($page_description) ? htmlspecialchars($page_description) : 'Computecnicos - Tu tienda de tecnología y servicios de mantenimiento de computadoras.'; ?>">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="<?php echo 'https://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']; ?>">
+    <meta property="og:site_name" content="Computecnicos">
     <title><?php echo isset($page_title) ? $page_title . ' | ' : ''; ?>Computecnicos</title>
     <link rel="icon" type="image/svg+xml" href="<?= asset('images/favicon.svg') ?>">
     <meta name="color-scheme" content="dark">
