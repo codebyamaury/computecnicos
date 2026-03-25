@@ -4,15 +4,31 @@ require_once __DIR__ . '/app/Core/bootstrap.php';
 
 $estado    = $_GET['status'] ?? ($_GET['estado'] ?? 'UNKNOWN');
 $pedido_id = (int)($_GET['pedido_id'] ?? 0);
+$esExito   = ($estado === 'APPROVED' || $estado === 'COMPLETED');
 
-// Si el pago fue exitoso, vaciar carrito
-if ($estado === 'APPROVED' || $estado === 'COMPLETED') {
+if ($esExito && $pedido_id > 0) {
+    if (!isset($_SESSION['pagos_vistos'])) {
+        $_SESSION['pagos_vistos'] = [];
+    }
+    
+    // Si ya vio este recibo de éxito, redirigirlo a sus pedidos
+    if (in_array($pedido_id, $_SESSION['pagos_vistos'])) {
+        header("Location: pedidos.php");
+        exit;
+    }
+    
+    // Marcar como visto
+    $_SESSION['pagos_vistos'][] = $pedido_id;
+    
+    // Vaciar carrito
+    if (isset($_SESSION['carrito'])) {
+        $_SESSION['carrito'] = [];
+    }
+} elseif ($esExito) {
     if (isset($_SESSION['carrito'])) {
         $_SESSION['carrito'] = [];
     }
 }
-
-$esExito = ($estado === 'APPROVED' || $estado === 'COMPLETED');
 
 $page_title = ($esExito ? '¡Pago Exitoso!' : 'Pago no completado') . ' - Computécnicos';
 $extra_css = '<link rel="stylesheet" href="' . asset('css/index.css') . '">';
@@ -171,6 +187,15 @@ include 'includes/header.php';
         piece.style.width  = (Math.random() * 6 + 4) + 'px';
         piece.style.height = (Math.random() * 6 + 4) + 'px';
         hero.appendChild(piece);
+    }
+    
+    // Mejorar la experiencia del usuario (UX) con el botón "Atrás"
+    // Esto reemplaza la URL en el historial del navegador con "pedidos.php"
+    // de manera que si el usuario navega a otra página y luego presiona "Atrás",
+    // en lugar de cargar paypal_response.php de nuevo (lo cual lo redirigiría forzosamente),
+    // el navegador cargará "pedidos.php" directamente, dándole un flujo perfecto.
+    if (window.history && window.history.replaceState) {
+        window.history.replaceState(null, null, 'pedidos.php');
     }
 })();
 <?php endif; ?>
