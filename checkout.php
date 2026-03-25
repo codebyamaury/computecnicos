@@ -458,6 +458,74 @@ $step_confirm = 'pending';
                     }
                 }).render('#paypal-button-container');
             </script>
+
+            <!-- Botón Cancelar Pedido -->
+            <div style="text-align:center; margin-top:24px; padding-top:20px; border-top:1px solid #222;">
+                <button type="button" id="btn-cancelar-pedido" style="background:none; border:1px solid #555; color:#999; padding:10px 28px; border-radius:6px; cursor:pointer; font-size:0.9rem; transition:all 0.3s;" onmouseover="this.style.borderColor='#ff4444';this.style.color='#ff4444';" onmouseout="this.style.borderColor='#555';this.style.color='#999';">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:6px;"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+                    Cancelar pedido
+                </button>
+            </div>
+
+            <!-- Modal de confirmación de cancelación -->
+            <div id="modal-cancelar" style="display:none; position:fixed; inset:0; z-index:9999; background:rgba(0,0,0,0.75); backdrop-filter:blur(4px); display:none; align-items:center; justify-content:center;">
+                <div style="background:#141414; border:1px solid #333; border-radius:12px; padding:32px; max-width:420px; width:90%; text-align:center; box-shadow:0 20px 60px rgba(0,0,0,0.5);">
+                    <div style="width:56px;height:56px;border-radius:50%;background:rgba(255,68,68,0.15);display:flex;align-items:center;justify-content:center;margin:0 auto 16px;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#ff4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                    </div>
+                    <h3 style="color:#fff; font-size:1.2rem; font-weight:700; margin-bottom:8px;">¿Cancelar este pedido?</h3>
+                    <p style="color:#888; font-size:0.9rem; line-height:1.5; margin-bottom:24px;">Esta acción eliminará tu pedido pendiente. Podrás volver a comprar cuando quieras.</p>
+                    <div style="display:flex; gap:12px; justify-content:center;">
+                        <button type="button" id="btn-cancelar-no" style="flex:1; padding:10px 20px; border-radius:6px; border:1px solid #444; background:transparent; color:#ccc; cursor:pointer; font-size:0.9rem; font-weight:500; transition:all 0.2s;" onmouseover="this.style.borderColor='#888'" onmouseout="this.style.borderColor='#444'">No, volver</button>
+                        <button type="button" id="btn-cancelar-si" style="flex:1; padding:10px 20px; border-radius:6px; border:none; background:#dc2626; color:#fff; cursor:pointer; font-size:0.9rem; font-weight:600; transition:all 0.2s;" onmouseover="this.style.background='#b91c1c'" onmouseout="this.style.background='#dc2626'">Sí, cancelar</button>
+                    </div>
+                </div>
+            </div>
+
+            <script>
+            (function(){
+                const modal = document.getElementById('modal-cancelar');
+                const btnOpen = document.getElementById('btn-cancelar-pedido');
+                const btnNo = document.getElementById('btn-cancelar-no');
+                const btnSi = document.getElementById('btn-cancelar-si');
+
+                btnOpen.addEventListener('click', function(){
+                    modal.style.display = 'flex';
+                });
+                btnNo.addEventListener('click', function(){
+                    modal.style.display = 'none';
+                });
+                modal.addEventListener('click', function(e){
+                    if(e.target === modal) modal.style.display = 'none';
+                });
+
+                btnSi.addEventListener('click', async function(){
+                    btnSi.disabled = true;
+                    btnSi.textContent = 'Cancelando...';
+                    try {
+                        const res = await fetch('api/cancelar_pedido.php', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ pedido_id: <?php echo (int)$id_pedido; ?> })
+                        });
+                        const data = await res.json();
+                        if(data.ok) {
+                            modal.style.display = 'none';
+                            if(typeof showToast === 'function') showToast(data.msg || 'Pedido cancelado.', 'success', 4000);
+                            setTimeout(function(){ window.location.href = 'productos.php'; }, 1500);
+                        } else {
+                            if(typeof showToast === 'function') showToast(data.msg || 'Error al cancelar.', 'error', 5000);
+                            btnSi.disabled = false;
+                            btnSi.textContent = 'Sí, cancelar';
+                        }
+                    } catch(err) {
+                        if(typeof showToast === 'function') showToast('Error de conexión.', 'error', 5000);
+                        btnSi.disabled = false;
+                        btnSi.textContent = 'Sí, cancelar';
+                    }
+                });
+            })();
+            </script>
         <?php else: ?>
             <?php
             // Determinar si el usuario ya tiene todos los datos de contacto completos
