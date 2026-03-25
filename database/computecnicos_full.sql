@@ -310,6 +310,31 @@ CREATE TABLE IF NOT EXISTS remember_tokens (
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci;
 
 -- =====================================
+-- FEATURE: Reembolsos / Desembolsos
+-- =====================================
+CREATE TABLE IF NOT EXISTS reembolsos (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    id_pedido INT NOT NULL,
+    id_usuario INT NOT NULL,
+    motivo VARCHAR(500) NOT NULL,
+    monto DECIMAL(12, 2) NOT NULL,
+    estado ENUM('solicitado', 'aprobado', 'procesado', 'rechazado') DEFAULT 'solicitado',
+    paypal_refund_id VARCHAR(128) NULL,
+    paypal_capture_id VARCHAR(128) NULL,
+    nota_admin VARCHAR(500) NULL,
+    fecha_solicitud DATETIME DEFAULT CURRENT_TIMESTAMP,
+    fecha_resolucion DATETIME NULL,
+    id_admin_resolucion INT NULL,
+    stock_devuelto TINYINT(1) DEFAULT 0,
+    FOREIGN KEY (id_pedido) REFERENCES pedidos (id) ON DELETE CASCADE,
+    FOREIGN KEY (id_usuario) REFERENCES usuarios (id) ON DELETE CASCADE,
+    FOREIGN KEY (id_admin_resolucion) REFERENCES usuarios (id) ON DELETE SET NULL,
+    INDEX idx_pedido (id_pedido),
+    INDEX idx_estado (estado),
+    INDEX idx_usuario (id_usuario)
+) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci;
+
+-- =====================================
 -- DATOS DE PRUEBA
 -- =====================================
 

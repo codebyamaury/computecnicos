@@ -162,4 +162,168 @@ class PaypalHelper
             }
         }
     }
+
+    /**
+     * Get order details from PayPal to extract capture ID
+     */
+    public function getOrderDetails($orderId)
+    {
+        $token = $this->getAccessToken();
+        $ch = curl_init();
+        curl_setopt_array($ch, [
+            CURLOPT_URL => $this->baseUrl . '/v2/checkout/orders/' . urlencode($orderId),
+            CURLOPT_HTTPHEADER => [
+                'Content-Type: application/json',
+                'Authorization: Bearer ' . $token
+            ],
+            CURLOPT_RETURNTRANSFER => true
+        ]);
+        $resp = curl_exec($ch);
+        if ($resp === false) {
+            throw new Exception('Error obteniendo detalles de orden PayPal: ' . curl_error($ch));
+        }
+        curl_close($ch);
+        return json_decode($resp, true);
+    }
+
+    /**
+     * Refund a captured payment
+     * @param string $captureId The PayPal capture ID
+     * @param float|null $amount Amount to refund (null = full refund)
+     * @param string $currency Currency code
+     * @param string $note Note for the refund
+     * @return array PayPal response
+     */
+    public function refundCapture($captureId, $amount = null, $currency = 'USD', $note = '')
+    {
+        $token = $this->getAccessToken();
+
+        $payload = [];
+        if ($note) {
+            $payload['note_to_payer'] = mb_substr($note, 0, 255);
+        }
+        if ($amount !== null) {
+            $payload['amount'] = [
+                'value' => number_format($amount, 2, '.', ''),
+                'currency_code' => $currency
+            ];
+        }
+
+        $ch = curl_init();
+        $opts = [
+            CURLOPT_URL => $this->baseUrl . '/v2/payments/captures/' . urlencode($captureId) . '/refund',
+            CURLOPT_HTTPHEADER => [
+                'Content-Type: application/json',
+                'Authorization: Bearer ' . $token
+            ],
+            CURLOPT_POST => true,
+            CURLOPT_RETURNTRANSFER => true
+        ];
+
+        if (!empty($payload)) {
+            $opts[CURLOPT_POSTFIELDS] = json_encode($payload);
+        }
+
+        curl_setopt_array($ch, $opts);
+        $resp = curl_exec($ch);
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        if ($resp === false) {
+            throw new Exception('Error realizando reembolso PayPal: ' . curl_error($ch));
+        }
+        curl_close($ch);
+
+        $data = json_decode($resp, true);
+        if ($httpCode >= 400) {
+            $errorMsg = $data['message'] ?? ($data['details'][0]['description'] ?? 'Error desconocido de PayPal');
+            throw new Exception('PayPal Refund Error: ' . $errorMsg);
+        }
+
+        return $data;
+    }
+
+    /**
+     * Process a full refund for an order:
+     * 1. Find the capture ID from PayPal order
+     * 2. Execute the refund
+     * 3. Update order status
+     * 4. Restore stock
+     */
+    public function processFullRefund($pedido_id, $reembolso_id, $admin_id)
+    {
+        // Get order total and convert to USD
+        $stmt = $this->pdo->prepare('SELECT total FROM pedidos WHERE id = ?');
+        $stmt->execute([$pedido_id]);
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        if (!$row) {
+            throw new Exception('Pedido no encontrado');
+        }
+
+        $total_cop = (float) $row['total'];
+        $currency = $this->config['currency'] ?? 'USD';
+        if ($currency === 'USD') {
+            $rate = (float) ($this->config['exchange_rate_cop_to_usd'] ?? 0.00025);
+            $amount = round($total_cop * $rate, 2);
+        } else {
+            $amount = $total_cop;
+        }
+
+        // Get the capture ID from the reembolso record
+        $stmtR = $this->pdo->prepare('SELECT paypal_capture_id FROM reembolsos WHERE id = ?');
+        $stmtR->execute([$reembolso_id]);
+        $captureId = $stmtR->fetchColumn();
+
+        if (!$captureId) {
+            throw new Exception('No se encontró el ID de captura de PayPal para este reembolso');
+        }
+
+        // Execute refund via PayPal
+        $refundResult = $this->refundCapture($captureId, $amount, $currency, 'Reembolso Pedido #' . $pedido_id);
+
+        $refundId = $refundResult['id'] ?? null;
+        $refundStatus = $refundResult['status'] ?? 'UNKNOWN';
+
+        if ($refundStatus === 'COMPLETED' || $refundStatus === 'PENDING') {
+            $this->pdo->beginTransaction();
+            try {
+                // Update reembolso record
+                $this->pdo->prepare('UPDATE reembolsos SET estado = ?, paypal_refund_id = ?, fecha_resolucion = NOW(), id_admin_resolucion = ? WHERE id = ?')
+                    ->execute(['procesado', $refundId, $admin_id, $reembolso_id]);
+
+                // Update order status to cancelado
+                $this->pdo->prepare('UPDATE pedidos SET estado = ? WHERE id = ?')
+                    ->execute(['cancelado', $pedido_id]);
+
+                // Add to order history
+                $this->pdo->prepare('INSERT INTO pedido_estados (id_pedido, estado, comentario) VALUES (?, ?, ?)')
+                    ->execute([$pedido_id, 'cancelado', 'Reembolso procesado vía PayPal (Ref: ' . ($refundId ?? 'N/A') . ')']);
+
+                // Restore stock
+                $stmtDet = $this->pdo->prepare('SELECT id_producto, cantidad FROM detalle_pedido WHERE id_pedido = ?');
+                $stmtDet->execute([$pedido_id]);
+                $detalles = $stmtDet->fetchAll(PDO::FETCH_ASSOC);
+
+                foreach ($detalles as $d) {
+                    $this->pdo->prepare('UPDATE productos SET stock = stock + ? WHERE id = ?')
+                        ->execute([$d['cantidad'], $d['id_producto']]);
+                    $this->pdo->prepare("INSERT INTO movimientos_inventario (id_producto, tipo, cantidad, motivo, id_usuario) VALUES (?, 'entrada', ?, ?, ?)")
+                        ->execute([$d['id_producto'], $d['cantidad'], 'Reembolso Pedido #' . $pedido_id, $admin_id]);
+                }
+
+                // Mark stock as restored
+                $this->pdo->prepare('UPDATE reembolsos SET stock_devuelto = 1 WHERE id = ?')
+                    ->execute([$reembolso_id]);
+
+                $this->pdo->commit();
+            } catch (Exception $e) {
+                $this->pdo->rollBack();
+                throw $e;
+            }
+        }
+
+        return [
+            'refund_id' => $refundId,
+            'status' => $refundStatus,
+            'result' => $refundResult
+        ];
+    }
 }
