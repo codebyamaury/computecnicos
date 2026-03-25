@@ -59,7 +59,13 @@ if (isset($_POST['cambiar_estado'], $_POST['id_pedido'], $_POST['nuevo_estado'])
 // Filtro estado
 $estado_filtro = isset($_GET['estado']) ? strtolower(trim($_GET['estado'])) : 'todos';
 $valid_estados = ['pendiente','pagado','preparacion','enviado','entregado','cancelado'];
-if (in_array($estado_filtro, $valid_estados)) {
+
+if ($estado_filtro !== 'todos' && !in_array($estado_filtro, $valid_estados)) {
+    header('Location: pedidos.php');
+    exit;
+}
+
+if ($estado_filtro !== 'todos') {
     $stmt = $pdo->prepare('SELECT p.*, u.nombre AS usuario_nombre, u.email FROM pedidos p LEFT JOIN usuarios u ON p.id_usuario=u.id WHERE p.estado=? ORDER BY p.fecha DESC');
     $stmt->execute([$estado_filtro]);
     $pedidos = $stmt->fetchAll();
