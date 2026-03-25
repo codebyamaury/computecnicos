@@ -265,7 +265,7 @@ include '_layout.php';
             <!-- Actions -->
             <div class="reembolso-actions">
                 <?php if ($r['estado'] === 'solicitado'): ?>
-                    <button type="button" class="adm-btn adm-btn-blue" onclick="abrirModalConfirmacion(<?= $r['id'] ?>, 'aprobar', '¿Aprobar este reembolso?', 'El reembolso pasará a estado Aprobado y estará listo para ejecutarse.')">
+                    <button type="button" class="adm-btn adm-btn-blue" onclick="abrirModalConfirmacion(<?= $r['id'] ?>, 'aprobar', '¿Aprobar este reembolso?', 'El reembolso pasará a estado Aprobado y estará listo para ejecutarse.', 'blue')">
                         <i data-lucide="check" style="width:14px;height:14px"></i> Aprobar
                     </button>
                     <button type="button" class="adm-btn adm-btn-danger" onclick="abrirModalRechazo(<?= $r['id'] ?>)">
@@ -302,7 +302,7 @@ include '_layout.php';
         <button class="adm-modal-close" onclick="cerrarRechazo()">&times;</button>
         <div class="adm-modal-title">Rechazar Reembolso</div>
         <p style="color:#888;font-size:0.85rem;margin-bottom:1rem">Explica al cliente el motivo del rechazo:</p>
-        <textarea id="rechazo-nota" class="reembolso-modal-textarea" placeholder="Motivo del rechazo..." minlength="5"></textarea>
+        <textarea id="rechazo-nota" class="reembolso-modal-textarea" placeholder="Motivo del rechazo..." minlength="5" maxlength="500"></textarea>
         <div style="display:flex;gap:10px;margin-top:1rem">
             <button type="button" onclick="cerrarRechazo()" class="adm-btn" style="flex:1;justify-content:center">Cancelar</button>
             <button type="button" id="btn-confirmar-rechazo" class="adm-btn adm-btn-danger" style="flex:1;justify-content:center">Confirmar Rechazo</button>
@@ -313,16 +313,13 @@ include '_layout.php';
 <!-- Modal Confirmación Genérico -->
 <div id="modal-confirm-bg" class="adm-modal-overlay"></div>
 <div id="modal-confirm" class="adm-modal hidden">
-    <div class="adm-modal-box" style="max-width:450px;text-align:center">
+    <div class="adm-modal-box" style="max-width:450px">
         <button class="adm-modal-close" onclick="cerrarConfirmacion()">&times;</button>
-        <div style="width:48px;height:48px;border-radius:50%;background:rgba(59,130,246,0.1);color:#60a5fa;display:flex;align-items:center;justify-content:center;margin:0 auto 1rem">
-            <i data-lucide="alert-circle" style="width:24px;height:24px"></i>
-        </div>
         <div class="adm-modal-title" id="confirm-title" style="margin-bottom:0.5rem">¿Estás seguro?</div>
         <p id="confirm-desc" style="color:#888;font-size:0.85rem;margin-bottom:1.5rem;line-height:1.5">Esta acción no se puede deshacer.</p>
         <div style="display:flex;gap:10px">
             <button type="button" onclick="cerrarConfirmacion()" class="adm-btn" style="flex:1;justify-content:center">Cancelar</button>
-            <button type="button" id="btn-confirmar-accion" class="adm-btn adm-btn-primary" style="flex:1;justify-content:center">Continuar</button>
+            <button type="button" id="btn-confirmar-accion" class="adm-btn adm-btn-primary" style="flex:1;justify-content:center">Confirmar</button>
         </div>
     </div>
 </div>
@@ -331,10 +328,13 @@ include '_layout.php';
 var rechazoId = null;
 var confirmAccionData = null;
 
-function abrirModalConfirmacion(id, accion, title, desc) {
+function abrirModalConfirmacion(id, accion, title, desc, actionColor = 'primary') {
     confirmAccionData = { id: id, accion: accion };
     document.getElementById('confirm-title').innerText = title;
     document.getElementById('confirm-desc').innerText = desc;
+    
+    var btn = document.getElementById('btn-confirmar-accion');
+    btn.className = 'adm-btn adm-btn-' + actionColor;
     
     document.getElementById('modal-confirm-bg').classList.add('show');
     document.getElementById('modal-confirm').classList.remove('hidden');
