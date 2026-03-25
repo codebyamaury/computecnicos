@@ -575,7 +575,7 @@ footer::before {
   box-shadow: 0 0 10px rgba(255, 0, 0, 0.2);
 }
 
-.glass-input-group svg {
+.glass-input-group > svg {
   position: absolute;
   left: 0.75rem;
   width: 18px;
@@ -584,7 +584,7 @@ footer::before {
   pointer-events: none;
 }
 
-.glass-input-group:focus-within svg {
+.glass-input-group:focus-within > svg {
   color: var(--neon-red);
 }
 

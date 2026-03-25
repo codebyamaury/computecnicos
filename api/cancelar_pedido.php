@@ -41,13 +41,22 @@ try {
 
     $pdo->beginTransaction();
 
-    // Cambiar estado a cancelado
-    $stmt = $pdo->prepare("UPDATE pedidos SET estado = 'cancelado' WHERE id = ?");
-    $stmt->execute([$pedido_id]);
+    // Obtener todos los pedidos pendientes del usuario (incluyendo el actual si lo hay más)
+    $stmtIds = $pdo->prepare("SELECT id FROM pedidos WHERE id_usuario = ? AND estado = 'pendiente'");
+    $stmtIds->execute([$id_usuario]);
+    $pendientes = $stmtIds->fetchAll(PDO::FETCH_COLUMN);
 
-    // Registrar en historial
-    $stmt = $pdo->prepare("INSERT INTO pedido_estados (id_pedido, estado, comentario) VALUES (?, 'cancelado', 'Cancelado por el usuario antes de pagar')");
-    $stmt->execute([$pedido_id]);
+    if (count($pendientes) > 0) {
+        // Cambiar estado a cancelado general
+        $stmtUpdate = $pdo->prepare("UPDATE pedidos SET estado = 'cancelado' WHERE id_usuario = ? AND estado = 'pendiente'");
+        $stmtUpdate->execute([$id_usuario]);
+
+        // Registrar en historial de todos
+        $stmtHist = $pdo->prepare("INSERT INTO pedido_estados (id_pedido, estado, comentario) VALUES (?, 'cancelado', 'Cancelado por limpieza de carrito (abandonado)')");
+        foreach ($pendientes as $pid) {
+            $stmtHist->execute([$pid]);
+        }
+    }
 
     $pdo->commit();
 
