@@ -85,6 +85,7 @@
 
 @media (min-width: 1440px) {
   .products-grid {
+    grid-template-columns: repeat(4, 1fr);
     gap: 2.5rem;
   }
 
