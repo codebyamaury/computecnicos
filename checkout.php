@@ -149,7 +149,33 @@ if (isset($_SESSION['usuario'])) {
 
 $mensaje = '';
 $id_pedido = null;
-if (!$carrito_vacio && $_SERVER['REQUEST_METHOD'] === 'POST' && !isset($_POST['compra_directa'])) {
+
+if (isset($_GET['pay_order']) && $id_usuario) {
+    $pay_order_id = intval($_GET['pay_order']);
+    // Validar que el pedido es del usuario y está pendiente
+    $stmt = $pdo->prepare("SELECT total, direccion_envio FROM pedidos WHERE id = ? AND id_usuario = ? AND estado = 'pendiente'");
+    $stmt->execute([$pay_order_id, $id_usuario]);
+    $pedidoExistente = $stmt->fetch();
+    if ($pedidoExistente) {
+        $id_pedido = $pay_order_id;
+        $total = $pedidoExistente['total'];
+        $direccion = $pedidoExistente['direccion_envio'];
+        // Obtener items
+        $stmt_items = $pdo->prepare("SELECT dp.*, p.nombre FROM detalle_pedido dp JOIN productos p ON dp.id_producto = p.id WHERE dp.id_pedido = ?");
+        $stmt_items->execute([$id_pedido]);
+        $items_detalle = [];
+        $combo_discount = 0; // Descuento ya aplicado al total en bd
+        foreach ($stmt_items->fetchAll() as $row) {
+             $items_detalle[] = [
+                 'nombre' => $row['nombre'],
+                 'cantidad' => $row['cantidad'],
+                 'precio' => $row['precio_unitario']
+             ];
+        }
+        $carrito_vacio = false;
+        $mensaje = 'Continuando con el pago del pedido pendiente.';
+    }
+} elseif (!$carrito_vacio && $_SERVER['REQUEST_METHOD'] === 'POST' && !isset($_POST['compra_directa'])) {
     $nombre = $_POST['nombre'] ?? '';
     $email = $_POST['email'] ?? '';
     $telefono = $_POST['telefono'] ?? '';
@@ -275,10 +301,24 @@ $step_confirm = 'pending';
         <?php endif; ?>
 
         <?php if ($carrito_vacio): ?>
-            <div class="checkout-form animate-slide-up">
-                <div class="text-center text-gray-300">Tu carrito está vacío.</div>
-                <div class="checkout-actions mt-6">
-                    <a href="productos.php" class="checkout-btn primary">Explorar productos</a>
+            <?php
+            $stmtPendingCheckout = null;
+            if (isset($_SESSION['usuario']) && isset($pdo)) {
+                $stmtPendingQuery = $pdo->prepare("SELECT id FROM pedidos WHERE id_usuario = ? AND estado = 'pendiente' ORDER BY fecha DESC LIMIT 1");
+                $stmtPendingQuery->execute([$_SESSION['usuario']['id']]);
+                $stmtPendingCheckout = $stmtPendingQuery->fetchColumn();
+            }
+            ?>
+            <div class="checkout-form animate-slide-up text-center">
+                <div class="text-gray-300 mb-6">Tu carrito está vacío.</div>
+                <?php if ($stmtPendingCheckout): ?>
+                    <div style="background-color: #1a1a1a; padding: 20px; border-radius: 8px; border: 1px solid #333; margin-bottom: 20px;">
+                        <h3 style="color: #ffaa00; font-size: 1.1rem; margin-bottom: 15px; font-weight: 600;">Detectamos un pedido pendiente de pago</h3>
+                        <a href="checkout.php?pay_order=<?php echo $stmtPendingCheckout; ?>" class="checkout-btn" style="background-color: #ffaa00; color: #000; display: inline-block; padding: 10px 24px; font-weight: bold; border-radius: 6px; transition: 0.3s; margin-bottom: 10px;">Continuar con el Pago</a>
+                    </div>
+                <?php endif; ?>
+                <div class="checkout-actions mt-6 flex justify-center">
+                    <a href="productos.php" class="checkout-btn primary text-center" style="max-width: 300px;">Explorar productos</a>
                 </div>
             </div>
         <?php elseif ($id_pedido): ?>
@@ -370,6 +410,12 @@ $step_confirm = 'pending';
                 src="https://www.paypal.com/sdk/js?client-id=<?php echo urlencode($paypal_config['client_id']); ?>&currency=<?php echo htmlspecialchars($paypal_config['currency'] ?? 'USD'); ?>&components=buttons"></script>
             <script>
                 paypal.Buttons({
+                    style: {
+                        color: 'blue',
+                        shape: 'rect',
+                        label: 'pay',
+                        height: 45
+                    },
                     createOrder: function (data, actions) {
                         return fetch('api/paypal_create_order.php', {
                             method: 'POST',
