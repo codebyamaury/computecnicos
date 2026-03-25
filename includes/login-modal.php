@@ -684,7 +684,7 @@ if (window.location.search.indexOf('login=1') !== -1) {
 <?php endif; ?>
 
 <!-- Contenedor de notificaciones toast -->
-<div id="toast-container" class="fixed top-20 right-4 z-[900] space-y-2"></div>
+<div id="toast-container" class="fixed top-20 right-4 z-[99999] space-y-2"></div>
 
 <script>
 // Función para mostrar notificaciones toast

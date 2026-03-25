@@ -467,7 +467,7 @@ include __DIR__ . '/includes/header.php';
 </div>
 
 <!-- Toast notification container -->
-<div id="toast-container" style="position:fixed;top:80px;right:16px;z-index:900;display:flex;flex-direction:column;gap:8px;"></div>
+<div id="toast-container" style="position:fixed;top:80px;right:16px;z-index:99999;display:flex;flex-direction:column;gap:8px;"></div>
 
 <script>
     (function () {
@@ -477,7 +477,7 @@ include __DIR__ . '/includes/header.php';
             if (!toastContainer) {
                 toastContainer = document.createElement('div');
                 toastContainer.id = 'toast-container';
-                toastContainer.style.cssText = 'position:fixed;top:80px;right:16px;z-index:900;display:flex;flex-direction:column;gap:8px;';
+                toastContainer.style.cssText = 'position:fixed;top:80px;right:16px;z-index:99999;display:flex;flex-direction:column;gap:8px;';
                 document.body.appendChild(toastContainer);
             }
 
