@@ -352,8 +352,10 @@ function cerrarConfirmacion() {
 
 document.getElementById('btn-confirmar-accion').addEventListener('click', function() {
     if (!confirmAccionData) return;
+    const idToProcess = confirmAccionData.id;
+    const accionToProcess = confirmAccionData.accion;
     cerrarConfirmacion();
-    accionReembolso(confirmAccionData.id, confirmAccionData.accion);
+    accionReembolso(idToProcess, accionToProcess);
 });
 
 function accionReembolso(id, accion) {
