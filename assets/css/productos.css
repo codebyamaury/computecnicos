@@ -404,6 +404,12 @@
     }
 }
 
+@media (min-width: 1440px) {
+    .products-grid {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
 /* Cards de Producto Futuristas */
 .product-card {
     background: rgba(18, 18, 18, 0.9);
