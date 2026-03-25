@@ -87,8 +87,18 @@ if ($stmtRefunded->fetch()) {
 
 // Create refund request
 try {
-    $stmt = $pdo->prepare('INSERT INTO reembolsos (id_pedido, id_usuario, motivo, monto, estado) VALUES (?, ?, ?, ?, ?)');
-    $stmt->execute([$id_pedido, $id_usuario, $motivo, $pedido['total'], 'solicitado']);
+    // Try to get PayPal capture_id from the pedido (for automatic refunds)
+    $captureId = null;
+    try {
+        $stmtCap = $pdo->prepare('SELECT paypal_capture_id FROM pedidos WHERE id = ?');
+        $stmtCap->execute([$id_pedido]);
+        $captureId = $stmtCap->fetchColumn() ?: null;
+    } catch (Exception $e) {
+        // Column might not exist yet
+    }
+
+    $stmt = $pdo->prepare('INSERT INTO reembolsos (id_pedido, id_usuario, motivo, monto, estado, paypal_capture_id) VALUES (?, ?, ?, ?, ?, ?)');
+    $stmt->execute([$id_pedido, $id_usuario, $motivo, $pedido['total'], 'solicitado', $captureId]);
 
     // Add to order history
     $pdo->prepare('INSERT INTO pedido_estados (id_pedido, estado, comentario) VALUES (?, ?, ?)')

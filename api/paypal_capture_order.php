@@ -13,11 +13,24 @@ try {
     }
     $paypal = new PaypalHelper($pdo);
     $result = $paypal->captureOrder($input['orderID'], (int)$input['pedido_id']);
-    // Si el pago fue completado, vaciar el carrito
+    // Si el pago fue completado, vaciar el carrito y guardar capture_id
     if (isset($result['status']) && $result['status'] === 'COMPLETED') {
         $_SESSION['carrito'] = [];
-        // Mensaje de éxito para mostrar en el header/toast si aplica
         $_SESSION['checkout_success'] = 'Pago completado. Carrito vaciado.';
+        // Guardar el capture_id de PayPal para futuros reembolsos
+        $captureId = $result['purchase_units'][0]['payments']['captures'][0]['id'] ?? null;
+        $orderId = $result['id'] ?? $input['orderID'];
+        if ($captureId) {
+            try {
+                // Agregar columnas si no existen
+                $pdo->exec("ALTER TABLE pedidos ADD COLUMN IF NOT EXISTS paypal_order_id VARCHAR(128) NULL");
+                $pdo->exec("ALTER TABLE pedidos ADD COLUMN IF NOT EXISTS paypal_capture_id VARCHAR(128) NULL");
+                $pdo->prepare('UPDATE pedidos SET paypal_order_id = ?, paypal_capture_id = ? WHERE id = ?')
+                    ->execute([$orderId, $captureId, (int)$input['pedido_id']]);
+            } catch (Exception $e) {
+                error_log('paypal_capture: Error guardando capture_id: ' . $e->getMessage());
+            }
+        }
     }
     echo json_encode($result);
 } catch (Throwable $e) {
