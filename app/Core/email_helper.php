@@ -93,3 +93,60 @@ function enviar_con_mail($fromEmail, $fromName, $to, $subject, $htmlBody) {
     }
     return $result;
 }
+
+/**
+ * Enviar email de bienvenida a nuevos usuarios
+ */
+function enviar_correo_bienvenida($email, $nombre) {
+    if (empty($email)) return false;
+    
+    $subject = "¡Bienvenido a CompuTécnicos, $nombre!";
+    $nombreCorto = explode(' ', trim($nombre))[0];
+    
+    // Asumimos que base_url() existe globalmente via bootstrap.php
+    $site_url = function_exists('base_url') ? base_url() : 'https://computecnicos.store';
+    
+    $htmlBody = "
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='UTF-8'>
+    <style>
+        body { font-family: 'Segoe UI', Arial, sans-serif; background-color: #050505; margin: 0; padding: 20px; }
+        .container { max-width: 600px; margin: 0 auto; background: #0f0f0f; border: 1px solid #222; border-radius: 12px; overflow: hidden; }
+        .header { background: linear-gradient(135deg, #b91c1c, #7f1d1d); padding: 35px 30px; text-align: center; }
+        .header h1 { color: #ffffff; margin: 0; font-size: 28px; font-weight: 800; letter-spacing: 2px; }
+        .body { padding: 40px 30px; color: #cccccc; line-height: 1.6; font-size: 15px; }
+        .body h2 { color: #ffffff; font-size: 22px; margin-top: 0; margin-bottom: 20px; }
+        .btn { display: inline-block; background: #dc2626; color: #ffffff !important; padding: 14px 28px; text-decoration: none; border-radius: 8px; font-weight: bold; margin-top: 25px; transition: background 0.2s; }
+        .footer { background: #050505; padding: 25px; text-align: center; border-top: 1px solid #1a1a1a; }
+        .footer p { color: #555555; font-size: 12px; margin: 5px 0; }
+        .highlight { color: #ef4444; font-weight: 600; }
+    </style>
+</head>
+<body>
+    <div class='container'>
+        <div class='header'>
+            <h1>COMPUTÉCNICOS</h1>
+        </div>
+        <div class='body'>
+            <h2>¡Hola, $nombreCorto! 👋</h2>
+            <p>Queremos darte una cálida bienvenida a la familia de <span class='highlight'>CompuTécnicos</span>. Nos emociona mucho tenerte con nosotros.</p>
+            <p>A partir de ahora, tienes acceso a todo nuestro catálogo de productos tecnológicos: desde los mejores componentes para armar tu PC, hasta accesorios premium con envíos rápidos y seguros.</p>
+            <p>Tu cuenta ya está activa y lista para usar. Entra ahora para descubrir nuestras últimas ofertas y novedades:</p>
+            <div style='text-align: center;'>
+                <a href='$site_url/productos.php' class='btn'>Explorar Productos</a>
+            </div>
+            <p style='margin-top: 35px;'>Si en algún momento necesitas ayuda técnica o tienes alguna duda con un producto, no dudes en contactarnos. ¡Nuestro equipo de soporte siempre está dispuesto a asesorarte!</p>
+            <p>Saludos cordiales,<br><strong style='color:#fff;'>El Equipo de CompuTécnicos</strong></p>
+        </div>
+        <div class='footer'>
+            <p>Estás recibiendo este correo porque te has registrado recientemente en CompuTécnicos Store.</p>
+            <p>&copy; " . date('Y') . " CompuTécnicos. Todos los derechos reservados.</p>
+        </div>
+    </div>
+</body>
+</html>";
+
+    return enviar_email($email, $subject, $htmlBody);
+}

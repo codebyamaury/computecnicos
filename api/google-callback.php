@@ -35,6 +35,10 @@ if (isset($_GET['code'])) {
                 $stmt = $pdo->prepare('INSERT INTO usuarios (nombre, email, telefono, direccion, password, foto) VALUES (?, ?, ?, ?, ?, ?)');
                 $stmt->execute([$nombre, $email, null, null, $hash, $foto_final]);
 
+                // Enviar correo de bienvenida
+                require_once __DIR__ . '/../app/Core/email_helper.php';
+                enviar_correo_bienvenida($email, $nombre);
+
                 // Recuperar el usuario recién creado
                 $stmt2 = $pdo->prepare('SELECT id, nombre, email, rol, foto FROM usuarios WHERE email = ?');
                 $stmt2->execute([$email]);

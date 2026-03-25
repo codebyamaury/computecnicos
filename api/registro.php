@@ -71,6 +71,11 @@ if ($foto && $foto['tmp_name']) {
 try {
     $stmt = $pdo->prepare('INSERT INTO usuarios (nombre, email, telefono, direccion, password, foto) VALUES (?, ?, ?, ?, ?, ?)');
     $stmt->execute([$nombre, $email, $telefono, $direccion, $hash, $foto_url]);
+    
+    // Enviar correo de bienvenida
+    require_once __DIR__ . '/../app/Core/email_helper.php';
+    enviar_correo_bienvenida($email, $nombre);
+    
     // Iniciar sesión automáticamente
 // Sesión manejada por bootstrap (DB handler)
     $stmt2 = $pdo->prepare('SELECT id, nombre, email, rol, foto FROM usuarios WHERE email = ?');
