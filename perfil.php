@@ -56,6 +56,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['ajax'])) {
         $nombre   = trim($_POST['nombre']   ?? '');
         $email    = trim($_POST['email']    ?? '');
         $telefono = trim($_POST['telefono'] ?? '');
+        
+        if (!empty($telefono)) {
+            $telefono_limpio = preg_replace('/\s+/', '', $telefono);
+            if (!preg_match('/^3\d{9}$/', $telefono_limpio)) {
+                echo json_encode(['ok' => false, 'msg' => 'El teléfono debe ser un celular válido de 10 dígitos.']); exit;
+            }
+            $telefono = $telefono_limpio;
+        }
+
         if (!$nombre || !$email) {
             echo json_encode(['ok' => false, 'msg' => 'Nombre y correo son obligatorios.']); exit;
         }
@@ -139,6 +148,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['ajax'])) {
         $direccion = trim($_POST['direccion'] ?? '');
         if (!$direccion) {
             echo json_encode(['ok' => false, 'msg' => 'La dirección es obligatoria.']); exit;
+        }
+
+        if (strlen($direccion) < 10) {
+            echo json_encode(['ok' => false, 'msg' => 'La dirección es demasiado corta. Usa un formato completo.']); exit;
+        }
+        if (!preg_match('/[a-zA-ZáéíóúÁÉÍÓÚñÑ]/', $direccion) || !preg_match('/[0-9]/', $direccion)) {
+            echo json_encode(['ok' => false, 'msg' => 'La dirección es inválida. Debe contener un formato con texto y números (ej. Cra 17 #45-20).']); exit;
+        }
+        if (preg_match('/^\.+$/', $direccion)) {
+            echo json_encode(['ok' => false, 'msg' => 'La dirección no puede contener solo puntos o símbolos.']); exit;
         }
         $pdo->prepare('UPDATE usuarios SET direccion=? WHERE id=?')->execute([$direccion, $usuario_id]);
         echo json_encode(['ok' => true, 'msg' => 'Dirección actualizada correctamente.', 'direccion' => $direccion]); exit;

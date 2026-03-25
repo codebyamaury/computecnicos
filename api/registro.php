@@ -30,6 +30,25 @@ if (strlen($password) < 6) {
     respuesta(false, 'La contraseña debe tener al menos 6 caracteres.');
 }
 
+// ─── Validar y Normalizar Teléfono (Colombiano de 10 dígitos) ───
+$telefono_limpio = preg_replace('/\s+/', '', $telefono); // Quita todos los espacios
+if (!preg_match('/^3\d{9}$/', $telefono_limpio)) {
+    respuesta(false, 'El teléfono debe ser un celular válido de 10 dígitos (ej. 3168500131).');
+}
+$telefono = $telefono_limpio;
+
+// ─── Validar Dirección ───
+if (strlen(trim($direccion)) < 10) {
+    respuesta(false, 'La dirección es demasiado corta. Usa un formato completo (ej. CR 91 # 39 I 43).');
+}
+if (!preg_match('/[a-zA-ZáéíóúÁÉÍÓÚñÑ]/', $direccion) || !preg_match('/[0-9]/', $direccion)) {
+    respuesta(false, 'La dirección es inválida. Debe contener un formato real con texto y números (ej. Cra 17 #45-20).');
+}
+if (preg_match('/^\.+$/', trim($direccion))) {
+    // Si la persona pone puros puntos, fallará por la falta de números y letras arriba, pero por si acaso.
+    respuesta(false, 'La dirección no puede contener solo puntos o símbolos vacíos.');
+}
+
 // Verificar que el email fue verificado con código
 if (!isset($_SESSION['reg_email_verified']) 
     || strtolower($_SESSION['reg_email_verified']['email']) !== strtolower($email)
