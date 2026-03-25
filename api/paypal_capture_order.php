@@ -31,6 +31,24 @@ try {
                 error_log('paypal_capture: Error guardando capture_id: ' . $e->getMessage());
             }
         }
+        
+        // Enviar correo de éxito
+        require_once __DIR__ . '/../app/Core/email_helper.php';
+        try {
+            $stmtP = $pdo->prepare("SELECT p.total, u.email, u.nombre FROM pedidos p JOIN usuarios u ON p.id_usuario = u.id WHERE p.id = ?");
+            $stmtP->execute([(int)$input['pedido_id']]);
+            $pedidoData = $stmtP->fetch(PDO::FETCH_ASSOC);
+
+            if ($pedidoData) {
+                $stmtD = $pdo->prepare("SELECT d.cantidad, d.precio_unitario as precio, pr.nombre FROM detalle_pedido d JOIN productos pr ON d.id_producto = pr.id WHERE d.id_pedido = ?");
+                $stmtD->execute([(int)$input['pedido_id']]);
+                $itemsData = $stmtD->fetchAll(PDO::FETCH_ASSOC);
+
+                enviar_correo_compra($pedidoData['email'], $pedidoData['nombre'], (int)$input['pedido_id'], $pedidoData['total'], $itemsData);
+            }
+        } catch (Exception $e) {
+            error_log('Error enviando correo de compra: ' . $e->getMessage());
+        }
     }
     echo json_encode($result);
 } catch (Throwable $e) {

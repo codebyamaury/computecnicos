@@ -150,3 +150,87 @@ function enviar_correo_bienvenida($email, $nombre) {
 
     return enviar_email($email, $subject, $htmlBody);
 }
+
+/**
+ * Enviar email de confirmación de compra exitosa
+ */
+function enviar_correo_compra($email, $nombre, $pedidoId, $total, $items) {
+    if (empty($email)) return false;
+    
+    $subject = "Confirmación de Pedido #$pedidoId — CompuTécnicos";
+    $nombreCorto = explode(' ', trim($nombre))[0];
+    $site_url = function_exists('base_url') ? base_url() : 'https://computecnicos.store';
+    $totalFmt = '$' . number_format($total, 0, ',', '.');
+    
+    $itemsHtml = '';
+    foreach ($items as $item) {
+        $precioFmt = '$' . number_format($item['precio'], 0, ',', '.');
+        $itemsHtml .= "
+        <tr>
+            <td style='padding: 12px; border-bottom: 1px solid #333; color: #fff;'>{$item['nombre']}</td>
+            <td style='padding: 12px; border-bottom: 1px solid #333; color: #ccc; text-align: center;'>{$item['cantidad']}</td>
+            <td style='padding: 12px; border-bottom: 1px solid #333; color: #fff; text-align: right;'>$precioFmt</td>
+        </tr>";
+    }
+
+    $htmlBody = "
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='UTF-8'>
+    <style>
+        body { font-family: 'Segoe UI', Arial, sans-serif; background-color: #050505; margin: 0; padding: 20px; }
+        .container { max-width: 600px; margin: 0 auto; background: #0f0f0f; border: 1px solid #222; border-radius: 12px; overflow: hidden; }
+        .header { background: linear-gradient(135deg, #16a34a, #14532d); padding: 35px 30px; text-align: center; }
+        .header h1 { color: #ffffff; margin: 0; font-size: 26px; font-weight: 800; letter-spacing: 1px; }
+        .body { padding: 40px 30px; color: #cccccc; line-height: 1.6; font-size: 15px; }
+        .body h2 { color: #ffffff; font-size: 22px; margin-top: 0; margin-bottom: 20px; }
+        .table { width: 100%; border-collapse: collapse; margin-top: 25px; margin-bottom: 25px; }
+        .table th { background: #1a1a1a; color: #888; padding: 12px; text-align: left; font-size: 13px; text-transform: uppercase; border-bottom: 2px solid #333; }
+        .total-row { font-size: 18px; font-weight: bold; color: #22c55e; text-align: right; padding-top: 20px; }
+        .btn { display: inline-block; background: #dc2626; color: #ffffff !important; padding: 14px 28px; text-decoration: none; border-radius: 8px; font-weight: bold; margin-top: 25px; transition: background 0.2s; }
+        .footer { background: #050505; padding: 25px; text-align: center; border-top: 1px solid #1a1a1a; }
+        .footer p { color: #555555; font-size: 12px; margin: 5px 0; }
+        .highlight { color: #22c55e; font-weight: 600; }
+    </style>
+</head>
+<body>
+    <div class='container'>
+        <div class='header'>
+            <h1>¡PAGO EXITOSO!</h1>
+        </div>
+        <div class='body'>
+            <h2>Hola, $nombreCorto 👋</h2>
+            <p>Queremos confirmarte que hemos recibido tu pago correctamente y tu pedido <strong style='color:#fff;'>#$pedidoId</strong> ya está en proceso.</p>
+            <p>A continuación, te presentamos el resumen de tu compra:</p>
+            
+            <table class='table'>
+                <thead>
+                    <tr>
+                        <th>Producto</th>
+                        <th style='text-align:center;'>Cant.</th>
+                        <th style='text-align:right;'>Precio Unit.</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    $itemsHtml
+                </tbody>
+            </table>
+            <div class='total-row'>Total Pagado: $totalFmt</div>
+            
+            <p style='margin-top: 35px;'>Nos estamos preparando para enviar tus productos lo antes posible. Podrás rastrear el estado de tu pedido directamente en tu perfil:</p>
+            <div style='text-align: center;'>
+                <a href='$site_url/pedidos.php' class='btn'>Ver mi pedido</a>
+            </div>
+            <p style='margin-top: 35px;'>¡Gracias por confiar en CompuTécnicos!</p>
+        </div>
+        <div class='footer'>
+            <p>Este es un correo automático, por favor no respondas a este mensaje.</p>
+            <p>&copy; " . date('Y') . " CompuTécnicos. Todos los derechos reservados.</p>
+        </div>
+    </div>
+</body>
+</html>";
+
+    return enviar_email($email, $subject, $htmlBody);
+}
