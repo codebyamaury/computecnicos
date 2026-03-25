@@ -33,7 +33,7 @@ if (container) {
 
 // Partículas
 const particlesGeometry = new THREE.BufferGeometry();
-const particlesCount = 2000;
+const particlesCount = 6000; // Incrementamos la cantidad de partículas
 const posArray = new Float32Array(particlesCount * 3);
 
 for (let i = 0; i < particlesCount * 3; i++) {
@@ -43,10 +43,10 @@ for (let i = 0; i < particlesCount * 3; i++) {
 particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
 
 const particlesMaterial = new THREE.PointsMaterial({
-    size: 0.05,
-    color: 0xff0000,
+    size: 0.06, // Tamaño más sutil
+    color: 0xff1111, // Rojo neón más intenso pero agradable
     transparent: true,
-    opacity: 0.8,
+    opacity: 0.6, // Suavizamos las partículas
     blending: THREE.AdditiveBlending
 });
 
@@ -57,10 +57,11 @@ scene.add(particlesMesh);
 // Esfera Gigante
 const geometry = new THREE.IcosahedronGeometry(65, 2);
 const material = new THREE.MeshBasicMaterial({
-    color: 0xff0000,
+    color: 0xff0505,
     wireframe: true,
     transparent: true,
-    opacity: 0.15
+    opacity: 0.12, // Muy sutil para que sea elegante y no canse la vista
+    blending: THREE.AdditiveBlending // Mantiene el brillo en las intersecciones pero suave
 });
 const sphere = new THREE.Mesh(geometry, material);
 scene.add(sphere);
@@ -72,7 +73,21 @@ const pointLight = new THREE.PointLight(0xff0000, 2, 100);
 pointLight.position.set(10, 10, 10);
 scene.add(pointLight);
 
-camera.position.z = 45;
+// Ajuste dinámico de cámara para que la esfera se vea bien en móviles (responsivo)
+function updateCameraZ() {
+    const w = window.innerWidth;
+    if (w < 768) {
+        camera.position.z = 45; // De vuelta adentro de la esfera igual que en PC
+        camera.fov = 110; // Campo de visión vertical más amplio (compensa la pantalla angosta)
+        material.opacity = 0.20; // Ligeramente más evidente sin dejar de ser elegante
+    } else {
+        camera.position.z = 45;  // Efecto inmersivo en desktop
+        camera.fov = 75; // Campo de visión normal en PC
+        material.opacity = 0.12; // Sutil en desktop
+    }
+    camera.updateProjectionMatrix();
+}
+updateCameraZ();
 
 let mouseX = 0;
 let mouseY = 0;
@@ -150,4 +165,31 @@ window.addEventListener('resize', () => {
         camera.updateProjectionMatrix();
         renderer.setSize(window.innerWidth, window.innerHeight);
     }
+    updateCameraZ(); // Adaptar escala y opacidad al redimensionar
 });
+
+// ── Anti-FOUC: ocultar canvas al navegar para evitar destello blanco ─────
+// Cuando el usuario navega fuera de esta página, el contexto WebGL se destruye
+// y puede mostrar un frame blanco. Ocultamos el canvas instantáneamente para
+// que el último frame visible sea el fondo oscuro de .hero-section.
+function hideCanvas() {
+    renderer.domElement.style.transition = 'none';
+    renderer.domElement.style.opacity = '0';
+}
+
+// Interceptar clics en links internos
+document.addEventListener('click', (e) => {
+    const link = e.target.closest('a');
+    if (!link) return;
+    const href = link.getAttribute('href');
+    if (!href) return;
+    if (link.target === '_blank' || link.target === '_new') return;
+    if (href.charAt(0) === '#' || href.startsWith('javascript:')) return;
+    if (href.startsWith('mailto:') || href.startsWith('tel:')) return;
+    if (href.startsWith('http') && !href.includes(window.location.hostname)) return;
+    hideCanvas();
+});
+
+// También al enviar formularios y al descargar la página
+window.addEventListener('beforeunload', hideCanvas);
+window.addEventListener('pagehide', hideCanvas);

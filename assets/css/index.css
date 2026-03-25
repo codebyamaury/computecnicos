@@ -32,35 +32,18 @@ body {
   border-bottom: 1px solid var(--neon-red-dim);
 }
 
-/* Grid de fondo con perspectiva */
-.hero-section::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-image:
-    linear-gradient(var(--grid-color) 1px, transparent 1px),
-    linear-gradient(90deg, var(--grid-color) 1px, transparent 1px);
-  background-size: 40px 40px;
-  background-position: center center;
-  transform: perspective(500px) rotateX(60deg) scale(2);
-  transform-origin: center top;
-  opacity: 0.3;
-  animation: gridMove 20s linear infinite;
-  pointer-events: none;
+/* Contenedor del canvas 3D: fondo negro para evitar destello blanco durante la inicialización de WebGL */
+#hero-canvas-container {
+  background-color: #000 !important;
+}
+#hero-canvas-container canvas {
+  background-color: transparent !important;
+  display: block;
 }
 
-@keyframes gridMove {
-  0% {
-    background-position: center 0;
-  }
-
-  100% {
-    background-position: center 40px;
-  }
-}
+/* Grid de fondo con perspectiva (Eliminado) */
+/* .hero-section::before { ... } */
+/* @keyframes gridMove { ... } */
 
 .hero-content {
   position: relative;
@@ -253,7 +236,7 @@ body {
   border: 1px solid #333;
   position: relative;
   transition: all 0.3s ease;
-  overflow: hidden;
+  overflow: visible;
 }
 
 /* Esquinas Tech */
@@ -296,7 +279,7 @@ body {
 
 /* Imágenes en Cards */
 .card-image-container {
-  background: #ffffff;
+  background: #1a1a1a;
   height: 200px;
   display: flex;
   align-items: center;
@@ -1724,6 +1707,18 @@ footer .text-center.text-gray-500 {
   padding-bottom: 1rem;
 }
 
+.product-card {
+    background: rgba(20, 20, 20, 0.6);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 1rem;
+    overflow: visible;
+    cursor: pointer;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+}
 
 .team-card {
   background: rgba(20, 20, 20, 0.8);

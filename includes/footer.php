@@ -52,7 +52,7 @@
         <div>
             <h3 class="text-base sm:text-lg font-bold mb-2 border-b-2 border-red-600 inline-block pb-1">Contacto</h3>
             <ul class="space-y-1 mt-2 text-xs sm:text-sm">
-                <li>Email: info@computecnicos.com</li>
+                <li>Email: soportecomputecnicos@yahoo.com</li>
                 <li>Tel: +57 316 850 0131</li>
                 <li>Dirección: Paseo Bolívar Cra 17 #45-20, Cartagena</li>
             </ul>

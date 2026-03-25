@@ -1,5 +1,6 @@
 <?php
 // Sesión manejada por bootstrap (DB handler)
+// DEPLOY VERIFICATION: 2026-03-17 10:16
 require_once __DIR__ . '/app/Core/bootstrap.php';
 
 $id = isset($_GET['id']) ? intval($_GET['id']) : 0;
@@ -78,11 +79,26 @@ try {
 ?>
 <?php
 $page_title = htmlspecialchars($producto['nombre']) . ' | Computécnicos';
-$extra_css = '<link rel="stylesheet" href="' . asset('css/index.css') . '">' . "\n" .
-    '<link rel="stylesheet" href="' . asset('css/producto.css') . '">';
+$extra_css = '<link rel="stylesheet" href="' . asset('css/index.css') . '?v=' . time() . '">' . "\n" .
+    '<link rel="stylesheet" href="' . asset('css/producto.css') . '?v=' . time() . '">';
 include 'includes/header.php';
 ?>
 
+<?php
+// Procesar video URL si existe (antes de la galería)
+$videoEmbedUrl = null;
+if (!empty($producto['video_url'])) {
+    $vurl = trim($producto['video_url']);
+    if (preg_match('/\.(mp4|webm|ogg)(\?|$)/i', $vurl)) {
+        if (strpos($vurl, 'http') !== 0) {
+            $videoEmbedUrl = rtrim(base_url(), '/') . '/' . $vurl;
+        } else {
+            $videoEmbedUrl = $vurl;
+        }
+    }
+}
+$tieneVideo = !empty($videoEmbedUrl);
+?>
 <main class="flex-1 bg-[#0a0a0a] text-white">
 
     <!-- Product Main -->
@@ -90,21 +106,25 @@ include 'includes/header.php';
 
         <!-- Galería -->
         <div class="prod-gallery">
-            <?php if (count($galeria) > 1): ?>
+            <?php if (count($galeria) > 1 || $tieneVideo): ?>
                 <div class="prod-thumbs">
                     <?php foreach ($galeria as $idx => $img): ?>
                         <img src="<?php echo htmlspecialchars($img); ?>" data-src="<?php echo htmlspecialchars($img); ?>"
                             alt="Miniatura <?php echo $idx + 1; ?>"
                             class="prod-thumb thumb-img <?php echo $idx === 0 ? 'active' : ''; ?>">
                     <?php endforeach; ?>
+                    <?php if ($tieneVideo): ?>
+                        <div class="prod-thumb prod-thumb-video" id="thumb-video" data-video="<?php echo htmlspecialchars($videoEmbedUrl); ?>" title="Ver video">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+                            <span>VIDEO</span>
+                        </div>
+                    <?php endif; ?>
                 </div>
             <?php endif; ?>
 
             <div class="prod-img-main">
                 <div class="prod-badges">
-                    <?php if ($enOferta): ?>
-                        <span class="prod-badge prod-badge-offer">OFERTA</span>
-                    <?php endif; ?>
+
                     <?php if ($esNuevo): ?>
                         <span class="prod-badge prod-badge-new">NUEVO</span>
                     <?php endif; ?>
@@ -114,6 +134,15 @@ include 'includes/header.php';
                         src="<?php echo htmlspecialchars($galeria[0] ?? 'https://via.placeholder.com/500x500?text=Sin+Imagen'); ?>"
                         alt="<?php echo htmlspecialchars($producto['nombre']); ?>">
                 </div>
+                <!-- Video player (oculto por defecto, se muestra al clic en thumbnail de video) -->
+                <?php if ($tieneVideo): ?>
+                <div class="prod-video-wrapper" id="gallery-video-wrapper" style="display:none;">
+                    <video id="gallery-video" controls preload="metadata" playsinline style="width:100%;height:100%;object-fit:contain;background:#000;border-radius:0.75rem">
+                        <source src="<?php echo htmlspecialchars($videoEmbedUrl); ?>" type="video/mp4">
+                        Tu navegador no soporta la reproducción de videos.
+                    </video>
+                </div>
+                <?php endif; ?>
                 <button class="prod-zoom-btn" id="open-lightbox" title="Ver imagen completa">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg>
                 </button>
@@ -153,12 +182,67 @@ include 'includes/header.php';
 
             <!-- Precio -->
             <div class="prod-price-block">
-                <div class="prod-price">$<?php echo number_format($producto['precio'], 0, ',', '.'); ?></div>
+                <?php
+                    $priceData = get_product_price_data($producto);
+                    $tieneDescuento = $priceData['tiene_descuento'];
+                    $precioFinal = $priceData['precio'];
+                    $precioOriginal = $priceData['precio_original'];
+                    $porcentajeDescuento = $priceData['porcentaje'];
+                    $ahorro = $priceData['ahorro'];
+                ?>
+                <?php if ($tieneDescuento): ?>
+                    <div class="prod-discount-container">
+                        <div class="prod-price-row">
+                            <span class="prod-price-original">$<?php echo number_format($precioOriginal, 0, ',', '.'); ?></span>
+                            <span class="prod-discount-badge">-<?php echo number_format($porcentajeDescuento, 0); ?>%</span>
+                        </div>
+                        <div class="prod-price">$<?php echo number_format($precioFinal, 0, ',', '.'); ?></div>
+                        <div class="prod-savings">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>
+                            Ahorras $<?php echo number_format($ahorro, 0, ',', '.'); ?> COP
+                        </div>
+                    </div>
+                <?php else: ?>
+                    <div class="prod-price">$<?php echo number_format($precioFinal, 0, ',', '.'); ?></div>
+                <?php endif; ?>
                 <span class="prod-price-iva">IVA incluido</span>
             </div>
 
+            <?php if ($enOferta && !empty($producto['oferta_hasta'])): ?>
+            <!-- Countdown Timer -->
+            <div class="prod-offer-countdown" id="prod-offer-countdown" data-end="<?php echo htmlspecialchars($producto['oferta_hasta']); ?>">
+                <div class="prod-countdown-header">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                    <span>¡Oferta por tiempo limitado!</span>
+                </div>
+                <div class="prod-countdown-boxes">
+                    <div class="prod-countdown-box">
+                        <span id="pcd-days" class="prod-countdown-num">--</span>
+                        <span class="prod-countdown-label">Días</span>
+                    </div>
+                    <div class="prod-countdown-sep">:</div>
+                    <div class="prod-countdown-box">
+                        <span id="pcd-hours" class="prod-countdown-num">--</span>
+                        <span class="prod-countdown-label">Horas</span>
+                    </div>
+                    <div class="prod-countdown-sep">:</div>
+                    <div class="prod-countdown-box">
+                        <span id="pcd-mins" class="prod-countdown-num">--</span>
+                        <span class="prod-countdown-label">Min</span>
+                    </div>
+                    <div class="prod-countdown-sep">:</div>
+                    <div class="prod-countdown-box">
+                        <span id="pcd-secs" class="prod-countdown-num">--</span>
+                        <span class="prod-countdown-label">Seg</span>
+                    </div>
+                </div>
+            </div>
+            <?php endif; ?>
+
             <!-- Divider -->
             <div class="prod-divider"></div>
+
+
 
             <!-- Descripción -->
             <div class="prod-desc-card">
@@ -634,8 +718,42 @@ include 'includes/header.php';
                 if (mainImg) mainImg.src = src;
                 thumbs.forEach(t => t.classList.remove('active'));
                 this.classList.add('active');
+                // Si estábamos viendo el video, ocultarlo y mostrar la imagen
+                const videoWrapper = document.getElementById('gallery-video-wrapper');
+                const videoEl = document.getElementById('gallery-video');
+                const videoThumb = document.getElementById('thumb-video');
+                if (videoWrapper) {
+                    videoWrapper.style.display = 'none';
+                    if (mainImg) mainImg.parentElement.style.display = '';
+                    if (videoEl) videoEl.pause();
+                    if (videoThumb) videoThumb.classList.remove('active');
+                }
+                // Mostrar la lupa de nuevo al volver a imagen
+                const zoomBtn = document.getElementById('open-lightbox');
+                if (zoomBtn) zoomBtn.style.display = '';
             });
         });
+
+        // ── Video en galería ──
+        const videoThumbBtn = document.getElementById('thumb-video');
+        const galleryVideoWrapper = document.getElementById('gallery-video-wrapper');
+        const galleryVideo = document.getElementById('gallery-video');
+
+        if (videoThumbBtn && galleryVideoWrapper) {
+            videoThumbBtn.addEventListener('click', function() {
+                // Ocultar imagen, mostrar video
+                if (mainImg) mainImg.parentElement.style.display = 'none';
+                galleryVideoWrapper.style.display = 'flex';
+                // Quitar active de todos los thumbs imagen
+                thumbs.forEach(t => t.classList.remove('active'));
+                videoThumbBtn.classList.add('active');
+                // Ocultar la lupa cuando hay video
+                const zoomBtn = document.getElementById('open-lightbox');
+                if (zoomBtn) zoomBtn.style.display = 'none';
+            });
+        }
+
+        // Al hacer clic en imagen del thumb, volver a imagen (ya manejado arriba)
 
         // ── Lightbox (visor fullscreen) ──
         const lightbox = document.getElementById('prod-lightbox');
@@ -1143,6 +1261,40 @@ function openReviewImage(src) {
     overlay.addEventListener('click', () => overlay.remove());
     document.body.appendChild(overlay);
 }
+</script>
+<script>
+// ── Countdown Timer for Product Offer ──
+(function() {
+    const el = document.getElementById('prod-offer-countdown');
+    if (!el) return;
+    const endStr = el.dataset.end;
+    if (!endStr) return;
+    const endDate = new Date(endStr + 'T23:59:59');
+
+    function update() {
+        const now = new Date();
+        const diff = endDate - now;
+        if (diff <= 0) {
+            document.getElementById('pcd-days').textContent = '0';
+            document.getElementById('pcd-hours').textContent = '00';
+            document.getElementById('pcd-mins').textContent = '00';
+            document.getElementById('pcd-secs').textContent = '00';
+            // Recargar la página para aplicar el precio original automáticamente
+            setTimeout(() => window.location.reload(), 1500);
+            return;
+        }
+        const d = Math.floor(diff / 86400000);
+        const h = Math.floor((diff % 86400000) / 3600000);
+        const m = Math.floor((diff % 3600000) / 60000);
+        const s = Math.floor((diff % 60000) / 1000);
+        document.getElementById('pcd-days').textContent = d;
+        document.getElementById('pcd-hours').textContent = String(h).padStart(2, '0');
+        document.getElementById('pcd-mins').textContent = String(m).padStart(2, '0');
+        document.getElementById('pcd-secs').textContent = String(s).padStart(2, '0');
+    }
+    update();
+    setInterval(update, 1000);
+})();
 </script>
 <script>if (typeof lucide !== 'undefined') lucide.createIcons();</script>
 </body>

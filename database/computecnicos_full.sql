@@ -18,7 +18,8 @@ CREATE TABLE IF NOT EXISTS usuarios (
     password VARCHAR(255) NOT NULL,
     foto VARCHAR(255),
     fecha_registro DATETIME DEFAULT CURRENT_TIMESTAMP,
-    rol ENUM('cliente', 'admin') NOT NULL DEFAULT 'cliente'
+    rol ENUM('cliente', 'admin') NOT NULL DEFAULT 'cliente',
+    es_principal TINYINT(1) NOT NULL DEFAULT 0
 );
 
 -- Tabla de categorías
@@ -49,6 +50,9 @@ CREATE TABLE IF NOT EXISTS productos (
     destacado TINYINT(1) NOT NULL DEFAULT 0,
     nuevo_hasta DATE DEFAULT NULL,
     oferta_hasta DATE DEFAULT NULL,
+    precio_original DECIMAL(12, 2) DEFAULT NULL,
+    descuento DECIMAL(5, 2) DEFAULT NULL,
+    video_url VARCHAR(500) DEFAULT NULL,
     fecha_creacion DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (id_categoria) REFERENCES categorias (id) ON DELETE SET NULL,
     FOREIGN KEY (id_marca) REFERENCES marcas (id) ON DELETE SET NULL
@@ -79,6 +83,7 @@ CREATE TABLE IF NOT EXISTS pedidos (
     total DECIMAL(12, 2) NOT NULL,
     direccion_envio VARCHAR(255),
     numero_guia VARCHAR(100) NULL,
+    notificado_admin TINYINT(1) NOT NULL DEFAULT 0,
     FOREIGN KEY (id_usuario) REFERENCES usuarios (id) ON DELETE CASCADE
 );
 
@@ -159,6 +164,25 @@ CREATE TABLE IF NOT EXISTS movimientos_inventario (
     FOREIGN KEY (id_producto) REFERENCES productos (id) ON DELETE CASCADE,
     FOREIGN KEY (id_usuario) REFERENCES usuarios (id) ON DELETE SET NULL,
     FOREIGN KEY (id_proveedor) REFERENCES proveedores (id) ON DELETE SET NULL
+);
+
+-- Tabla de sesiones PHP (DB Handler)
+CREATE TABLE IF NOT EXISTS sessions (
+    id VARCHAR(128) NOT NULL PRIMARY KEY,
+    data TEXT NOT NULL,
+    expires_at DATETIME NOT NULL,
+    INDEX idx_expires (expires_at)
+);
+
+-- Tabla de tokens para "Recordarme"
+CREATE TABLE IF NOT EXISTS remember_tokens (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    id_usuario INT NOT NULL,
+    token_hash VARCHAR(64) NOT NULL,
+    expires_at DATETIME NOT NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (id_usuario) REFERENCES usuarios (id) ON DELETE CASCADE,
+    INDEX idx_token (token_hash)
 );
 
 -- =====================================

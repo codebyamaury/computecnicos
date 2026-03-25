@@ -84,34 +84,55 @@
           <div class="reg-progress-dot" id="reg-dot-3"></div>
           <div class="reg-progress-dot" id="reg-dot-4"></div>
           <div class="reg-progress-dot" id="reg-dot-5"></div>
+          <div class="reg-progress-dot" id="reg-dot-6"></div>
         </div>
 
         <!-- PASO 1: Nombre -->
         <div class="reg-step reg-step-active" id="reg-step-1">
-          <div class="reg-step-title">Paso 1 de 5 — ¿Cuál es tu nombre?</div>
+          <div class="reg-step-title">Paso 1 de 6 — ¿Cuál es tu nombre?</div>
           <div class="glass-input-group">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 12A4 4 0 118 12a4 4 0 018 0z"/></svg>
             <input type="text" id="register-simple-nombre" class="glass-input" placeholder="Nombre completo" autofocus>
           </div>
-          <button type="button" class="reg-next-btn" style="width:100%;margin-top:14px;" onclick="regValidateAndNext(1)">SIGUIENTE →</button>
+          <button type="button" class="glass-btn" style="margin-top:14px;" onclick="regValidateAndNext(1)">SIGUIENTE →</button>
         </div>
 
         <!-- PASO 2: Email -->
         <div class="reg-step" id="reg-step-2">
-          <div class="reg-step-title">Paso 2 de 5 — Tu correo electrónico</div>
+          <div class="reg-step-title">Paso 2 de 6 — Tu correo electrónico</div>
           <div class="glass-input-group">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
             <input type="email" id="register-simple-email" class="glass-input" placeholder="Correo electrónico">
           </div>
           <div style="display:flex;gap:8px;margin-top:14px;">
             <button type="button" class="reg-back-btn" style="flex:1;" onclick="regGoTo(1)">← ATRÁS</button>
-            <button type="button" class="reg-next-btn" style="flex:2;" onclick="regValidateAndNext(2)">SIGUIENTE →</button>
+            <button type="button" class="glass-btn" style="flex:2;" id="reg-send-code-btn" onclick="regSendVerificationCode()">ENVIAR CÓDIGO →</button>
           </div>
         </div>
 
-        <!-- PASO 3: Contraseña -->
+        <!-- PASO 3: Verificación de código -->
         <div class="reg-step" id="reg-step-3">
-          <div class="reg-step-title">Paso 3 de 5 — Crea una contraseña</div>
+          <div class="reg-step-title">Paso 3 de 6 — Verifica tu correo</div>
+          <p style="color:#999;font-size:0.82rem;text-align:center;margin:0 0 14px;line-height:1.5">
+            Enviamos un código de 6 dígitos a <strong id="reg-verify-email-display" style="color:#ff4444"></strong>. Ingrésalo a continuación.
+          </p>
+          <div class="glass-input-group">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+            <input type="text" id="register-simple-codigo" class="glass-input" placeholder="Código de 6 dígitos" maxlength="6" inputmode="numeric" pattern="[0-9]*" autocomplete="one-time-code">
+          </div>
+          <div id="reg-code-timer" style="text-align:center;margin:8px 0;font-size:0.78rem;color:#666"></div>
+          <div style="text-align:center;margin-bottom:10px">
+            <button type="button" id="reg-resend-btn" class="reg-resend-link" onclick="regResendCode()" disabled>Reenviar código</button>
+          </div>
+          <div style="display:flex;gap:8px;margin-top:8px;">
+            <button type="button" class="reg-back-btn" style="flex:1;" onclick="regGoTo(2)">← ATRÁS</button>
+            <button type="button" class="glass-btn" style="flex:2;" id="reg-verify-btn" onclick="regVerifyCode()">VERIFICAR ✓</button>
+          </div>
+        </div>
+
+        <!-- PASO 4: Contraseña -->
+        <div class="reg-step" id="reg-step-4">
+          <div class="reg-step-title">Paso 4 de 6 — Crea una contraseña</div>
           <div class="glass-input-group" style="margin-bottom:10px;">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 11c1.657 0 3-1.343 3-3V7a3 3 0 10-6 0v1c0 1.657 1.343 3 3 3zM5 11h14v10a2 2 0 01-2 2H7a2 2 0 01-2-2V11z"/></svg>
             <input type="password" id="register-simple-password" class="glass-input" placeholder="Contraseña (mín. 6 caracteres)">
@@ -121,34 +142,34 @@
             <input type="password" id="register-simple-password2" class="glass-input" placeholder="Repetir contraseña">
           </div>
           <div style="display:flex;gap:8px;margin-top:14px;">
-            <button type="button" class="reg-back-btn" style="flex:1;" onclick="regGoTo(2)">← ATRÁS</button>
-            <button type="button" class="reg-next-btn" style="flex:2;" onclick="regValidateAndNext(3)">SIGUIENTE →</button>
+            <button type="button" class="reg-back-btn" style="flex:1;" onclick="regGoTo(3)">← ATRÁS</button>
+            <button type="button" class="glass-btn" style="flex:2;" onclick="regValidateAndNext(4)">SIGUIENTE →</button>
           </div>
         </div>
 
-        <!-- PASO 4: Dirección -->
-        <div class="reg-step" id="reg-step-4">
-          <div class="reg-step-title">Paso 4 de 5 — Tu dirección</div>
+        <!-- PASO 5: Dirección -->
+        <div class="reg-step" id="reg-step-5">
+          <div class="reg-step-title">Paso 5 de 6 — Tu dirección</div>
           <div class="glass-input-group">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 12.414a4 4 0 10-5.657 5.657l4.243 4.243a8 8 0 1011.314-11.314l-4.243 4.243z"/></svg>
             <input type="text" id="register-simple-direccion" class="glass-input" placeholder="Dirección completa">
           </div>
           <div style="display:flex;gap:8px;margin-top:14px;">
-            <button type="button" class="reg-back-btn" style="flex:1;" onclick="regGoTo(3)">← ATRÁS</button>
-            <button type="button" class="reg-next-btn" style="flex:2;" onclick="regValidateAndNext(4)">SIGUIENTE →</button>
+            <button type="button" class="reg-back-btn" style="flex:1;" onclick="regGoTo(4)">← ATRÁS</button>
+            <button type="button" class="glass-btn" style="flex:2;" onclick="regValidateAndNext(5)">SIGUIENTE →</button>
           </div>
         </div>
 
-        <!-- PASO 5: Teléfono + Submit -->
-        <div class="reg-step" id="reg-step-5">
-          <div class="reg-step-title">Paso 5 de 5 — Tu teléfono</div>
+        <!-- PASO 6: Teléfono + Submit -->
+        <div class="reg-step" id="reg-step-6">
+          <div class="reg-step-title">Paso 6 de 6 — Tu teléfono</div>
           <div class="glass-input-group">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6.62 10.79a15.053 15.053 0 006.59 6.59l2.2-2.2a1 1 0 011.11-.21c1.21.49 2.53.76 3.88.76a1 1 0 011 1v3.5a1 1 0 01-1 1C10.07 22 2 13.93 2 4.5A1 1 0 013 3.5H6.5a1 1 0 011 1c0 1.35.27 2.67.76 3.88a1 1 0 01-.21 1.11l-2.2 2.2z"/></svg>
             <input type="tel" id="register-simple-telefono" class="glass-input" placeholder="Número de teléfono">
           </div>
           <div style="display:flex;gap:8px;margin-top:14px;">
-            <button type="button" class="reg-back-btn" style="flex:1;" onclick="regGoTo(4)">← ATRÁS</button>
-            <button type="submit" class="reg-next-btn" style="flex:2;" id="reg-submit-btn">✓ COMPLETAR REGISTRO</button>
+            <button type="button" class="reg-back-btn" style="flex:1;" onclick="regGoTo(5)">← ATRÁS</button>
+            <button type="submit" class="glass-btn" style="flex:2;" id="reg-submit-btn">✓ COMPLETAR REGISTRO</button>
           </div>
         </div>
       </form>
@@ -224,7 +245,11 @@ document.addEventListener('DOMContentLoaded', function() {
 // ========== REGISTRO MULTI-PASO ==========
 
 var regCurrentStep = 1;
-var regTotalSteps = 5;
+var regTotalSteps = 6;
+var regCodeSent = false;
+var regCodeVerified = false;
+var regResendTimer = null;
+var regResendCountdown = 0;
 
 function regShowError(msg) {
   var err = document.getElementById('modal-register-error');
@@ -267,21 +292,178 @@ function regValidateAndNext(step) {
     var v = document.getElementById('register-simple-nombre').value.trim();
     if (!v) { regShowError('Ingresa tu nombre completo para continuar.'); return; }
     regGoTo(2);
-  } else if (step === 2) {
-    var v = document.getElementById('register-simple-email').value.trim();
-    if (!v || v.indexOf('@') === -1 || v.indexOf('.') === -1) { regShowError('Ingresa un correo electrónico válido.'); return; }
-    regGoTo(3);
-  } else if (step === 3) {
+  } else if (step === 4) {
     var p1 = document.getElementById('register-simple-password').value;
     var p2 = document.getElementById('register-simple-password2').value;
     if (p1.length < 6) { regShowError('La contraseña debe tener al menos 6 caracteres.'); return; }
     if (p1 !== p2) { regShowError('Las contraseñas no coinciden.'); return; }
-    regGoTo(4);
-  } else if (step === 4) {
+    regGoTo(5);
+  } else if (step === 5) {
     var v = document.getElementById('register-simple-direccion').value.trim();
     if (!v) { regShowError('Ingresa tu dirección para continuar.'); return; }
-    regGoTo(5);
+    regGoTo(6);
   }
+}
+
+// ========== VALIDACIÓN DE EMAIL GLOBAL ==========
+
+/**
+ * Valida formato de email + detecta dominios sospechosos/typos.
+ * Retorna { ok: true } o { ok: false, msg: 'razón' }
+ */
+function validarEmail(email) {
+    if (!email || typeof email !== 'string') return { ok: false, msg: 'Ingresa un correo electrónico.' };
+    email = email.trim().toLowerCase();
+    var re = /^[a-zA-Z0-9](?:[a-zA-Z0-9._%+\-]*[a-zA-Z0-9])?@[a-zA-Z0-9](?:[a-zA-Z0-9\-]*[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9\-]*[a-zA-Z0-9])?)*\.[a-zA-Z]{2,10}$/;
+    if (!re.test(email)) return { ok: false, msg: 'El correo no tiene un formato válido (ejemplo: nombre@gmail.com).' };
+    if (email.split('@')[0].indexOf('..') !== -1) return { ok: false, msg: 'El correo no puede tener puntos consecutivos.' };
+    var domain = email.split('@')[1];
+    var base = domain.split('.')[0];
+    var pv = {
+        'gmail':['gmail.com'],'yahoo':['yahoo.com','yahoo.es','yahoo.com.mx','yahoo.com.co','yahoo.com.ar','yahoo.co.uk','ymail.com'],
+        'outlook':['outlook.com','outlook.es','outlook.com.mx','outlook.co','outlook.com.co'],
+        'hotmail':['hotmail.com','hotmail.es','hotmail.com.mx','hotmail.co','hotmail.com.co','hotmail.co.uk'],
+        'live':['live.com','live.com.mx','live.com.co'],'icloud':['icloud.com'],'me':['me.com'],'mac':['mac.com'],
+        'aol':['aol.com'],'protonmail':['protonmail.com','proton.me','pm.me'],'zoho':['zoho.com','zohomail.com']
+    };
+    if (pv[base] && pv[base].indexOf(domain) === -1) {
+        return { ok: false, msg: 'El dominio "' + domain + '" no es válido. ¿Quisiste escribir @' + pv[base][0] + '?' };
+    }
+    var typos = {'gmal':'gmail.com','gmial':'gmail.com','gmaill':'gmail.com','gamil':'gmail.com','gnail':'gmail.com','gmai':'gmail.com','gimail':'gmail.com','gmil':'gmail.com','yaho':'yahoo.com','yahooo':'yahoo.com','yhaoo':'yahoo.com','outllok':'outlook.com','outlok':'outlook.com','outloock':'outlook.com','hotmal':'hotmail.com','hotmial':'hotmail.com','hotmaill':'hotmail.com','htmail':'hotmail.com','htomail':'hotmail.com','iclould':'icloud.com'};
+    if (typos[base]) {
+        return { ok: false, msg: 'Parece un error de escritura. ¿Quisiste escribir @' + typos[base] + '?' };
+    }
+    return { ok: true };
+}
+
+// ========== ENVÍO Y VERIFICACIÓN DE CÓDIGO ==========
+
+async function regSendVerificationCode() {
+  regHideError();
+  var email = document.getElementById('register-simple-email').value.trim();
+  var nombre = document.getElementById('register-simple-nombre').value.trim();
+  var emailCheck = validarEmail(email);
+  if (!emailCheck.ok) {
+    regShowError(emailCheck.msg);
+    return;
+  }
+
+  var btn = document.getElementById('reg-send-code-btn');
+  btn.disabled = true;
+  btn.textContent = 'Enviando...';
+
+  try {
+    var fd = new FormData();
+    fd.append('email', email);
+    fd.append('nombre', nombre);
+    var res = await fetch('api/enviar_codigo_registro.php', { method: 'POST', body: fd });
+    var data = await res.json();
+
+    if (data.ok) {
+      regCodeSent = true;
+      document.getElementById('reg-verify-email-display').textContent = email;
+      regGoTo(3);
+      regStartResendTimer(60);
+    } else {
+      regShowError(data.msg || 'Error al enviar código.');
+    }
+  } catch(err) {
+    regShowError('Error de conexión. Intenta de nuevo.');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'ENVIAR CÓDIGO →';
+  }
+}
+
+async function regVerifyCode() {
+  regHideError();
+  var codigo = document.getElementById('register-simple-codigo').value.trim();
+  var email = document.getElementById('register-simple-email').value.trim();
+
+  if (!codigo || codigo.length !== 6) {
+    regShowError('Ingresa el código de 6 dígitos.');
+    return;
+  }
+
+  var btn = document.getElementById('reg-verify-btn');
+  btn.disabled = true;
+  btn.textContent = 'Verificando...';
+
+  try {
+    var fd = new FormData();
+    fd.append('codigo', codigo);
+    fd.append('email', email);
+    var res = await fetch('api/verificar_codigo_registro.php', { method: 'POST', body: fd });
+    var data = await res.json();
+
+    if (data.ok) {
+      regCodeVerified = true;
+      if (typeof showToast === 'function') showToast('¡Correo verificado!', 'success', 3000);
+      regGoTo(4);
+    } else {
+      regShowError(data.msg || 'Código incorrecto.');
+    }
+  } catch(err) {
+    regShowError('Error de conexión. Intenta de nuevo.');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'VERIFICAR ✓';
+  }
+}
+
+async function regResendCode() {
+  regHideError();
+  var email = document.getElementById('register-simple-email').value.trim();
+  var nombre = document.getElementById('register-simple-nombre').value.trim();
+
+  var btn = document.getElementById('reg-resend-btn');
+  btn.disabled = true;
+  btn.textContent = 'Enviando...';
+
+  try {
+    var fd = new FormData();
+    fd.append('email', email);
+    fd.append('nombre', nombre);
+    var res = await fetch('api/enviar_codigo_registro.php', { method: 'POST', body: fd });
+    var data = await res.json();
+
+    if (data.ok) {
+      regStartResendTimer(60);
+      if (typeof showToast === 'function') showToast('Nuevo código enviado a tu correo.', 'success', 3000);
+    } else {
+      regShowError(data.msg || 'Error al reenviar código.');
+      btn.disabled = false;
+      btn.textContent = 'Reenviar código';
+    }
+  } catch(err) {
+    regShowError('Error de conexión.');
+    btn.disabled = false;
+    btn.textContent = 'Reenviar código';
+  }
+}
+
+function regStartResendTimer(seconds) {
+  regResendCountdown = seconds;
+  var btn = document.getElementById('reg-resend-btn');
+  var timerEl = document.getElementById('reg-code-timer');
+  btn.disabled = true;
+
+  if (regResendTimer) clearInterval(regResendTimer);
+
+  function tick() {
+    if (regResendCountdown <= 0) {
+      clearInterval(regResendTimer);
+      btn.disabled = false;
+      btn.textContent = 'Reenviar código';
+      if (timerEl) timerEl.textContent = '';
+      return;
+    }
+    btn.textContent = 'Reenviar en ' + regResendCountdown + 's';
+    if (timerEl) timerEl.textContent = 'El código expira en 10 minutos';
+    regResendCountdown--;
+  }
+  tick();
+  regResendTimer = setInterval(tick, 1000);
 }
 
 // Avanzar con Enter en cada paso
@@ -332,11 +514,7 @@ document.addEventListener('DOMContentLoaded', function() {
       var data = await res.json();
 
       if (data.ok) {
-        if (typeof showToast === 'function') {
-          showToast(data.msg, 'success');
-        } else {
-          alert(data.msg);
-        }
+        showToast(data.msg, 'success', 4000);
         setTimeout(function() { window.location.reload(); }, 1000);
       } else {
         regShowError(data.msg || 'Error al registrarse.');

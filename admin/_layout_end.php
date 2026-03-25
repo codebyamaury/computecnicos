@@ -256,6 +256,16 @@ async function abrirModalEditarProducto(id, event) {
             document.body.appendChild(container);
         }
         container.innerHTML = html;
+        // Ejecutar scripts inyectados (innerHTML no ejecuta <script> automáticamente)
+        container.querySelectorAll('script').forEach(function(oldScript) {
+            const newScript = document.createElement('script');
+            if (oldScript.src) {
+                newScript.src = oldScript.src;
+            } else {
+                newScript.textContent = oldScript.textContent;
+            }
+            oldScript.parentNode.replaceChild(newScript, oldScript);
+        });
         document.getElementById('modal-edit-bg').classList.add('show');
         document.getElementById('modal-edit-producto').classList.remove('hidden');
         document.getElementById('modal-edit-producto').classList.add('show');

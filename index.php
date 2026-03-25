@@ -122,8 +122,9 @@ include __DIR__ . '/includes/header.php';
     <div class="carousel-destacados-wrap" style="position:relative;margin-top:3rem">
         <div class="carousel-destacados" id="carousel-destacados">
             <?php foreach ($productos_destacados as $p):
+                $priceData = get_product_price_data($p);
                 $esNuevo = !empty($p['nuevo_hasta']) && strtotime($p['nuevo_hasta']) >= strtotime('today');
-                $enOferta = !empty($p['oferta']) && (empty($p['oferta_hasta']) || strtotime($p['oferta_hasta']) >= strtotime('today'));
+                $enOferta = $priceData['tiene_descuento'];
             ?>
                 <article class="product-card carousel-dest-card" onclick="window.location.href='producto.php?id=<?php echo intval($p['id']); ?>'">
                     <div class="product-image-container">
@@ -133,9 +134,8 @@ include __DIR__ . '/includes/header.php';
                             <?php if ($esNuevo): ?>
                                 <span class="tech-badge tech-badge-new">NUEVO</span>
                             <?php endif; ?>
-                            <?php if ($enOferta): ?>
-                                <span class="tech-badge tech-badge-offer">OFERTA</span>
-                            <?php endif; ?>
+
+
                         </div>
                         <div class="product-overlay">
                             <span class="view-product-btn">Ver detalles</span>
@@ -153,7 +153,17 @@ include __DIR__ . '/includes/header.php';
                             <?php endif; ?>
                         </div>
                         <div class="product-footer">
-                            <div class="product-price">$<?php echo number_format($p['precio'], 0, ',', '.'); ?></div>
+                            <?php if ($priceData['tiene_descuento']): ?>
+                                <div class="product-price-container">
+                                    <span class="product-price-old">$<?php echo number_format($priceData['precio_original'], 0, ',', '.'); ?></span>
+                                    <div class="product-price-row">
+                                        <div class="product-price">$<?php echo number_format($priceData['precio'], 0, ',', '.'); ?></div>
+                                        <span class="product-discount-badge-small">-<?php echo number_format($priceData['porcentaje'], 0); ?>%</span>
+                                    </div>
+                                </div>
+                            <?php else: ?>
+                                <div class="product-price">$<?php echo number_format($priceData['precio'], 0, ',', '.'); ?></div>
+                            <?php endif; ?>
                         </div>
                     </div>
                 </article>
@@ -249,7 +259,7 @@ include __DIR__ . '/includes/header.php';
             <div class="team-img-wrapper">
                 <img src="assets/images/Luis.jpg" onerror="this.onerror=null;this.src='https://ui-avatars.com/api/?name=Luis+Perez&background=0a0a0a&color=dc2626&size=200&bold=true';" alt="Luis David Perez Coa">
             </div>
-            <h3 class="team-name">Luis David<br>Perez Coa</h3>
+            <h3 class="team-name">Luis Daniel<br>Perez Coa</h3>
             <p class="team-role">Tester</p>
         </div>
     </div>
@@ -274,7 +284,7 @@ include __DIR__ . '/includes/header.php';
             const data = await res.json();
 
             if (data.ok) {
-                alert(data.msg);
+                showToast(data.msg || 'Producto agregado al carrito.', 'success', 4000);
                 // Actualizar contador del carrito en el header si existe
                 const carritoCounter = document.querySelector('.cart-counter') || document.querySelector('.bg-red-600.text-xs');
                 if (carritoCounter) {
@@ -284,10 +294,10 @@ include __DIR__ . '/includes/header.php';
                     }
                 }
             } else {
-                alert('Error: ' + data.msg);
+                showToast(data.msg || 'No se pudo agregar al carrito.', 'error', 5000);
             }
         } catch (err) {
-            alert('Error de conexión. Intenta de nuevo.');
+            showToast('Error de conexión. Intenta de nuevo.', 'error', 5000);
         }
     }
 </script>

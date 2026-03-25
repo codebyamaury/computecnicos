@@ -76,7 +76,7 @@ $stmtIns->execute([$email, $token]);
 
 // Construir URL de recuperación (siempre apuntar a producción)
 $appUrl = $_ENV['APP_URL'] ?? base_url();
-$resetUrl = rtrim($appUrl, '/') . '/reset_password.php?token=' . $token;
+$resetUrl = rtrim($appUrl, '/') . '/reset_password?token=' . $token;
 
 // Enviar email
 $nombreUsuario = $usuario['nombre'];

@@ -117,9 +117,31 @@ require_once BASE_PATH . '/app/Core/RememberMe.php';
 $rememberMe = new RememberMe($pdo);
 $rememberMe->tryRestore();
 
+// ─── Validación de Usuario Activo (Auto-logout si fue eliminado) ───
+if (isset($_SESSION['usuario']['id'])) {
+    $stmtCheckUser = $pdo->prepare("SELECT id FROM usuarios WHERE id = ?");
+    $stmtCheckUser->execute([$_SESSION['usuario']['id']]);
+    if (!$stmtCheckUser->fetch()) {
+        // El usuario ya no existe en la BD (fue eliminado por un administrador)
+        $deletedUserId = $_SESSION['usuario']['id'];
+        
+        // Destruir sesión y cookies de "Recordarme"
+        session_unset();
+        session_destroy();
+        $rememberMe->invalidateAllTokens($deletedUserId);
+        
+        // Iniciar una sesión nueva temporal solo para mostrar el mensaje
+        session_start();
+        $_SESSION['error_google'] = 'Tu cuenta ha sido eliminada por el administrador. Se ha cerrado la sesión.';
+        
+        header('Location: ' . base_url() . '/index.php?error=account_deleted');
+        exit;
+    }
+}
+
 // ─── Migraciones de esquema (se ejecutan UNA SOLA VEZ) ───
     // Usa un archivo bandera para evitar consultas de esquema en cada request
-    $migrationFlag = BASE_PATH . '/logs/.schema_migrated_v5';
+    $migrationFlag = BASE_PATH . '/logs/.schema_migrated_v8';
     if (!file_exists($migrationFlag)) {
         try {
             // Crear tabla de sesiones si no existe
@@ -157,6 +179,21 @@ $rememberMe->tryRestore();
                 $pdo->exec("ALTER TABLE productos ADD COLUMN nuevo_hasta DATE NULL DEFAULT NULL");
             if (!in_array('oferta_hasta', $cols))
                 $pdo->exec("ALTER TABLE productos ADD COLUMN oferta_hasta DATE NULL DEFAULT NULL");
+            if (!in_array('precio_original', $cols))
+                $pdo->exec("ALTER TABLE productos ADD COLUMN precio_original DECIMAL(12,2) NULL DEFAULT NULL");
+            if (!in_array('descuento', $cols))
+                $pdo->exec("ALTER TABLE productos ADD COLUMN descuento DECIMAL(5,2) NULL DEFAULT NULL");
+            if (!in_array('video_url', $cols))
+                $pdo->exec("ALTER TABLE productos ADD COLUMN video_url VARCHAR(500) NULL DEFAULT NULL");
+
+            // v7: Auto-populate precio_original para productos con oferta activa que no lo tienen
+            // Esto hace que los productos existentes muestren el precio original tachado
+            $pdo->exec("UPDATE productos SET 
+                precio_original = ROUND(precio * 1.15, 2), 
+                descuento = 13.04 
+                WHERE oferta = 1 
+                AND (precio_original IS NULL OR precio_original = 0)
+                AND precio > 0");
 
             // Migrar usuarios es_principal
             $colsUsers = $pdo->query("SHOW COLUMNS FROM usuarios")->fetchAll(PDO::FETCH_COLUMN, 0);
@@ -167,8 +204,8 @@ $rememberMe->tryRestore();
 
         // Marcar migraciones como completadas
         @mkdir(BASE_PATH . '/logs', 0775, true);
-        @file_put_contents($migrationFlag, date('Y-m-d H:i:s') . ' - Schema migrations completed');
-        log_event('Migraciones de esquema completadas exitosamente');
+        @file_put_contents($migrationFlag, date('Y-m-d H:i:s') . ' - Schema migrations v8 completed');
+        log_event('Migraciones de esquema v8 completadas exitosamente');
     } catch (Throwable $e) {
         log_event('Error en migraciones: ' . $e->getMessage());
     }
@@ -208,6 +245,50 @@ function require_admin(): void {
 // Helper pequeño para limpiar texto
 function e(?string $text): string { return htmlspecialchars($text ?? '', ENT_QUOTES, 'UTF-8'); }
 
-// Nota: Este bootstrap no cambia rutas ni includes en páginas existentes.
-// Podemos ir incorporándolo gradualmente con: require_once __DIR__ . '/bootstrap.php';
+/**
+ * Calcula el precio efectivo y el estado del descuento de un producto.
+ * @param array $p Datos del producto de la BD
+ * @return array [precio, tiene_descuento, precio_original, porcentaje, ahorro]
+ */
+function get_product_price_data(array $p): array {
+    $now = strtotime('today');
+    $enOferta = !empty($p['oferta']) && (empty($p['oferta_hasta']) || strtotime($p['oferta_hasta']) >= $now);
+    
+    // Si tiene precio_original configurado
+    if (!empty($p['precio_original']) && $p['precio_original'] > 0) {
+        if ($enOferta) {
+            // El precio de venta (p['precio']) es el descuento
+            $porcentaje = !empty($p['descuento']) && $p['descuento'] > 0 
+                ? $p['descuento'] 
+                : round((($p['precio_original'] - $p['precio']) / $p['precio_original']) * 100);
+            
+            return [
+                'precio' => (float)$p['precio'],
+                'tiene_descuento' => true,
+                'precio_original' => (float)$p['precio_original'],
+                'porcentaje' => (float)$porcentaje,
+                'ahorro' => (float)($p['precio_original'] - $p['precio'])
+            ];
+        } else {
+            // La oferta venció o no está activa: el precio vuelve al original
+            return [
+                'precio' => (float)$p['precio_original'],
+                'tiene_descuento' => false,
+                'precio_original' => (float)$p['precio_original'],
+                'porcentaje' => 0,
+                'ahorro' => 0
+            ];
+        }
+    }
+
+    // Sin descuento configurado o precio_original vacío
+    return [
+        'precio' => (float)$p['precio'],
+        'tiene_descuento' => false,
+        'precio_original' => (float)$p['precio'],
+        'porcentaje' => 0,
+        'ahorro' => 0
+    ];
+}
+
 ?>

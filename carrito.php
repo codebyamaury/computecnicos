@@ -68,7 +68,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['actualizar'])) {
         foreach ($_SESSION['carrito'] as $it) {
             $total_items += (int) $it['cantidad'];
             if (isset($productos[$it['id_producto']])) {
-                $subtotal += $productos[$it['id_producto']]['precio'] * $it['cantidad'];
+                $priceData = get_product_price_data($productos[$it['id_producto']]);
+                $subtotal += $priceData['precio'] * $it['cantidad'];
             }
         }
         $envio = $subtotal > 50000 ? 0 : 10000;
@@ -111,7 +112,8 @@ $total_items = 0;
 foreach ($_SESSION['carrito'] as $item) {
     $total_items += (int) $item['cantidad'];
     if (isset($productos[$item['id_producto']])) {
-        $subtotal += $productos[$item['id_producto']]['precio'] * $item['cantidad'];
+        $priceData = get_product_price_data($productos[$item['id_producto']]);
+        $subtotal += $priceData['precio'] * $item['cantidad'];
     }
 }
 
@@ -126,8 +128,9 @@ try {
         $cat = $productos[$pid]['categoria'];
         if (!isset($byCat[$cat]))
             $byCat[$cat] = [];
+        $priceData = get_product_price_data($productos[$pid]);
         $byCat[$cat][] = [
-            'precio' => (float) $productos[$pid]['precio'],
+            'precio' => (float) $priceData['precio'],
             'cantidad' => (int) $item['cantidad']
         ];
     }
@@ -306,7 +309,8 @@ include __DIR__ . '/includes/header.php';
                             if (!isset($productos[$item['id_producto']]))
                                 continue;
                             $p = $productos[$item['id_producto']];
-                            $itemSubtotal = $p['precio'] * $item['cantidad'];
+                            $priceData = get_product_price_data($p);
+                            $itemSubtotal = $priceData['precio'] * $item['cantidad'];
                             $delay_class = 'delay-' . min($delay * 100, 500);
                             ?>
                             <div class="cart-item-card animate-slide-right <?php echo $delay_class; ?>">
@@ -495,8 +499,8 @@ include __DIR__ . '/includes/header.php';
                                             </div>
                                             <div class="cart-rec-info">
                                                 <span class="cart-rec-name"><?php echo htmlspecialchars($r['nombre']); ?></span>
-                                                <span
-                                                    class="cart-rec-price">$<?php echo number_format($r['precio'], 0, ',', '.'); ?></span>
+                                                <?php $rPrice = get_product_price_data($r); ?>
+                                                <span class="cart-rec-price">$<?php echo number_format($rPrice['precio'], 0, ',', '.'); ?></span>
                                             </div>
                                             <form method="POST" action="api/agregar_carrito.php">
                                                 <input type="hidden" name="id_producto" value="<?php echo intval($r['id']); ?>">

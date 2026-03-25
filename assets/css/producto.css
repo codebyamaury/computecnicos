@@ -77,7 +77,7 @@
 }
 
 .prod-img-main {
-    background: #ffffff;
+    background: #1a1a1a;
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 1rem;
     position: relative;
@@ -97,17 +97,16 @@
     overflow: hidden;
     border-radius: 1rem;
     cursor: pointer;
-    background: #ffffff;
-    padding: 1.5rem;
+    background: #000;
+    padding: 0;
 }
 
 .prod-img-main img#main-img {
-    max-width: 100%;
-    max-height: 100%;
-    width: auto;
-    height: auto;
+    width: 100%;
+    height: 100%;
     object-fit: contain;
     display: block;
+    transition: transform 0.5s ease;
 }
 
 /* Botón de lupa / abrir lightbox */
@@ -182,13 +181,13 @@
 .prod-thumbs {
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
+    gap: 0.6rem;
     overflow-y: auto;
-    overflow-x: hidden;
+    overflow-x: visible;
     max-height: 480px;
-    padding-right: 0.25rem;
+    padding: 12px 10px; /* Más espacio lateral para la ampliación */
     flex-shrink: 0;
-    width: 78px;
+    width: 96px; /* Aumentado para compensar el padding */
 }
 
 .prod-thumbs::-webkit-scrollbar {
@@ -209,19 +208,75 @@
     cursor: pointer;
     flex-shrink: 0;
     transition: border-color 0.25s, transform 0.25s, box-shadow 0.25s;
-    background: #ffffff;
+    background: #1a1a1a;
 }
 
 .prod-thumb:hover {
     border-color: rgba(255, 0, 0, 0.5);
-    transform: scale(1.08);
-    box-shadow: 0 0 12px rgba(255, 0, 0, 0.15);
+    transform: scale(1.1); /* Ligeramente más grande para que se note el cambio */
+    box-shadow: 0 0 15px rgba(255, 0, 0, 0.3);
+    z-index: 10;
+    position: relative;
 }
 
 .prod-thumb.active {
     border-color: #ff0000;
     box-shadow: 0 0 16px rgba(255, 0, 0, 0.25);
 }
+
+/* Thumbnail de video en la galería */
+.prod-thumb-video {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.15rem;
+    color: #a78bfa;
+    background: linear-gradient(135deg, rgba(139, 92, 246, 0.15), rgba(139, 92, 246, 0.05));
+    border-color: rgba(139, 92, 246, 0.4);
+    font-size: 0.55rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.prod-thumb-video:hover {
+    border-color: #a78bfa;
+    transform: scale(1.08);
+    box-shadow: 0 0 12px rgba(139, 92, 246, 0.3);
+}
+
+.prod-thumb-video.active {
+    border-color: #a78bfa;
+    box-shadow: 0 0 16px rgba(139, 92, 246, 0.4);
+    background: linear-gradient(135deg, rgba(139, 92, 246, 0.25), rgba(139, 92, 246, 0.1));
+}
+
+.prod-thumb-video svg {
+    width: 22px;
+    height: 22px;
+    filter: drop-shadow(0 0 4px rgba(139, 92, 246, 0.5));
+}
+
+/* Video wrapper dentro de la galería principal */
+.prod-video-wrapper {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 9; /* Ajustado a formato panorámico común en tecnología */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    border-radius: 1rem;
+    background: #000;
+}
+
+@media (min-width: 1024px) {
+    .prod-video-wrapper {
+        aspect-ratio: 1 / 1; /* Mantener cuadrado en desktop para consistencia de galería */
+    }
+}
+
 
 /* ── Info del Producto ─────────────────────────────── */
 .prod-info {
@@ -863,7 +918,7 @@
 .prod-combo-card-img {
     width: 80px;
     height: 80px;
-    background: #ffffff;
+    background: #1a1a1a;
     border-radius: 0.5rem;
     overflow: hidden;
     flex-shrink: 0;
@@ -1316,11 +1371,11 @@
     .prod-thumbs {
         flex-direction: row;
         overflow-x: auto;
-        overflow-y: hidden;
+        overflow-y: visible;
         max-height: none;
         width: 100%;
-        padding-right: 0;
-        padding-bottom: 0.25rem;
+        padding: 12px 10px;
+        scroll-padding: 10px;
     }
 
     .prod-thumbs::-webkit-scrollbar {
@@ -1799,4 +1854,262 @@
     border-color: rgba(255, 0, 0, 0.5);
     transform: scale(1.05);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+/* ══════════════════════════════════════════════════
+   DESCUENTO Y COUNTDOWN TIMER
+   ══════════════════════════════════════════════════ */
+
+/* Discount Container */
+.prod-discount-container {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.prod-price-row {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.prod-price-original {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #666;
+    text-decoration: line-through;
+    text-decoration-color: rgba(239, 68, 68, 0.6);
+    text-decoration-thickness: 2px;
+    letter-spacing: -0.5px;
+}
+
+.prod-discount-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #dc2626, #ef4444);
+    color: #fff;
+    font-size: 0.85rem;
+    font-weight: 800;
+    padding: 0.3rem 0.75rem;
+    border-radius: 100px;
+    letter-spacing: 0.5px;
+    box-shadow: 0 2px 12px rgba(239, 68, 68, 0.35);
+    animation: pulse-discount 2s ease-in-out infinite;
+}
+
+@keyframes pulse-discount {
+    0%, 100% {
+        box-shadow: 0 2px 12px rgba(239, 68, 68, 0.35);
+        transform: scale(1);
+    }
+    50% {
+        box-shadow: 0 4px 20px rgba(239, 68, 68, 0.5);
+        transform: scale(1.05);
+    }
+}
+
+.prod-savings {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: #4ade80;
+    background: rgba(74, 222, 128, 0.08);
+    border: 1px solid rgba(74, 222, 128, 0.2);
+    padding: 0.35rem 0.75rem;
+    border-radius: 0.5rem;
+    margin-top: 0.25rem;
+    width: fit-content;
+}
+
+.prod-savings svg {
+    color: #4ade80;
+    flex-shrink: 0;
+}
+
+/* Countdown Timer */
+.prod-offer-countdown {
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.08), rgba(239, 68, 68, 0.03));
+    border: 1px solid rgba(239, 68, 68, 0.2);
+    border-radius: 0.75rem;
+    padding: 1rem 1.25rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.prod-offer-countdown::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(239, 68, 68, 0.05), transparent);
+    animation: countdown-shine 3s ease-in-out infinite;
+}
+
+@keyframes countdown-shine {
+    0% { left: -100%; }
+    100% { left: 100%; }
+}
+
+.prod-countdown-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: #f87171;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 0.75rem;
+    position: relative;
+    z-index: 1;
+}
+
+.prod-countdown-header svg {
+    color: #f87171;
+    animation: spin-clock 4s linear infinite;
+}
+
+@keyframes spin-clock {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.prod-countdown-boxes {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    position: relative;
+    z-index: 1;
+}
+
+.prod-countdown-box {
+    text-align: center;
+    background: rgba(0, 0, 0, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 0.5rem;
+    padding: 0.6rem 0.85rem;
+    min-width: 62px;
+    backdrop-filter: blur(4px);
+    transition: all 0.3s ease;
+}
+
+.prod-countdown-box:hover {
+    border-color: rgba(239, 68, 68, 0.3);
+    background: rgba(239, 68, 68, 0.08);
+}
+
+.prod-countdown-num {
+    display: block;
+    font-size: 1.6rem;
+    font-weight: 900;
+    color: #fff;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+}
+
+.prod-countdown-box:last-child .prod-countdown-num {
+    color: #ff4444;
+}
+
+.prod-countdown-label {
+    display: block;
+    font-size: 0.62rem;
+    color: #777;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-top: 0.2rem;
+    font-weight: 600;
+}
+
+.prod-countdown-sep {
+    font-size: 1.5rem;
+    font-weight: 900;
+    color: #555;
+    line-height: 1;
+    margin-top: -0.5rem;
+}
+
+/* Responsive Countdown and Discount */
+@media (max-width: 640px) {
+    .prod-price-original {
+        font-size: 1rem;
+    }
+
+    .prod-discount-badge {
+        font-size: 0.75rem;
+        padding: 0.25rem 0.6rem;
+    }
+
+    .prod-countdown-boxes {
+        gap: 0.25rem;
+    }
+
+    .prod-countdown-box {
+        min-width: 50px;
+        padding: 0.5rem 0.6rem;
+    }
+
+    .prod-countdown-num {
+        font-size: 1.3rem;
+    }
+
+    .prod-countdown-sep {
+        font-size: 1.2rem;
+    }
+}
+
+/* ── Video del Producto ──────────────────────────────── */
+.prod-video-section {
+    margin: 1.5rem 0;
+    border-radius: 1rem;
+    overflow: hidden;
+    border: 1px solid rgba(139, 92, 246, 0.2);
+    background: rgba(139, 92, 246, 0.03);
+}
+
+.prod-video-header {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.85rem 1.2rem;
+    background: linear-gradient(135deg, rgba(139, 92, 246, 0.12), rgba(139, 92, 246, 0.04));
+    border-bottom: 1px solid rgba(139, 92, 246, 0.15);
+    color: #a78bfa;
+    font-weight: 700;
+    font-size: 0.9rem;
+    letter-spacing: 0.02em;
+}
+
+.prod-video-container {
+    position: relative;
+    width: 100%;
+    padding-top: 56.25%; /* 16:9 Aspect Ratio */
+    background: #000;
+}
+
+.prod-video-container iframe,
+.prod-video-container video {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: none;
+}
+
+@media (max-width: 768px) {
+    .prod-video-section {
+        border-radius: 0.75rem;
+        margin: 1rem 0;
+    }
+
+    .prod-video-header {
+        padding: 0.65rem 1rem;
+        font-size: 0.8rem;
+    }
 }

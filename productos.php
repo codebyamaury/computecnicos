@@ -7,8 +7,8 @@ if (session_status() === PHP_SESSION_NONE) {
 // Configuración del header
 $page_title = 'Productos';
 $extra_css = '<link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.1/flowbite.min.css" rel="stylesheet" />' . "\n" .
-             '<link rel="stylesheet" href="' . asset('css/index.css') . '">' . "\n" .
-             '<link rel="stylesheet" href="' . asset('css/productos.css') . '">';
+    '<link rel="stylesheet" href="' . asset('css/index.css') . '">' . "\n" .
+    '<link rel="stylesheet" href="' . asset('css/productos.css') . '">';
 
 // Obtener categorías y marcas para filtros
 $categorias = $pdo->query('SELECT id, nombre FROM categorias ORDER BY nombre ASC')->fetchAll();
@@ -111,10 +111,10 @@ include __DIR__ . '/includes/header.php';
 <main class="flex-1 bg-[#050505] text-white relative z-10">
     
     <!-- Hero Section -->
-    <section class="products-hero">
-        <div class="container mx-auto px-4 relative z-10">
-            <h1 class="section-title animate-slide-up">Nuestros Productos</h1>
-            <p class="text-gray-400 max-w-2xl mx-auto mt-4 animate-slide-up delay-100 text-center">
+    <section class="products-hero py-12 md:py-20">
+        <div class="container mx-auto px-4 relative z-10 text-center">
+            <h1 class="section-title animate-slide-up" style="font-family:'Orbitron', sans-serif; letter-spacing: 4px;">Nuestros Productos</h1>
+            <p class="text-gray-400 max-w-2xl mx-auto mt-6 animate-slide-up delay-100 text-base md:text-lg">
                 Explora nuestra selección de productos tecnológicos de alta calidad. Encuentra lo que necesitas para potenciar tu experiencia digital.
             </p>
             
@@ -160,7 +160,8 @@ include __DIR__ . '/includes/header.php';
                     <!-- Mantener búsqueda si existe -->
                     <?php if (!empty($filtro_busqueda)): ?>
                         <input type="hidden" name="busqueda" value="<?php echo htmlspecialchars($filtro_busqueda); ?>">
-                    <?php endif; ?>
+                    <?php
+endif; ?>
                     
                     <!-- Categoría -->
                     <div class="filter-group">
@@ -169,10 +170,11 @@ include __DIR__ . '/includes/header.php';
                             <option value="">Todas las categorías</option>
                             <?php foreach ($categorias as $cat): ?>
                                 <option value="<?php echo htmlspecialchars(strtolower($cat['nombre'])); ?>" 
-                                        <?php echo (strtolower($filtro_categoria) === strtolower($cat['nombre'])) ? 'selected' : ''; ?>>
+                                        <?php echo(strtolower($filtro_categoria) === strtolower($cat['nombre'])) ? 'selected' : ''; ?>>
                                     <?php echo htmlspecialchars($cat['nombre']); ?>
                                 </option>
-                            <?php endforeach; ?>
+                            <?php
+endforeach; ?>
                         </select>
                     </div>
                     
@@ -183,10 +185,11 @@ include __DIR__ . '/includes/header.php';
                             <option value="">Todas las marcas</option>
                             <?php foreach ($marcas as $mar): ?>
                                 <option value="<?php echo intval($mar['id']); ?>" 
-                                        <?php echo ($filtro_marca === intval($mar['id'])) ? 'selected' : ''; ?>>
+                                        <?php echo($filtro_marca === intval($mar['id'])) ? 'selected' : ''; ?>>
                                     <?php echo htmlspecialchars($mar['nombre']); ?>
                                 </option>
-                            <?php endforeach; ?>
+                            <?php
+endforeach; ?>
                         </select>
                     </div>
                     
@@ -226,7 +229,8 @@ include __DIR__ . '/includes/header.php';
                             <span>Solo ofertas</span>
                             <?php if ($total_ofertas > 0): ?>
                                 <span class="offers-count"><?php echo $total_ofertas; ?></span>
-                            <?php endif; ?>
+                            <?php
+endif; ?>
                         </label>
                     </div>
                     
@@ -262,15 +266,17 @@ include __DIR__ . '/includes/header.php';
                         <p>Intenta ajustar los filtros o busca algo diferente.</p>
                         <a href="productos.php" class="reset-search-btn">Ver todos los productos</a>
                     </div>
-                <?php else: ?>
+                <?php
+else: ?>
                     <div class="products-grid">
-                        <?php 
-                        $delay = 0;
-                        foreach ($productos as $p): 
-                            $esNuevo = !empty($p['nuevo_hasta']) && strtotime($p['nuevo_hasta']) >= strtotime('today');
-                            $enOferta = !empty($p['oferta']) && (empty($p['oferta_hasta']) || strtotime($p['oferta_hasta']) >= strtotime('today'));
-                            $delay_class = 'delay-' . min($delay * 100, 500);
-                        ?>
+                        <?php
+    $delay = 0;
+    foreach ($productos as $p):
+        $priceData = get_product_price_data($p);
+        $esNuevo = !empty($p['nuevo_hasta']) && strtotime($p['nuevo_hasta']) >= strtotime('today');
+        $enOferta = $priceData['tiene_descuento'];
+        $delay_class = 'delay-' . min($delay * 100, 500);
+?>
                             <article class="product-card animate-slide-up <?php echo $delay_class; ?>" 
                                      onclick="window.location.href='producto.php?id=<?php echo intval($p['id']); ?>'">
                                 <div class="product-image-container">
@@ -281,10 +287,10 @@ include __DIR__ . '/includes/header.php';
                                     <div class="product-badges">
                                         <?php if ($esNuevo): ?>
                                             <span class="tech-badge tech-badge-new">NUEVO</span>
-                                        <?php endif; ?>
-                                        <?php if ($enOferta): ?>
-                                            <span class="tech-badge tech-badge-offer">OFERTA</span>
-                                        <?php endif; ?>
+                                        <?php
+        endif; ?>
+
+
                                     </div>
                                     
                                     <div class="product-overlay">
@@ -300,74 +306,96 @@ include __DIR__ . '/includes/header.php';
                                         <span class="product-brand"><?php echo htmlspecialchars($p['marca']); ?></span>
                                         <?php if ((int)$p['stock'] > 0): ?>
                                             <span class="product-stock in-stock">En stock</span>
-                                        <?php else: ?>
+                                        <?php
+        else: ?>
                                             <span class="product-stock out-stock">Agotado</span>
-                                        <?php endif; ?>
+                                        <?php
+        endif; ?>
                                     </div>
                                     
                                     <div class="product-footer">
-                                        <div class="product-price">$<?php echo number_format($p['precio'], 0, ',', '.'); ?></div>
+                                        <?php if ($priceData['tiene_descuento']): ?>
+                                            <div class="product-price-container">
+                                                <span class="product-price-old">$<?php echo number_format($priceData['precio_original'], 0, ',', '.'); ?></span>
+                                                <div class="product-price-row">
+                                                    <div class="product-price">$<?php echo number_format($priceData['precio'], 0, ',', '.'); ?></div>
+                                                    <span class="product-discount-badge-small">-<?php echo number_format($priceData['porcentaje'], 0); ?>%</span>
+                                                </div>
+                                            </div>
+                                        <?php
+        else: ?>
+                                            <div class="product-price">$<?php echo number_format($priceData['precio'], 0, ',', '.'); ?></div>
+                                        <?php
+        endif; ?>
                                     </div>
                                 </div>
                             </article>
-                        <?php 
-                            $delay++;
-                        endforeach; 
-                        ?>
+                        <?php
+        $delay++;
+    endforeach; ?>
                     </div>
 
                     <!-- Paginación -->
                     <?php if ($total_paginas > 1): ?>
                     <div class="pagination-container animate-slide-up" style="margin-top: 3rem;">
                         <div class="tech-pagination">
-                            <?php 
-                            // Construir URL base para los links preservando filtros
-                            $query_params = $_GET;
-                            unset($query_params['page']);
-                            $base_url = 'productos.php?' . http_build_query($query_params);
-                            if ($base_url !== 'productos.php?') $base_url .= '&';
-                            else $base_url = 'productos.php?';
-                            ?>
+                            <?php
+        // Construir URL base para los links preservando filtros
+        $query_params = $_GET;
+        unset($query_params['page']);
+        $base_url = 'productos.php?' . http_build_query($query_params);
+        if ($base_url !== 'productos.php?')
+            $base_url .= '&';
+        else
+            $base_url = 'productos.php?';
+?>
 
                             <?php if ($pagina_actual > 1): ?>
                                 <a href="<?php echo $base_url; ?>page=<?php echo $pagina_actual - 1; ?>" class="pag-btn pag-nav" title="Anterior">
                                     <i data-lucide="chevron-left"></i>
                                 </a>
-                            <?php endif; ?>
+                            <?php
+        endif; ?>
 
                             <?php
-                            $start = max(1, $pagina_actual - 2);
-                            $end = min($total_paginas, $pagina_actual + 2);
+        $start = max(1, $pagina_actual - 2);
+        $end = min($total_paginas, $pagina_actual + 2);
 
-                            if ($start > 1) {
-                                echo '<a href="'.$base_url.'page=1" class="pag-btn">1</a>';
-                                if ($start > 2) echo '<span class="pag-dots">...</span>';
-                            }
+        if ($start > 1) {
+            echo '<a href="' . $base_url . 'page=1" class="pag-btn">1</a>';
+            if ($start > 2)
+                echo '<span class="pag-dots">...</span>';
+        }
 
-                            for ($i = $start; $i <= $end; $i++):
-                            ?>
+        for ($i = $start; $i <= $end; $i++):
+?>
                                 <a href="<?php echo $base_url; ?>page=<?php echo $i; ?>" 
-                                   class="pag-btn <?php echo ($i == $pagina_actual) ? 'active' : ''; ?>">
+                                   class="pag-btn <?php echo($i == $pagina_actual) ? 'active' : ''; ?>">
                                     <?php echo $i; ?>
                                 </a>
-                            <?php endfor; ?>
+                            <?php
+        endfor; ?>
 
                             <?php
-                            if ($end < $total_paginas) {
-                                if ($end < $total_paginas - 1) echo '<span class="pag-dots">...</span>';
-                                echo '<a href="'.$base_url.'page='.$total_paginas.'" class="pag-btn">'.$total_paginas.'</a>';
-                            }
-                            ?>
+        if ($end < $total_paginas) {
+            if ($end < $total_paginas - 1)
+                echo '<span class="pag-dots">...</span>';
+            echo '<a href="' . $base_url . 'page=' . $total_paginas . '" class="pag-btn">' . $total_paginas . '</a>';
+        }
+?>
 
                             <?php if ($pagina_actual < $total_paginas): ?>
                                 <a href="<?php echo $base_url; ?>page=<?php echo $pagina_actual + 1; ?>" class="pag-btn pag-nav" title="Siguiente">
                                     <i data-lucide="chevron-right"></i>
                                 </a>
-                            <?php endif; ?>
+                            <?php
+        endif; ?>
                         </div>
                     </div>
-                    <?php endif; ?>
-                <?php endif; ?>
+                    <?php
+    endif; ?>
+                <?php
+endif; ?>
             </div>
         </div>
     </section>
