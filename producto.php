@@ -101,6 +101,36 @@ $tieneVideo = !empty($videoEmbedUrl);
 ?>
 <main class="flex-1 bg-[#0a0a0a] text-white">
 
+    <!-- Breadcrumb / Navegación de regreso -->
+    <div class="prod-breadcrumb">
+        <nav aria-label="Breadcrumb">
+            <a href="javascript:void(0)" onclick="window.history.length > 1 ? window.history.back() : window.location.href='productos'" class="prod-breadcrumb-back" title="Volver a la página anterior">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+                Volver
+            </a>
+            <span class="prod-breadcrumb-divider">|</span>
+            <a href="/">Inicio</a>
+            <span class="prod-breadcrumb-sep">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+            </span>
+            <a href="/productos">Productos</a>
+            <span class="prod-breadcrumb-sep">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+            </span>
+            <a href="/productos?categoria=<?php echo urlencode($producto['categoria']); ?>"><?php echo htmlspecialchars($producto['categoria']); ?></a>
+            <?php if (!empty($producto['marca'])): ?>
+            <span class="prod-breadcrumb-sep">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+            </span>
+            <a href="/productos?marca=<?php echo urlencode($producto['marca']); ?>"><?php echo htmlspecialchars($producto['marca']); ?></a>
+            <?php endif; ?>
+            <span class="prod-breadcrumb-sep">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+            </span>
+            <span class="current"><?php echo htmlspecialchars($producto['nombre']); ?></span>
+        </nav>
+    </div>
+
     <!-- Product Main -->
     <section class="prod-main">
 
