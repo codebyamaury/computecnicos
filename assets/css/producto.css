@@ -76,7 +76,7 @@
 
 /* Links del breadcrumb */
 .prod-breadcrumb a:not(.prod-breadcrumb-back) {
-    color: #3b82f6; /* Azul profesional al estilo MercadoLibre/Amazon */
+    color: #ff0000; /* Rojo principal de la página */
     text-decoration: none;
     transition: color 0.15s ease;
     display: inline-flex;
@@ -85,7 +85,7 @@
 }
 
 .prod-breadcrumb a:not(.prod-breadcrumb-back):hover {
-    color: #60a5fa;
+    color: #ff4d4d;
 }
 
 /* Elemento actual (nombre del producto) */
