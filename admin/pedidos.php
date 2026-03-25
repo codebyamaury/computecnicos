@@ -547,7 +547,8 @@ function cerrarNuevo() {
     document.body.style.overflow = '';
 }
 function abrirConfirmEliminar(id) {
-    document.getElementById('modal-del-href').href = 'pedido_eliminar.php?id=' + id;
+    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+    document.getElementById('modal-del-href').href = 'pedido_eliminar.php?id=' + id + (csrfToken ? '&csrf_token=' + csrfToken : '');
     document.getElementById('modal-del-msg').textContent = 'El Pedido #' + id + ' será eliminado permanentemente y no se podrá recuperar.';
     document.getElementById('modal-del-bg').classList.add('show');
     document.getElementById('modal-del').classList.remove('hidden');
