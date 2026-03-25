@@ -225,7 +225,7 @@ include __DIR__ . '/includes/header.php';
         <!-- Amaury -->
         <div class="team-card" data-aos="flip-right" data-aos-delay="0">
             <div class="team-img-wrapper">
-                <img src="assets/images/amaury.jpg" onerror="this.onerror=null;this.src='https://ui-avatars.com/api/?name=Amaury+Mendoza&background=0a0a0a&color=dc2626&size=200&bold=true';" alt="Amaury Enrique Mendoza Acosta">
+                <img src="assets/images/amaury.jpg" loading="lazy" onerror="this.onerror=null;this.src='https://ui-avatars.com/api/?name=Amaury+Mendoza&background=0a0a0a&color=dc2626&size=200&bold=true';" alt="Amaury Enrique Mendoza Acosta">
             </div>
             <h3 class="team-name">Amaury Enrique<br>Mendoza Acosta</h3>
             <p class="team-role">Desarrollador Full Stack<br>& Director</p>
@@ -233,7 +233,7 @@ include __DIR__ . '/includes/header.php';
         <!-- Carlos -->
         <div class="team-card" data-aos="flip-right" data-aos-delay="100">
             <div class="team-img-wrapper">
-                <img src="assets/images/Carmona.jpg" onerror="this.onerror=null;this.src='https://ui-avatars.com/api/?name=Carlos+Carmona&background=0a0a0a&color=dc2626&size=200&bold=true';" alt="Carlos Alberto Carmona Miranda">
+                <img src="assets/images/Carmona.jpg" loading="lazy" onerror="this.onerror=null;this.src='https://ui-avatars.com/api/?name=Carlos+Carmona&background=0a0a0a&color=dc2626&size=200&bold=true';" alt="Carlos Alberto Carmona Miranda">
             </div>
             <h3 class="team-name">Carlos Alberto<br>Carmona Miranda</h3>
             <p class="team-role">Desarrollador Frontend</p>
@@ -241,7 +241,7 @@ include __DIR__ . '/includes/header.php';
         <!-- Jose -->
         <div class="team-card" data-aos="flip-right" data-aos-delay="200">
             <div class="team-img-wrapper">
-                <img src="assets/images/Jose.jpg" onerror="this.onerror=null;this.src='https://ui-avatars.com/api/?name=Jose+Olivo&background=0a0a0a&color=dc2626&size=200&bold=true';" alt="Jose Miguel Olivo Zabaleta">
+                <img src="assets/images/Jose.jpg" loading="lazy" onerror="this.onerror=null;this.src='https://ui-avatars.com/api/?name=Jose+Olivo&background=0a0a0a&color=dc2626&size=200&bold=true';" alt="Jose Miguel Olivo Zabaleta">
             </div>
             <h3 class="team-name">Jose Miguel<br>Olivo Zabaleta</h3>
             <p class="team-role">Desarrollador Frontend</p>
@@ -249,7 +249,7 @@ include __DIR__ . '/includes/header.php';
         <!-- Samuel -->
         <div class="team-card" data-aos="flip-right" data-aos-delay="300">
             <div class="team-img-wrapper">
-                <img src="assets/images/Samuel.jpg?v=2" onerror="this.onerror=null;this.src='https://ui-avatars.com/api/?name=Samuel+Ramos&background=0a0a0a&color=dc2626&size=200&bold=true';" alt="Samuel David Ramos Teran">
+                <img src="assets/images/Samuel.jpg?v=2" loading="lazy" onerror="this.onerror=null;this.src='https://ui-avatars.com/api/?name=Samuel+Ramos&background=0a0a0a&color=dc2626&size=200&bold=true';" alt="Samuel David Ramos Teran">
             </div>
             <h3 class="team-name">Samuel David<br>Ramos Teran</h3>
             <p class="team-role">Frontend &<br>Documentación</p>
@@ -257,7 +257,7 @@ include __DIR__ . '/includes/header.php';
         <!-- Luis -->
         <div class="team-card" data-aos="flip-right" data-aos-delay="400">
             <div class="team-img-wrapper">
-                <img src="assets/images/Luis.jpg" onerror="this.onerror=null;this.src='https://ui-avatars.com/api/?name=Luis+Perez&background=0a0a0a&color=dc2626&size=200&bold=true';" alt="Luis David Perez Coa">
+                <img src="assets/images/Luis.jpg" loading="lazy" onerror="this.onerror=null;this.src='https://ui-avatars.com/api/?name=Luis+Perez&background=0a0a0a&color=dc2626&size=200&bold=true';" alt="Luis David Perez Coa">
             </div>
             <h3 class="team-name">Luis Daniel<br>Perez Coa</h3>
             <p class="team-role">Tester</p>
@@ -265,7 +265,7 @@ include __DIR__ . '/includes/header.php';
     </div>
 </section>
 <!-- Flowbite JS -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.1/flowbite.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.1/flowbite.min.js" defer></script>
 <script>
     async function agregarAlCarrito(idProducto) {
         try {
