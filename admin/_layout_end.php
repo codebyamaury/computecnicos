@@ -284,6 +284,8 @@ function cerrarModalEditarProducto() {
         modal.classList.remove('show');
     }
     document.body.style.overflow = '';
+    const container = document.getElementById('modal-editar-producto-container');
+    if (container) setTimeout(() => { container.innerHTML = ''; }, 300);
 }
 
 async function guardarEdicionProducto(e, id) {

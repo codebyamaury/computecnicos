@@ -346,6 +346,8 @@ function abrirModalReembolso(pedidoId, monto) {
 function cerrarModalReembolso() {
     document.getElementById('modal-reembolso').style.display = 'none';
     document.body.style.overflow = '';
+    document.getElementById('reembolso-motivo').value = '';
+    document.getElementById('reembolso-chars').textContent = '0';
 }
 
 // Close on backdrop click

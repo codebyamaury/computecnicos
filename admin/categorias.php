@@ -164,6 +164,8 @@ function cerrarModal() {
     document.getElementById('modal-editar-categoria').classList.add('hidden');
     document.getElementById('modal-editar-categoria').classList.remove('show');
     document.body.style.overflow = '';
+    document.getElementById('form-editar-categoria').reset();
+    document.getElementById('modal-editar-msg').style.display = 'none';
 }
 document.getElementById('modal-editar-bg').addEventListener('click', cerrarModal);
 document.querySelectorAll('.btn-editar-categoria').forEach(btn => {

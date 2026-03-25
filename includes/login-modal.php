@@ -205,6 +205,22 @@ function abrirModalLogin() {
 }
 function cerrarModalLogin() {
   document.getElementById('modal-login').classList.add('hidden');
+  
+  var formLogin = document.getElementById('modal-form-login');
+  if (formLogin) formLogin.reset();
+  
+  var formReg = document.getElementById('modal-form-register-simple');
+  if (formReg) formReg.reset();
+  
+  var formForgot = document.getElementById('modal-form-forgot');
+  if (formForgot) formForgot.reset();
+  
+  var errorLogin = document.getElementById('modal-login-error');
+  if (errorLogin) errorLogin.textContent = '';
+  
+  if (typeof regHideError === 'function') regHideError();
+  if (typeof regGoTo === 'function') regGoTo(1);
+  if (typeof volverALogin === 'function') volverALogin();
 }
 
 // ========== TABS ==========

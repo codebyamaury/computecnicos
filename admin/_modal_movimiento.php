@@ -62,6 +62,8 @@ function abrirModalMovimiento(e) {
     document.getElementById('modal-nuevo-movimiento').classList.add('show');
     document.getElementById('form-nuevo-movimiento').reset();
     document.getElementById('campos-entrada').style.display='none';
+    const msg = document.getElementById('modal-nuevo-msg');
+    if(msg) msg.style.display='none';
     document.body.style.overflow='hidden';
 }
 
@@ -70,6 +72,10 @@ function cerrarModalMovimiento() {
     document.getElementById('modal-nuevo-movimiento').classList.add('hidden');
     document.getElementById('modal-nuevo-movimiento').classList.remove('show');
     document.body.style.overflow='';
+    document.getElementById('form-nuevo-movimiento').reset();
+    document.getElementById('campos-entrada').style.display='none';
+    const msg = document.getElementById('modal-nuevo-msg');
+    if(msg) msg.style.display='none';
 }
 
 function mostrarCamposEntrada() {

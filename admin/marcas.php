@@ -136,6 +136,7 @@ include '_layout.php';
                 <input type="text" name="descripcion" id="edit-descripcion" class="adm-input">
             </div>
             <button type="submit" class="adm-btn adm-btn-primary" style="width:100%;justify-content:center">Guardar cambios</button>
+
         </form>
         <div id="modal-editar-msg" style="display:none;margin-top:0.75rem;text-align:center;color:#ef4444;font-size:0.8rem"></div>
     </div>
@@ -157,6 +158,8 @@ function cerrarModal() {
     document.getElementById('modal-editar-marca').classList.add('hidden');
     document.getElementById('modal-editar-marca').classList.remove('show');
     document.body.style.overflow = '';
+    document.getElementById('form-editar-marca').reset();
+    document.getElementById('modal-editar-msg').style.display = 'none';
 }
 document.getElementById('modal-editar-bg').addEventListener('click', cerrarModal);
 document.querySelectorAll('.btn-editar-marca').forEach(btn => {
