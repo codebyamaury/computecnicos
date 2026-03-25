@@ -265,7 +265,7 @@ include '_layout.php';
             <!-- Actions -->
             <div class="reembolso-actions">
                 <?php if ($r['estado'] === 'solicitado'): ?>
-                    <button type="button" class="adm-btn adm-btn-blue" onclick="accionReembolso(<?= $r['id'] ?>, 'aprobar', 'Aprobar este reembolso?')">
+                    <button type="button" class="adm-btn adm-btn-blue" onclick="abrirModalConfirmacion(<?= $r['id'] ?>, 'aprobar', '¿Aprobar este reembolso?', 'El reembolso pasará a estado Aprobado y estará listo para ejecutarse.')">
                         <i data-lucide="check" style="width:14px;height:14px"></i> Aprobar
                     </button>
                     <button type="button" class="adm-btn adm-btn-danger" onclick="abrirModalRechazo(<?= $r['id'] ?>)">
@@ -273,7 +273,7 @@ include '_layout.php';
                     </button>
                 <?php endif; ?>
                 <?php if ($r['estado'] === 'aprobado'): ?>
-                    <button type="button" class="adm-btn adm-btn-primary" onclick="accionReembolso(<?= $r['id'] ?>, 'procesar_paypal', '¿Ejecutar el desembolso? <?= $r['paypal_capture_id'] ? 'Se procesará vía PayPal.' : 'Se procesará manualmente (sin PayPal capture ID).' ?>')">
+                    <button type="button" class="adm-btn adm-btn-primary" onclick="abrirModalConfirmacion(<?= $r['id'] ?>, 'procesar_paypal', '¿Ejecutar el desembolso?', '<?= $r['paypal_capture_id'] ? 'Se enviará el dinero de vuelta al cliente vía PayPal automáticamente y se restaurará el inventario.' : 'Modo Manual: Asegúrate de haber devuelto el dinero por tu cuenta (sin PayPal ID).' ?>')">
                         <i data-lucide="banknote" style="width:14px;height:14px"></i> Ejecutar Desembolso
                     </button>
                     <button type="button" class="adm-btn adm-btn-danger" onclick="abrirModalRechazo(<?= $r['id'] ?>)">
@@ -310,11 +310,53 @@ include '_layout.php';
     </div>
 </div>
 
+<!-- Modal Confirmación Genérico -->
+<div id="modal-confirm-bg" class="adm-modal-overlay"></div>
+<div id="modal-confirm" class="adm-modal hidden">
+    <div class="adm-modal-box" style="max-width:450px;text-align:center">
+        <button class="adm-modal-close" onclick="cerrarConfirmacion()">&times;</button>
+        <div style="width:48px;height:48px;border-radius:50%;background:rgba(59,130,246,0.1);color:#60a5fa;display:flex;align-items:center;justify-content:center;margin:0 auto 1rem">
+            <i data-lucide="alert-circle" style="width:24px;height:24px"></i>
+        </div>
+        <div class="adm-modal-title" id="confirm-title" style="margin-bottom:0.5rem">¿Estás seguro?</div>
+        <p id="confirm-desc" style="color:#888;font-size:0.85rem;margin-bottom:1.5rem;line-height:1.5">Esta acción no se puede deshacer.</p>
+        <div style="display:flex;gap:10px">
+            <button type="button" onclick="cerrarConfirmacion()" class="adm-btn" style="flex:1;justify-content:center">Cancelar</button>
+            <button type="button" id="btn-confirmar-accion" class="adm-btn adm-btn-primary" style="flex:1;justify-content:center">Continuar</button>
+        </div>
+    </div>
+</div>
+
 <script>
 var rechazoId = null;
+var confirmAccionData = null;
 
-function accionReembolso(id, accion, confirmMsg) {
-    if (confirmMsg && !confirm(confirmMsg)) return;
+function abrirModalConfirmacion(id, accion, title, desc) {
+    confirmAccionData = { id: id, accion: accion };
+    document.getElementById('confirm-title').innerText = title;
+    document.getElementById('confirm-desc').innerText = desc;
+    
+    document.getElementById('modal-confirm-bg').classList.add('show');
+    document.getElementById('modal-confirm').classList.remove('hidden');
+    document.getElementById('modal-confirm').classList.add('show');
+    document.body.style.overflow = 'hidden';
+}
+
+function cerrarConfirmacion() {
+    document.getElementById('modal-confirm-bg').classList.remove('show');
+    document.getElementById('modal-confirm').classList.add('hidden');
+    document.getElementById('modal-confirm').classList.remove('show');
+    document.body.style.overflow = '';
+    confirmAccionData = null;
+}
+
+document.getElementById('btn-confirmar-accion').addEventListener('click', function() {
+    if (!confirmAccionData) return;
+    cerrarConfirmacion();
+    accionReembolso(confirmAccionData.id, confirmAccionData.accion);
+});
+
+function accionReembolso(id, accion) {
 
     var fd = new FormData();
     fd.append('id_reembolso', id);
@@ -379,6 +421,7 @@ document.getElementById('btn-confirmar-rechazo').addEventListener('click', funct
 });
 
 document.getElementById('modal-rechazo-bg').addEventListener('click', cerrarRechazo);
+document.getElementById('modal-confirm-bg').addEventListener('click', cerrarConfirmacion);
 </script>
 
 <?php include '_layout_end.php'; ?>
