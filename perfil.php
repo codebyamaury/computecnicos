@@ -452,6 +452,45 @@ function cerrarModal(id) {
     // Limpiar mensajes al cerrar
     const msg = document.getElementById('msg-' + id.replace('modal-', ''));
     if (msg) { msg.className = 'perfil-msg hidden'; msg.textContent = ''; }
+    
+    // Restaurar valores y limpiar inputs al cerrar para que no persistan
+    if (id === 'modal-personal') {
+        let formPersonal = document.getElementById('form-personal');
+        if(formPersonal) formPersonal.reset();
+        
+        let currentNombre = document.getElementById('field-nombre').textContent.trim();
+        let currentEmail = document.getElementById('field-email').textContent.trim();
+        let currentTelefono = document.getElementById('field-telefono').textContent.trim();
+        
+        document.querySelector('#form-personal input[name="nombre"]').value = currentNombre;
+        document.querySelector('#form-personal input[name="email"]').value = currentEmail;
+        document.querySelector('#form-personal input[name="telefono"]').value = currentTelefono === '—' ? '' : currentTelefono;
+
+        // Limpiar secciones de código si estaban abiertas
+        const verifySection = document.getElementById('email-verify-section');
+        if(verifySection) verifySection.classList.add('hidden');
+        const verifyCode = document.getElementById('email-verify-code');
+        if(verifyCode) verifyCode.classList.add('hidden');
+        const hiddenCod = document.getElementById('hidden-codigo-verificacion');
+        if(hiddenCod) hiddenCod.value = '';
+        const inputCod = document.getElementById('input-codigo-email');
+        if(inputCod) inputCod.value = '';
+        if(typeof emailCodigoEnviado !== 'undefined') emailCodigoEnviado = false;
+        
+    } else if (id === 'modal-direccion') {
+        let formDireccion = document.getElementById('form-direccion');
+        if(formDireccion) formDireccion.reset();
+        let currentDireccion = document.getElementById('field-direccion').textContent.trim();
+        document.querySelector('#form-direccion input[name="direccion"]').value = currentDireccion === '—' ? '' : currentDireccion;
+    } else if (id === 'modal-seguridad') {
+        let fl = document.getElementById('form-seguridad');
+        if(fl) fl.reset();
+    } else if (id === 'modal-eliminar-cuenta') {
+        let fe = document.getElementById('form-eliminar-cuenta');
+        if(fe) fe.reset();
+        let be = document.getElementById('btn-eliminar');
+        if(be) be.disabled = true;
+    }
 }
 
 // Cerrar con Escape o clic en el backdrop

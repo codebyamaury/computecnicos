@@ -661,6 +661,9 @@ if (window.location.search.indexOf('login=1') !== -1) {
 <script>
 // Función para mostrar notificaciones toast
 function showToast(message, type, duration) {
+    if (window.lastToastMessage === message && (Date.now() - (window.lastToastTime || 0)) < 2000) return;
+    window.lastToastMessage = message;
+    window.lastToastTime = Date.now();
     type = type || 'error';
     duration = duration || 5000;
     var toastContainer = document.getElementById('toast-container');
@@ -691,9 +694,7 @@ function showToast(message, type, duration) {
             break;
     }
 
-    var actionHtml = (type === 'error')
-        ? '<button onclick="document.getElementById(\'modal-login\').classList.remove(\'hidden\'); document.getElementById(\'modal-tab-register\').click();" class="mt-2 text-xs bg-red-600 hover:bg-red-700 text-white font-bold py-1.5 px-2.5 rounded-md transition-colors">Registrarse ahora</button>'
-        : '';
+    var actionHtml = '';
 
     toast.innerHTML =
         '<div class="relative max-w-sm p-4 rounded-2xl bg-[#141414]/85 text-gray-100 border border-[#333] backdrop-blur-md shadow-2xl ring-1 ' + ringColor + '">' +
