@@ -326,6 +326,8 @@ function regValidateAndNext(step) {
   } else if (step === 5) {
     var v = document.getElementById('register-simple-direccion').value.trim();
     if (!v) { regShowError('Ingresa tu dirección para continuar.'); return; }
+    if (v.length < 10) { regShowError('La dirección es demasiado corta. Usa un formato completo (ej. CR 91 # 39 I 43).'); return; }
+    if (!/[a-zA-ZáéíóúÁÉÍÓÚñÑ]/.test(v) || !/[0-9]/.test(v)) { regShowError('La dirección debe contener letras y números (ej. Cra 17 #45-20).'); return; }
     regGoTo(6);
   }
 }
@@ -522,6 +524,7 @@ document.addEventListener('DOMContentLoaded', function() {
     var telefono = document.getElementById('register-simple-telefono').value.trim();
 
     if (!telefono) { regShowError('Ingresa tu teléfono para finalizar.'); return; }
+    if (!/^3\d{9}$/.test(telefono.replace(/\s+/g, ''))) { regShowError('El teléfono debe ser un celular válido de 10 dígitos (ej. 3168500131).'); return; }
 
     var btn = document.getElementById('reg-submit-btn');
     btn.disabled = true;
