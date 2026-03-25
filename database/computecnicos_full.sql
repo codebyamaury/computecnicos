@@ -335,6 +335,13 @@ CREATE TABLE IF NOT EXISTS reembolsos (
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci;
 
 -- =====================================
+-- FEATURE: PayPal tracking en pedidos
+-- =====================================
+ALTER TABLE pedidos
+ADD COLUMN paypal_order_id VARCHAR(128) NULL,
+ADD COLUMN paypal_capture_id VARCHAR(128) NULL;
+
+-- =====================================
 -- DATOS DE PRUEBA
 -- =====================================
 
