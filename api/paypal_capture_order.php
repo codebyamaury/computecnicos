@@ -22,9 +22,9 @@ try {
         $orderId = $result['id'] ?? $input['orderID'];
         if ($captureId) {
             try {
-                // Agregar columnas si no existen
-                $pdo->exec("ALTER TABLE pedidos ADD COLUMN IF NOT EXISTS paypal_order_id VARCHAR(128) NULL");
-                $pdo->exec("ALTER TABLE pedidos ADD COLUMN IF NOT EXISTS paypal_capture_id VARCHAR(128) NULL");
+                // Agregar columnas si no existen (compatible con MySQL < 8.0.29)
+                try { $pdo->exec("ALTER TABLE pedidos ADD COLUMN paypal_order_id VARCHAR(128) NULL"); } catch (Exception $e) {}
+                try { $pdo->exec("ALTER TABLE pedidos ADD COLUMN paypal_capture_id VARCHAR(128) NULL"); } catch (Exception $e) {}
                 $pdo->prepare('UPDATE pedidos SET paypal_order_id = ?, paypal_capture_id = ? WHERE id = ?')
                     ->execute([$orderId, $captureId, (int)$input['pedido_id']]);
             } catch (Exception $e) {
