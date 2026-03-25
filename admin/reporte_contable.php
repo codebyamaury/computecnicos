@@ -56,7 +56,44 @@ switch ($tipo_reporte) {
 }
 
 if (isset($_GET['exportar']) && $_GET['exportar'] === 'excel') {
-    header('Location: reporte_contable.php?tipo='.$tipo_reporte.'&fecha_inicio='.$fecha_inicio.'&fecha_fin='.$fecha_fin);
+    $filename = "reporte_{$tipo_reporte}_{$fecha_inicio}_a_{$fecha_fin}.csv";
+    if (ob_get_length()) ob_clean();
+    header('Content-Type: text/csv; charset=utf-8');
+    header('Content-Disposition: attachment; filename="' . $filename . '"');
+    header('Pragma: no-cache');
+    header('Expires: 0');
+    // BOM for Excel UTF-8
+    echo "\xEF\xBB\xBF";
+    $output = fopen('php://output', 'w');
+    
+    if ($tipo_reporte === 'inventario') {
+        fputcsv($output, ['Producto', 'Categoria', 'Stock Actual', 'Precio Promedio', 'Valor Total'], ';');
+        foreach ($inventario as $item) {
+            $vi = $item['stock_actual'] * ($item['precio_promedio'] ?? 0);
+            fputcsv($output, [
+                $item['nombre'], $item['categoria'] ?? '', $item['stock_actual'], 
+                $item['precio_promedio'] ?? 0, $vi
+            ], ';');
+        }
+    } elseif ($tipo_reporte === 'compras') {
+        fputcsv($output, ['Fecha', 'Producto', 'Proveedor', 'Factura', 'Cantidad', 'Precio Unit.', 'Total', 'IVA', 'Retencion'], ';');
+        foreach ($movimientos as $m) {
+            fputcsv($output, [
+                date('d/m/Y', strtotime($m['fecha'])), $m['producto'], $m['proveedor'] ?? '', 
+                $m['numero_factura'] ?? '', $m['cantidad'], $m['precio_unitario'] ?? 0, 
+                ($m['precio_unitario'] ?? 0) * $m['cantidad'], $m['iva'] ?? 0, $m['retencion'] ?? 0
+            ], ';');
+        }
+    } else {
+        fputcsv($output, ['Fecha', 'Tipo', 'Producto', 'Cantidad', 'Precio Unit.', 'IVA', 'Retencion', 'Usuario'], ';');
+        foreach ($movimientos as $m) {
+            fputcsv($output, [
+                date('d/m/Y', strtotime($m['fecha'])), ucfirst($m['tipo']), $m['producto'], 
+                $m['cantidad'], $m['precio_unitario'] ?? 0, $m['iva'] ?? 0, $m['retencion'] ?? 0, $m['usuario'] ?? ''
+            ], ';');
+        }
+    }
+    fclose($output);
     exit;
 }
 
