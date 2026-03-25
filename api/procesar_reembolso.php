@@ -110,15 +110,15 @@ try {
                         ->execute([$reembolso['id_pedido'], 'cancelado', 'Reembolso procesado manualmente por administrador']);
 
                     // Restore stock
-                    $stmtDet = $pdo->prepare('SELECT id_producto, cantidad FROM detalle_pedido WHERE id_pedido = ?');
+                    $stmtDet = $pdo->prepare('SELECT id_producto, cantidad, precio_unitario FROM detalle_pedido WHERE id_pedido = ?');
                     $stmtDet->execute([$reembolso['id_pedido']]);
                     $detalles = $stmtDet->fetchAll(PDO::FETCH_ASSOC);
 
                     foreach ($detalles as $d) {
                         $pdo->prepare('UPDATE productos SET stock = stock + ? WHERE id = ?')
                             ->execute([$d['cantidad'], $d['id_producto']]);
-                        $pdo->prepare("INSERT INTO movimientos_inventario (id_producto, tipo, cantidad, motivo, id_usuario) VALUES (?, 'entrada', ?, ?, ?)")
-                            ->execute([$d['id_producto'], $d['cantidad'], 'Reembolso manual Pedido #' . $reembolso['id_pedido'], $admin_id]);
+                        $pdo->prepare("INSERT INTO movimientos_inventario (id_producto, tipo, cantidad, precio_unitario, motivo, id_usuario) VALUES (?, 'entrada', ?, ?, ?, ?)")
+                            ->execute([$d['id_producto'], $d['cantidad'], $d['precio_unitario'], 'Reembolso manual Pedido #' . $reembolso['id_pedido'], $admin_id]);
                     }
 
                     $pdo->prepare('UPDATE reembolsos SET stock_devuelto = 1 WHERE id = ?')

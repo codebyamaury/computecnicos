@@ -19,6 +19,11 @@ function calcularTotales($movimientos) {
             $t['compras']    += $m['precio_unitario'] * $m['cantidad'];
             $t['iva_pagado'] += $m['iva'] ?? 0;
             $t['retenciones']+= $m['retencion'] ?? 0;
+        } elseif ($m['tipo'] === 'salida' && $m['precio_unitario']) {
+            $subtotal = $m['precio_unitario'] * $m['cantidad'];
+            $t['ventas']     += $subtotal;
+            // Estimar IVA cobrado asumiendo 19%
+            $t['iva_cobrado']+= $subtotal * 0.19;
         }
     }
     return $t;

@@ -147,18 +147,18 @@ class PaypalHelper
 
         // Reducir stock al confirmar el pago — el stock solo se gasta al comprar
         if ($estado === 'pagado') {
-            $stmtDet = $this->pdo->prepare('SELECT id_producto, cantidad FROM detalle_pedido WHERE id_pedido = ?');
+            $stmtDet = $this->pdo->prepare('SELECT id_producto, cantidad, precio_unitario FROM detalle_pedido WHERE id_pedido = ?');
             $stmtDet->execute([$pedido_id]);
             $detalles = $stmtDet->fetchAll(PDO::FETCH_ASSOC);
             $stmtUpd = $this->pdo->prepare('UPDATE productos SET stock = GREATEST(0, stock - ?) WHERE id = ?');
-            $stmtMov = $this->pdo->prepare("INSERT INTO movimientos_inventario (id_producto, tipo, cantidad, motivo, id_usuario) VALUES (?, 'salida', ?, ?, ?)");
+            $stmtMov = $this->pdo->prepare("INSERT INTO movimientos_inventario (id_producto, tipo, cantidad, precio_unitario, motivo, id_usuario) VALUES (?, 'salida', ?, ?, ?, ?)");
             foreach ($detalles as $d) {
                 $stmtUpd->execute([$d['cantidad'], $d['id_producto']]);
                 // id_usuario = 0 o nulo si no tenemos la sesion aquí conectada. O podemos coger el id_usuario del pedido.
                 $stmtUser = $this->pdo->prepare('SELECT id_usuario FROM pedidos WHERE id = ?');
                 $stmtUser->execute([$pedido_id]);
                 $cliente_id = $stmtUser->fetchColumn();
-                $stmtMov->execute([$d['id_producto'], $d['cantidad'], 'Pago PayPal Pedido #' . $pedido_id, $cliente_id]);
+                $stmtMov->execute([$d['id_producto'], $d['cantidad'], $d['precio_unitario'], 'Pago PayPal Pedido #' . $pedido_id, $cliente_id]);
             }
         }
     }
@@ -298,15 +298,15 @@ class PaypalHelper
                     ->execute([$pedido_id, 'cancelado', 'Reembolso procesado vía PayPal (Ref: ' . ($refundId ?? 'N/A') . ')']);
 
                 // Restore stock
-                $stmtDet = $this->pdo->prepare('SELECT id_producto, cantidad FROM detalle_pedido WHERE id_pedido = ?');
+                $stmtDet = $this->pdo->prepare('SELECT id_producto, cantidad, precio_unitario FROM detalle_pedido WHERE id_pedido = ?');
                 $stmtDet->execute([$pedido_id]);
                 $detalles = $stmtDet->fetchAll(PDO::FETCH_ASSOC);
 
                 foreach ($detalles as $d) {
                     $this->pdo->prepare('UPDATE productos SET stock = stock + ? WHERE id = ?')
                         ->execute([$d['cantidad'], $d['id_producto']]);
-                    $this->pdo->prepare("INSERT INTO movimientos_inventario (id_producto, tipo, cantidad, motivo, id_usuario) VALUES (?, 'entrada', ?, ?, ?)")
-                        ->execute([$d['id_producto'], $d['cantidad'], 'Reembolso Pedido #' . $pedido_id, $admin_id]);
+                    $this->pdo->prepare("INSERT INTO movimientos_inventario (id_producto, tipo, cantidad, precio_unitario, motivo, id_usuario) VALUES (?, 'entrada', ?, ?, ?, ?)")
+                        ->execute([$d['id_producto'], $d['cantidad'], $d['precio_unitario'], 'Reembolso Pedido #' . $pedido_id, $admin_id]);
                 }
 
                 // Mark stock as restored

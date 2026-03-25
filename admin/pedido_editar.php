@@ -126,52 +126,61 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 // Mapear cantidades anteriores y nuevas por producto
                 $mapa_ant = [];
                 foreach ($detalles_anteriores as $d) {
-                    $mapa_ant[$d['id_producto']] = $d['cantidad'];
+                    $mapa_ant[$d['id_producto']] = ['cantidad' => $d['cantidad'], 'precio' => $d['precio_unitario']];
                 }
                 $mapa_nuevo = [];
                 foreach ($detalles_nuevos as $d) {
-                    $mapa_nuevo[$d['id_producto']] = $d['cantidad'];
+                    $mapa_nuevo[$d['id_producto']] = ['cantidad' => $d['cantidad'], 'precio' => $d['precio_unitario']];
                 }
 
                 if ($ahora_reservado && !$era_reservado) {
                     // Restar stock completo de los nuevos detalles
-                    foreach ($mapa_nuevo as $idp => $cant_nuevo) {
-                        $pdo->prepare("INSERT INTO movimientos_inventario (id_producto, tipo, cantidad, motivo, id_usuario) VALUES (?, 'salida', ?, ?, ?)")
-                            ->execute([$idp, $cant_nuevo, 'Reserva Pedido #' . $id, $id_admin]);
+                    foreach ($mapa_nuevo as $idp => $data) {
+                        $cant_nuevo = $data['cantidad'];
+                        $precio_nuevo = $data['precio'];
+                        $pdo->prepare("INSERT INTO movimientos_inventario (id_producto, tipo, cantidad, precio_unitario, motivo, id_usuario) VALUES (?, 'salida', ?, ?, ?, ?)")
+                            ->execute([$idp, $cant_nuevo, $precio_nuevo, 'Reserva Pedido #' . $id, $id_admin]);
                         $pdo->prepare('UPDATE productos SET stock = stock - ? WHERE id = ?')
                             ->execute([$cant_nuevo, $idp]);
                     }
                 } elseif (!$ahora_reservado && $era_reservado) {
                     // Devolver stock completo de los anteriores detalles (porque ya no está reservado)
-                    foreach ($mapa_ant as $idp => $cant_ant) {
-                        $pdo->prepare("INSERT INTO movimientos_inventario (id_producto, tipo, cantidad, motivo, id_usuario) VALUES (?, 'entrada', ?, ?, ?)")
-                            ->execute([$idp, $cant_ant, 'Liberación Pedido #' . $id, $id_admin]);
+                    foreach ($mapa_ant as $idp => $data) {
+                        $cant_ant = $data['cantidad'];
+                        $precio_ant = $data['precio'];
+                        $pdo->prepare("INSERT INTO movimientos_inventario (id_producto, tipo, cantidad, precio_unitario, motivo, id_usuario) VALUES (?, 'entrada', ?, ?, ?, ?)")
+                            ->execute([$idp, $cant_ant, $precio_ant, 'Liberación Pedido #' . $id, $id_admin]);
                         $pdo->prepare('UPDATE productos SET stock = stock + ? WHERE id = ?')
                             ->execute([$cant_ant, $idp]);
                     }
                 } elseif ($ahora_reservado && $era_reservado) {
                     // Ajustar diferencias
-                    foreach ($mapa_ant as $idp => $cant_ant) {
-                        $cant_nuevo = $mapa_nuevo[$idp] ?? 0;
+                    foreach ($mapa_ant as $idp => $data) {
+                        $cant_ant = $data['cantidad'];
+                        $precio_ant = $data['precio'];
+                        $cant_nuevo = $mapa_nuevo[$idp]['cantidad'] ?? 0;
+                        $precio_nuevo = $mapa_nuevo[$idp]['precio'] ?? $precio_ant;
                         if ($cant_nuevo < $cant_ant) {
                             $diff = $cant_ant - $cant_nuevo;
-                            $pdo->prepare("INSERT INTO movimientos_inventario (id_producto, tipo, cantidad, motivo, id_usuario) VALUES (?, 'entrada', ?, ?, ?)")
-                                ->execute([$idp, $diff, 'Ajuste edición Pedido #' . $id, $id_admin]);
+                            $pdo->prepare("INSERT INTO movimientos_inventario (id_producto, tipo, cantidad, precio_unitario, motivo, id_usuario) VALUES (?, 'entrada', ?, ?, ?, ?)")
+                                ->execute([$idp, $diff, $precio_ant, 'Ajuste edición Pedido #' . $id, $id_admin]);
                             $pdo->prepare('UPDATE productos SET stock = stock + ? WHERE id = ?')
                                 ->execute([$diff, $idp]);
                         } elseif ($cant_nuevo > $cant_ant) {
                             $diff = $cant_nuevo - $cant_ant;
-                            $pdo->prepare("INSERT INTO movimientos_inventario (id_producto, tipo, cantidad, motivo, id_usuario) VALUES (?, 'salida', ?, ?, ?)")
-                                ->execute([$idp, $diff, 'Ajuste edición Pedido #' . $id, $id_admin]);
+                            $pdo->prepare("INSERT INTO movimientos_inventario (id_producto, tipo, cantidad, precio_unitario, motivo, id_usuario) VALUES (?, 'salida', ?, ?, ?, ?)")
+                                ->execute([$idp, $diff, $precio_nuevo, 'Ajuste edición Pedido #' . $id, $id_admin]);
                             $pdo->prepare('UPDATE productos SET stock = stock - ? WHERE id = ?')
                                 ->execute([$diff, $idp]);
                         }
                     }
                     // Productos nuevos que no existían antes
-                    foreach ($mapa_nuevo as $idp => $cant_nuevo) {
+                    foreach ($mapa_nuevo as $idp => $data) {
                         if (!isset($mapa_ant[$idp])) {
-                            $pdo->prepare("INSERT INTO movimientos_inventario (id_producto, tipo, cantidad, motivo, id_usuario) VALUES (?, 'salida', ?, ?, ?)")
-                                ->execute([$idp, $cant_nuevo, 'Ajuste edición Pedido #' . $id, $id_admin]);
+                            $cant_nuevo = $data['cantidad'];
+                            $precio_nuevo = $data['precio'];
+                            $pdo->prepare("INSERT INTO movimientos_inventario (id_producto, tipo, cantidad, precio_unitario, motivo, id_usuario) VALUES (?, 'salida', ?, ?, ?, ?)")
+                                ->execute([$idp, $cant_nuevo, $precio_nuevo, 'Ajuste edición Pedido #' . $id, $id_admin]);
                             $pdo->prepare('UPDATE productos SET stock = stock - ? WHERE id = ?')
                                 ->execute([$cant_nuevo, $idp]);
                         }

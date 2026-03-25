@@ -34,16 +34,16 @@ if (isset($_POST['cambiar_estado'], $_POST['id_pedido'], $_POST['nuevo_estado'])
             if (in_array($nuevo_estado, $estados_reservados) && !in_array($anterior, $estados_reservados)) {
                 // Pasó de no-reservado a reservado -> Restar stock
                 foreach ($detalles_upd as $d) {
-                    $pdo->prepare("INSERT INTO movimientos_inventario (id_producto, tipo, cantidad, motivo, id_usuario) VALUES (?, 'salida', ?, ?, ?)")
-                        ->execute([$d['id_producto'], $d['cantidad'], 'Reserva Pedido #'.$id_pedido, $id_usuario]);
+                    $pdo->prepare("INSERT INTO movimientos_inventario (id_producto, tipo, cantidad, precio_unitario, motivo, id_usuario) VALUES (?, 'salida', ?, ?, ?, ?)")
+                        ->execute([$d['id_producto'], $d['cantidad'], $d['precio_unitario'], 'Reserva Pedido #'.$id_pedido, $id_usuario]);
                     $pdo->prepare('UPDATE productos SET stock = stock - ? WHERE id = ?')
                         ->execute([$d['cantidad'], $d['id_producto']]);
                 }
             } elseif (!in_array($nuevo_estado, $estados_reservados) && in_array($anterior, $estados_reservados)) {
                 // Pasó de reservado a no-reservado (ej. cancelado, o devuelto a pendiente) -> Devolver stock
                 foreach ($detalles_upd as $d) {
-                    $pdo->prepare("INSERT INTO movimientos_inventario (id_producto, tipo, cantidad, motivo, id_usuario) VALUES (?, 'entrada', ?, ?, ?)")
-                        ->execute([$d['id_producto'], $d['cantidad'], 'Liberación Pedido #'.$id_pedido, $id_usuario]);
+                    $pdo->prepare("INSERT INTO movimientos_inventario (id_producto, tipo, cantidad, precio_unitario, motivo, id_usuario) VALUES (?, 'entrada', ?, ?, ?, ?)")
+                        ->execute([$d['id_producto'], $d['cantidad'], $d['precio_unitario'], 'Liberación Pedido #'.$id_pedido, $id_usuario]);
                     $pdo->prepare('UPDATE productos SET stock = stock + ? WHERE id = ?')
                         ->execute([$d['cantidad'], $d['id_producto']]);
                 }
