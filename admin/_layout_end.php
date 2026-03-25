@@ -106,7 +106,7 @@
         if (!pagDiv) return;
         var filtered = allItems.slice();
         var page = 1;
-        var uid = pagDivId;
+        var uid = pagDivId.replace(/-/g, '_');
 
         function render() {
             var total = Math.max(1, Math.ceil(filtered.length / perPage));
