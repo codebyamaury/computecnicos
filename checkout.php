@@ -512,7 +512,7 @@ $step_confirm = 'pending';
                         if(data.ok) {
                             modal.style.display = 'none';
                             if(typeof showToast === 'function') showToast(data.msg || 'Pedido cancelado.', 'success', 4000);
-                            setTimeout(function(){ window.location.href = 'productos.php'; }, 1500);
+                            setTimeout(function(){ window.location.href = 'index.php'; }, 1500);
                         } else {
                             if(typeof showToast === 'function') showToast(data.msg || 'Error al cancelar.', 'error', 5000);
                             btnSi.disabled = false;
