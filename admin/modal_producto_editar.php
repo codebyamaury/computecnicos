@@ -272,7 +272,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             <div style="position:relative">
                                 <img src="<?= htmlspecialchars((strpos($img['url_imagen'], 'http') === 0) ? $img['url_imagen'] : '../' . $img['url_imagen']) ?>" alt="img" style="width:90px;height:60px;object-fit:contain;border-radius:0.5rem;border:1px solid var(--adm-border);background:#1a1a1a;padding:5px">
                                 <label style="position:absolute;top:-6px;right:-6px;background:var(--adm-red);color:#fff;width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:0.75rem;font-weight:700">
-                                    <input type="checkbox" name="eliminar_imagen[<?= $img['id'] ?>]" value="1" style="display:none">
+                                    <input type="checkbox" name="eliminar_imagen[<?= $img['id'] ?>]" value="1" style="display:none" onchange="if(this.checked) this.closest('div').style.display='none'">
                                     ×
                                 </label>
                             </div>
