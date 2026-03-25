@@ -13,19 +13,40 @@ $tipo_reporte = $_GET['tipo']         ?? 'general';
 function formatearMoneda($v) { return '$' . number_format($v, 2, ',', '.'); }
 
 function calcularTotales($movimientos) {
-    $t = ['compras'=>0,'ventas'=>0,'iva_pagado'=>0,'iva_cobrado'=>0,'retenciones'=>0];
+    $t = [
+        'ventas_brutas' => 0, 
+        'devoluciones' => 0, 
+        'ventas_netas' => 0,
+        'iva_cobrado' => 0, 
+        'iva_devuelto' => 0,
+        'inversion_stock' => 0
+    ];
     foreach ($movimientos as $m) {
-        if ($m['tipo'] === 'entrada' && $m['precio_unitario']) {
-            $t['compras']    += $m['precio_unitario'] * $m['cantidad'];
-            $t['iva_pagado'] += $m['iva'] ?? 0;
-            $t['retenciones']+= $m['retencion'] ?? 0;
-        } elseif ($m['tipo'] === 'salida' && $m['precio_unitario']) {
-            $subtotal = $m['precio_unitario'] * $m['cantidad'];
-            $t['ventas']     += $subtotal;
-            // Estimar IVA cobrado asumiendo 19%
-            $t['iva_cobrado']+= $subtotal * 0.19;
+        $monto = ($m['precio_unitario'] ?? 0) * $m['cantidad'];
+        $iva = $m['iva'] ?? ($monto * 0.19); // Estimar IVA 19% si no está desglosado explícitamente
+
+        $motivo = mb_strtolower($m['motivo'] ?? '', 'UTF-8');
+        // Un movimiento se considera derivado de un pedido si incluye las palabras clave
+        $isPedido = strpos($motivo, 'pedido') !== false || strpos($motivo, 'pago') !== false || strpos($motivo, 'reembolso') !== false;
+
+        if ($m['tipo'] === 'salida' && $isPedido) {
+            // Venta formal
+            $t['ventas_brutas'] += $monto;
+            $t['iva_cobrado']   += $iva;
+        } elseif ($m['tipo'] === 'entrada' && $isPedido) {
+            // Devolución / Cancelación de Venta
+            $t['devoluciones'] += $monto;
+            $t['iva_devuelto'] += $iva;
+        } elseif ($m['tipo'] === 'entrada' && !$isPedido) {
+            // Ingreso de inventario desde panel (Ajuste/Reposición valorizado a precio de venta actual)
+            $t['inversion_stock'] += $monto;
         }
     }
+    
+    // Calcular netos consolidados
+    $t['ventas_netas'] = max(0, $t['ventas_brutas'] - $t['devoluciones']);
+    $t['iva_neto'] = max(0, $t['iva_cobrado'] - $t['iva_devuelto']);
+    
     return $t;
 }
 
@@ -142,24 +163,35 @@ include '_layout.php';
     </div>
 
     <?php if ($tipo_reporte === 'general' && isset($totales) && !empty($totales)): ?>
-    <!-- KPIs Financieros -->
+    <!-- KPIs Financieros Profesionales -->
     <div class="adm-kpi-grid" style="--kpi-cols:3">
-        <div class="adm-kpi green">
-            <div class="adm-kpi-label">Compras</div>
-            <div class="adm-kpi-value"><?= formatearMoneda($totales['compras']) ?></div>
-            <div class="adm-kpi-sub">IVA Pagado: <?= formatearMoneda($totales['iva_pagado']) ?></div>
-        </div>
         <div class="adm-kpi blue">
-            <div class="adm-kpi-label">Ventas</div>
-            <div class="adm-kpi-value"><?= formatearMoneda($totales['ventas']) ?></div>
-            <div class="adm-kpi-sub">IVA Cobrado: <?= formatearMoneda($totales['iva_cobrado']) ?></div>
+            <div class="adm-kpi-label">Ingresos Brutos</div>
+            <div class="adm-kpi-value text-white"><?= formatearMoneda($totales['ventas_brutas']) ?></div>
+            <div class="adm-kpi-sub">IVA Copiado: <?= formatearMoneda($totales['iva_cobrado']) ?></div>
         </div>
         <div class="adm-kpi yellow">
-            <div class="adm-kpi-label">Utilidad</div>
-            <div class="adm-kpi-value"><?= formatearMoneda($totales['ventas'] - $totales['compras']) ?></div>
-            <div class="adm-kpi-sub">Retenciones: <?= formatearMoneda($totales['retenciones']) ?></div>
+            <div class="adm-kpi-label">Devoluciones y Cancelaciones</div>
+            <div class="adm-kpi-value" style="color:#eab308">-<?= formatearMoneda($totales['devoluciones']) ?></div>
+            <div class="adm-kpi-sub" style="color:rgba(234,179,8,0.7)">Retorno IVA: -<?= formatearMoneda($totales['iva_devuelto']) ?></div>
+        </div>
+        <div class="adm-kpi green">
+            <div class="adm-kpi-label">Ventas Netas Realizadas</div>
+            <div class="adm-kpi-value" style="color:#22c55e"><?= formatearMoneda($totales['ventas_netas']) ?></div>
+            <div class="adm-kpi-sub" style="color:rgba(34,197,94,0.7)">IVA Neto Generado: <?= formatearMoneda($totales['iva_neto']) ?></div>
         </div>
     </div>
+
+    <!-- Indicador de Abastecimiento Opcional -->
+    <?php if ($totales['inversion_stock'] > 0): ?>
+    <div style="background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.06); padding:1rem 1.5rem; margin-top:1.5rem; margin-bottom:0.5rem; border-radius:12px; display:flex; justify-content:space-between; align-items:center;">
+        <div style="font-size:0.85rem; color:#888;">
+            <i data-lucide="package-plus" style="width:18px;height:18px;display:inline-block;vertical-align:middle;margin-right:8px;color:#a855f7;"></i>
+            Abastecimientos/Ajustes de Stock manuales incorporados al inventario (Capitalizados a precio de venta final):
+        </div>
+        <div style="font-weight:700; color:#fff; font-size:1.1rem; letter-spacing:0.5px;"><?= formatearMoneda($totales['inversion_stock']) ?></div>
+    </div>
+    <?php endif; ?>
     <?php endif; ?>
 
     <!-- Tabla de datos -->
