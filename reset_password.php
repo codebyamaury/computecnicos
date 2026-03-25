@@ -125,9 +125,12 @@ $page_title = 'Restablecer Contraseña';
                     
                     <div class="reset-field">
                         <label>Nueva contraseña</label>
-                        <div class="reset-input-wrap">
+                        <div class="reset-input-wrap" style="position:relative;">
                             <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-                            <input type="password" name="password" id="pw-new" class="reset-input" placeholder="Mínimo 6 caracteres" required minlength="6">
+                            <input type="password" name="password" id="pw-new" class="reset-input" placeholder="Mínimo 6 caracteres" required minlength="6" style="padding-right:40px;">
+                            <button type="button" onclick="const input = this.previousElementSibling; if(input.type==='password'){input.type='text';this.innerHTML='<svg width=\'18\' height=\'18\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'currentColor\' stroke-width=\'2\'><path d=\'M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24M1 1l22 22\'/></svg>';}else{input.type='password';this.innerHTML='<svg width=\'18\' height=\'18\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'currentColor\' stroke-width=\'2\'><path d=\'M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z\'></path><circle cx=\'12\' cy=\'12\' r=\'3\'></circle></svg>';}" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;color:#666;cursor:pointer;padding:0;">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                            </button>
                         </div>
                         <div class="pw-strength" id="pw-strength">
                             <div class="pw-strength-bar"></div>
@@ -140,9 +143,12 @@ $page_title = 'Restablecer Contraseña';
                     
                     <div class="reset-field">
                         <label>Confirmar contraseña</label>
-                        <div class="reset-input-wrap">
+                        <div class="reset-input-wrap" style="position:relative;">
                             <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-                            <input type="password" name="password2" id="pw-confirm" class="reset-input" placeholder="Repite tu contraseña" required minlength="6">
+                            <input type="password" name="password2" id="pw-confirm" class="reset-input" placeholder="Repite tu contraseña" required minlength="6" style="padding-right:40px;">
+                            <button type="button" onclick="const input = this.previousElementSibling; if(input.type==='password'){input.type='text';this.innerHTML='<svg width=\'18\' height=\'18\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'currentColor\' stroke-width=\'2\'><path d=\'M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24M1 1l22 22\'/></svg>';}else{input.type='password';this.innerHTML='<svg width=\'18\' height=\'18\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'currentColor\' stroke-width=\'2\'><path d=\'M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z\'></path><circle cx=\'12\' cy=\'12\' r=\'3\'></circle></svg>';}" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;color:#666;cursor:pointer;padding:0;">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                            </button>
                         </div>
                     </div>
 

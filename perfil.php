@@ -379,11 +379,26 @@ include 'includes/header.php';
                 <input type="hidden" name="ajax" value="1">
                 <input type="hidden" name="accion" value="seguridad">
                 <label class="perfil-label">Contraseña actual</label>
-                <input type="password" name="password_actual" class="perfil-input" required autocomplete="current-password">
+                <div style="position:relative;">
+                    <input type="password" name="password_actual" class="perfil-input" required autocomplete="current-password" style="padding-right:40px; width:100%;">
+                    <button type="button" onclick="const input = this.previousElementSibling; if(input.type==='password'){input.type='text';this.innerHTML='<svg width=\'18\' height=\'18\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'currentColor\' stroke-width=\'2\'><path d=\'M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24M1 1l22 22\'/></svg>';}else{input.type='password';this.innerHTML='<svg width=\'18\' height=\'18\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'currentColor\' stroke-width=\'2\'><path d=\'M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z\'></path><circle cx=\'12\' cy=\'12\' r=\'3\'></circle></svg>';}" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;color:#888;cursor:pointer;padding:0;display:flex;align-items:center;justify-content:center;">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                    </button>
+                </div>
                 <label class="perfil-label">Nueva contraseña</label>
-                <input type="password" name="password_nueva" class="perfil-input" required autocomplete="new-password">
+                <div style="position:relative;">
+                    <input type="password" name="password_nueva" class="perfil-input" required autocomplete="new-password" style="padding-right:40px; width:100%;">
+                    <button type="button" onclick="const input = this.previousElementSibling; if(input.type==='password'){input.type='text';this.innerHTML='<svg width=\'18\' height=\'18\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'currentColor\' stroke-width=\'2\'><path d=\'M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24M1 1l22 22\'/></svg>';}else{input.type='password';this.innerHTML='<svg width=\'18\' height=\'18\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'currentColor\' stroke-width=\'2\'><path d=\'M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z\'></path><circle cx=\'12\' cy=\'12\' r=\'3\'></circle></svg>';}" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;color:#888;cursor:pointer;padding:0;display:flex;align-items:center;justify-content:center;">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                    </button>
+                </div>
                 <label class="perfil-label">Confirmar nueva contraseña</label>
-                <input type="password" name="password_confirmar" class="perfil-input" required autocomplete="new-password">
+                <div style="position:relative;">
+                    <input type="password" name="password_confirmar" class="perfil-input" required autocomplete="new-password" style="padding-right:40px; width:100%;">
+                    <button type="button" onclick="const input = this.previousElementSibling; if(input.type==='password'){input.type='text';this.innerHTML='<svg width=\'18\' height=\'18\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'currentColor\' stroke-width=\'2\'><path d=\'M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24M1 1l22 22\'/></svg>';}else{input.type='password';this.innerHTML='<svg width=\'18\' height=\'18\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'currentColor\' stroke-width=\'2\'><path d=\'M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z\'></path><circle cx=\'12\' cy=\'12\' r=\'3\'></circle></svg>';}" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;color:#888;cursor:pointer;padding:0;display:flex;align-items:center;justify-content:center;">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                    </button>
+                </div>
                 <button type="submit" class="perfil-btn primary w-full" id="btn-seguridad">
                     <span id="btn-seguridad-text">Guardar contraseña</span>
                     <span id="btn-seguridad-spinner" class="hidden">Guardando…</span>
@@ -423,7 +438,12 @@ include 'includes/header.php';
             <p class="perfil-modal-desc">¿Estás seguro? <strong>Esta acción es irreversible.</strong> Se eliminarán todos tus datos, pedidos e historial. Ingresa tu contraseña para confirmar:</p>
             <div id="msg-eliminar" class="perfil-msg hidden"></div>
             <form id="form-eliminar-cuenta">
-                <input type="password" name="password" id="eliminar-password" class="perfil-input" placeholder="Tu contraseña actual" required>
+                <div style="position:relative;">
+                    <input type="password" name="password" id="eliminar-password" class="perfil-input" placeholder="Tu contraseña actual" required style="padding-right:40px; width:100%;">
+                    <button type="button" onclick="const input = this.previousElementSibling; if(input.type==='password'){input.type='text';this.innerHTML='<svg width=\'18\' height=\'18\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'currentColor\' stroke-width=\'2\'><path d=\'M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24M1 1l22 22\'/></svg>';}else{input.type='password';this.innerHTML='<svg width=\'18\' height=\'18\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'currentColor\' stroke-width=\'2\'><path d=\'M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z\'></path><circle cx=\'12\' cy=\'12\' r=\'3\'></circle></svg>';}" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;color:#888;cursor:pointer;padding:0;display:flex;align-items:center;justify-content:center;">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                    </button>
+                </div>
                 <label style="display:flex;align-items:center;gap:8px;margin:12px 0;color:#999;font-size:0.85rem;cursor:pointer">
                     <input type="checkbox" id="eliminar-confirm-check" style="accent-color:#ff0000;width:16px;height:16px">
                     Confirmo que quiero eliminar mi cuenta permanentemente
