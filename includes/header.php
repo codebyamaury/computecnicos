@@ -32,10 +32,97 @@ if (isset($_SESSION['usuario']['id']) && isset($pdo)) {
     <meta property="og:site_name" content="Computecnicos">
     <title><?php echo isset($page_title) ? $page_title . ' | ' : ''; ?>Computecnicos</title>
     <link rel="icon" type="image/svg+xml" href="<?= asset('images/favicon.svg') ?>">
+    <link rel="apple-touch-icon" href="<?= asset('images/favicon.svg') ?>">
     <meta name="color-scheme" content="dark">
     <meta name="theme-color" content="#050505">
     <!-- Bloqueo para Brave "Force Dark Mode" / DarkReader. Evita que el navegador invierta colores e inyecte fondos blancos temporales -->
     <meta name="darkreader-lock">
+    
+    <!-- Structured Data (JSON-LD) para Enhanced SEO (similar a grandes e-commerce) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "Computecnicos",
+      "url": "<?php echo base_url(); ?>",
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": "<?php echo base_url(); ?>/productos.php?q={search_term_string}",
+        "query-input": "required name=search_term_string"
+      }
+    }
+    </script>
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": "Computecnicos",
+      "url": "<?php echo base_url(); ?>",
+      "logo": "<?php echo asset('images/favicon.svg'); ?>",
+      "description": "Tu tienda de tecnología ideal. Encuentra computadoras, componentes de alto rendimiento, accesorios y nuestro servicio de mantenimiento.",
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "contactType": "customer service",
+        "url": "<?php echo base_url(); ?>/contacto.php",
+        "availableLanguage": "Spanish"
+      }
+    }
+    </script>
+    <!-- SiteNavigationElement: Indica a Google las secciones principales para generar Sitelinks -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "SiteNavigationElement",
+          "name": "Productos",
+          "description": "Explora nuestra tienda de computadoras, componentes, accesorios y periféricos de alto rendimiento.",
+          "url": "<?php echo base_url(); ?>/productos.php"
+        },
+        {
+          "@type": "SiteNavigationElement",
+          "name": "Servicios",
+          "description": "Servicio técnico profesional: mantenimiento, reparación y optimización de computadoras.",
+          "url": "<?php echo base_url(); ?>/servicios.php"
+        },
+        {
+          "@type": "SiteNavigationElement",
+          "name": "Contacto",
+          "description": "Contáctanos para cotizaciones, soporte técnico o cualquier consulta sobre nuestros productos.",
+          "url": "<?php echo base_url(); ?>/contacto.php"
+        },
+        {
+          "@type": "SiteNavigationElement",
+          "name": "Categorías",
+          "description": "Navega por categorías: laptops, PCs de escritorio, gaming, componentes, accesorios y más.",
+          "url": "<?php echo base_url(); ?>/categorias.php"
+        }
+      ]
+    }
+    </script>
+    <?php if (isset($page_title) && $current !== 'index.php'): ?>
+    <!-- BreadcrumbList: Genera breadcrumbs enriquecidos en Google (Inicio > Sección) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Inicio",
+          "item": "<?php echo base_url(); ?>"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "<?php echo htmlspecialchars($page_title); ?>",
+          "item": "<?php echo base_url() . '/' . $current; ?>"
+        }
+      ]
+    }
+    </script>
+    <?php endif; ?>
     
     <!-- CSS CRÍTICO INLINE: Se coloca aquí profesionalmente y NO en el main.css para que el navegador pinte la pantalla negra en el ms cero, ANTES de hacer la petición de red (Network Event) y evitar el destello blanco FOUC en monitores de 1920x1080 o más -->
     <style>
