@@ -3,6 +3,9 @@
 # Configuración de Apache para la aplicación
 # ============================================
 
+# Página de error 404 personalizada
+ErrorDocument 404 /404.php
+
 # Habilitar motor de reescritura
 RewriteEngine On
 
