@@ -108,20 +108,19 @@ include '_layout.php';
         <div class="adm-chart-grid">
             <div class="adm-card">
                 <div class="adm-card-title"><span class="adm-card-title-text">Ventas por mes</span></div>
-                <canvas id="chartVentasMes" height="140"></canvas>
+                <div style="position:relative;height:280px"><canvas id="chartVentasMes"></canvas></div>
             </div>
             <div class="adm-card">
-                <div class="adm-card-title"><span class="adm-card-title-text">Ventas por día (últimos 15 días)</span>
-                </div>
-                <canvas id="chartVentasDia" height="140"></canvas>
+                <div class="adm-card-title"><span class="adm-card-title-text">Ventas por día (últimos 15 días)</span></div>
+                <div style="position:relative;height:280px"><canvas id="chartVentasDia"></canvas></div>
             </div>
             <div class="adm-card">
                 <div class="adm-card-title"><span class="adm-card-title-text">Pedidos por estado</span></div>
-                <canvas id="chartEstados" height="140"></canvas>
+                <div style="position:relative;height:280px"><canvas id="chartEstados"></canvas></div>
             </div>
             <div class="adm-card">
                 <div class="adm-card-title"><span class="adm-card-title-text">Top 10 más vendidos</span></div>
-                <canvas id="chartMasVendidos" height="140"></canvas>
+                <div style="position:relative;height:280px"><canvas id="chartMasVendidos"></canvas></div>
             </div>
         </div>
 
@@ -240,51 +239,42 @@ include '_layout.php';
 </main>
 
 <script>
-    // Configuración global para tema oscuro premium
     Chart.defaults.color = '#888';
     Chart.defaults.font.family = "'Inter', 'Segoe UI', sans-serif";
     Chart.defaults.font.size = 11;
-    Chart.defaults.plugins.tooltip.backgroundColor = 'rgba(20, 20, 20, 0.9)';
-    Chart.defaults.plugins.tooltip.borderColor = 'rgba(255, 255, 255, 0.1)';
-    Chart.defaults.plugins.tooltip.borderWidth = 1;
-
-    const createGradient = (ctx, colorStart, colorEnd) => {
-        const gradient = ctx.createLinearGradient(0, 0, 0, 400);
-        gradient.addColorStop(0, colorStart);
-        gradient.addColorStop(1, colorEnd);
-        return gradient;
-    };
 
     const gridOpts = {
-        grid: { color: 'rgba(255, 255, 255, 0.05)', drawBorder: false },
+        grid: { color: 'rgba(255, 255, 255, 0.05)' },
         ticks: { color: '#666', font: { size: 10 } }
     };
 
+    const chartOpts = {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: { y: { ...gridOpts, beginAtZero: true }, x: gridOpts }
+    };
+
     // 1. Ventas por mes
-    const ctxVentasMes = document.getElementById('chartVentasMes').getContext('2d');
-    new Chart(ctxVentasMes, {
+    new Chart(document.getElementById('chartVentasMes'), {
         type: 'bar',
         data: {
             labels: <?= json_encode(array_reverse(array_column($ventas_mes, 'mes'))) ?>,
             datasets: [{
                 label: 'Ventas ($)',
                 data: <?= json_encode(array_reverse(array_map(fn($v) => (float) $v['total'], $ventas_mes))) ?>,
-                backgroundColor: createGradient(ctxVentasMes, 'rgba(224, 0, 0, 0.8)', 'rgba(224, 0, 0, 0.2)'),
+                backgroundColor: 'rgba(224, 0, 0, 0.7)',
+                hoverBackgroundColor: 'rgba(224, 0, 0, 0.9)',
                 borderRadius: 6,
                 borderWidth: 0,
                 barPercentage: 0.6
             }]
         },
-        options: {
-            maintainAspectRatio: false,
-            plugins: { legend: { display: false } },
-            scales: { y: gridOpts, x: gridOpts }
-        }
+        options: chartOpts
     });
 
     // 2. Ventas por día
-    const ctxVentasDia = document.getElementById('chartVentasDia').getContext('2d');
-    new Chart(ctxVentasDia, {
+    new Chart(document.getElementById('chartVentasDia'), {
         type: 'line',
         data: {
             labels: <?= json_encode(array_reverse(array_column($ventas_dia, 'dia'))) ?>,
@@ -292,19 +282,16 @@ include '_layout.php';
                 label: 'Ventas ($)',
                 data: <?= json_encode(array_reverse(array_map(fn($v) => (float) $v['total'], $ventas_dia))) ?>,
                 borderColor: '#3b82f6',
-                borderWidth: 3,
-                backgroundColor: createGradient(ctxVentasDia, 'rgba(59, 130, 246, 0.2)', 'transparent'),
+                borderWidth: 2.5,
+                backgroundColor: 'rgba(59, 130, 246, 0.1)',
                 fill: true,
                 tension: 0.4,
                 pointRadius: 4,
-                pointBackgroundColor: '#3b82f6'
+                pointBackgroundColor: '#3b82f6',
+                pointHoverRadius: 6
             }]
         },
-        options: {
-            maintainAspectRatio: false,
-            plugins: { legend: { display: false } },
-            scales: { y: gridOpts, x: gridOpts }
-        }
+        options: chartOpts
     });
 
     // 3. Pedidos por estado
@@ -314,67 +301,47 @@ include '_layout.php';
             labels: <?= json_encode(array_map(fn($e) => ucfirst($e['estado']), $estados)) ?>,
             datasets: [{
                 data: <?= json_encode(array_map(fn($e) => (int) $e['cantidad'], $estados)) ?>,
-                backgroundColor: [
-                    '#ef4444', // red
-                    '#3b82f6', // blue
-                    '#eab308', // yellow
-                    '#22c55e', // green
-                    '#a855f7', // purple
-                    '#64748b'  // gray
-                ],
+                backgroundColor: ['#ef4444','#3b82f6','#eab308','#22c55e','#a855f7','#64748b'],
                 borderWidth: 0,
-                hoverOffset: 15
+                hoverOffset: 10
             }]
         },
         options: {
+            responsive: true,
             maintainAspectRatio: false,
-            cutout: '70%',
+            cutout: '65%',
             plugins: {
                 legend: {
                     position: 'bottom',
-                    labels: {
-                        color: '#999',
-                        usePointStyle: true,
-                        padding: 20,
-                        font: { size: 11 }
-                    }
+                    labels: { color: '#999', usePointStyle: true, padding: 15, font: { size: 11 } }
                 }
             }
         }
     });
 
     // 4. Top 10 más vendidos
-    const ctxTop = document.getElementById('chartMasVendidos').getContext('2d');
-    new Chart(ctxTop, {
+    new Chart(document.getElementById('chartMasVendidos'), {
         type: 'bar',
         data: {
-            labels: <?= json_encode(array_map(fn($mv) => strlen($mv['nombre']) > 25 ? mb_substr($mv['nombre'], 0, 22) . '...' : $mv['nombre'], $mas_vendidos)) ?>,
+            labels: <?= json_encode(array_map(fn($mv) => mb_strlen($mv['nombre']) > 22 ? mb_substr($mv['nombre'], 0, 20) . '...' : $mv['nombre'], $mas_vendidos)) ?>,
             datasets: [{
                 label: 'Unidades',
                 data: <?= json_encode(array_map(fn($mv) => (int) $mv['total_vendidos'], $mas_vendidos)) ?>,
-                backgroundColor: createGradient(ctxTop, 'rgba(234, 179, 8, 0.8)', 'rgba(234, 179, 8, 0.3)'),
+                backgroundColor: 'rgba(234, 179, 8, 0.7)',
+                hoverBackgroundColor: 'rgba(234, 179, 8, 0.9)',
                 borderRadius: 4,
                 borderWidth: 0,
-                barThickness: 12
+                barThickness: 14
             }]
         },
         options: {
             indexAxis: 'y',
+            responsive: true,
             maintainAspectRatio: false,
             plugins: { legend: { display: false } },
             scales: {
-                x: {
-                    beginAtZero: true,
-                    grid: { color: 'rgba(255, 255, 255, 0.05)', drawBorder: false },
-                    ticks: { color: '#666' }
-                },
-                y: {
-                    grid: { display: false },
-                    ticks: {
-                        color: '#bbb',
-                        font: { weight: '600', size: 10 }
-                    }
-                }
+                x: { beginAtZero: true, grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#666' } },
+                y: { grid: { display: false }, ticks: { color: '#bbb', font: { weight: '600', size: 10 } } }
             }
         }
     });
