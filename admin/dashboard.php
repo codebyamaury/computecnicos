@@ -25,7 +25,9 @@ $utilidad_mes = $total_ventas_mes * 0.18;
 $ventas_netas_mes = $pdo->query("SELECT COALESCE(SUM(total), 0) FROM pedidos WHERE estado IN ('pagado','enviado','entregado') AND fecha >= DATE_FORMAT(NOW(), '%Y-%m-01')")->fetchColumn();
 
 // Devoluciones / Reembolsos del mes
-$devoluciones_mes = $pdo->query("SELECT COALESCE(SUM(monto_reembolso), 0) FROM reembolsos WHERE estado = 'aprobado' AND fecha_resolucion >= DATE_FORMAT(NOW(), '%Y-%m-01')")->fetchColumn();
+try {
+    $devoluciones_mes = $pdo->query("SELECT COALESCE(SUM(monto), 0) FROM reembolsos WHERE estado = 'aprobado' AND fecha_resolucion >= DATE_FORMAT(NOW(), '%Y-%m-01')")->fetchColumn();
+} catch (Throwable $e) { $devoluciones_mes = 0; }
 
 // Compras del mes (entradas de inventario con precio)
 $compras_mes = $pdo->query("SELECT COALESCE(SUM(precio_unitario * cantidad), 0) FROM movimientos_inventario WHERE tipo = 'entrada' AND precio_unitario IS NOT NULL AND precio_unitario > 0 AND fecha >= DATE_FORMAT(NOW(), '%Y-%m-01')")->fetchColumn();
