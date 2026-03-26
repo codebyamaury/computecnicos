@@ -20,9 +20,24 @@ $total_pedidos_mes = $ventas_mes ? $ventas_mes[0]['pedidos'] : 0;
 $total_productos_bajo = count($productos_bajo);
 $utilidad_mes = $total_ventas_mes * 0.18;
 
-$compras_mes = $pdo->query("SELECT SUM(precio_unitario * cantidad) as total FROM movimientos_inventario WHERE tipo = 'entrada' AND precio_unitario IS NOT NULL AND fecha >= DATE_FORMAT(NOW(), '%Y-%m-01')")->fetchColumn();
-$iva_pagado = $pdo->query("SELECT SUM(iva) as total FROM movimientos_inventario WHERE tipo = 'entrada' AND iva IS NOT NULL AND fecha >= DATE_FORMAT(NOW(), '%Y-%m-01')")->fetchColumn();
-$valor_inventario = $pdo->query("SELECT SUM(p.stock * COALESCE(avg_precio.precio_promedio, 0)) as total FROM productos p LEFT JOIN (SELECT id_producto, AVG(precio_unitario) as precio_promedio FROM movimientos_inventario WHERE tipo = 'entrada' AND precio_unitario IS NOT NULL GROUP BY id_producto) avg_precio ON p.id = avg_precio.id_producto")->fetchColumn();
+// ─── Resumen Contable del Mes ──────────────────────────────────────────────
+// Ventas netas del mes (pedidos pagados, enviados, entregados)
+$ventas_netas_mes = $pdo->query("SELECT COALESCE(SUM(total), 0) FROM pedidos WHERE estado IN ('pagado','enviado','entregado') AND fecha >= DATE_FORMAT(NOW(), '%Y-%m-01')")->fetchColumn();
+
+// Devoluciones / Reembolsos del mes
+$devoluciones_mes = $pdo->query("SELECT COALESCE(SUM(monto_reembolso), 0) FROM reembolsos WHERE estado = 'aprobado' AND fecha_resolucion >= DATE_FORMAT(NOW(), '%Y-%m-01')")->fetchColumn();
+
+// Compras del mes (entradas de inventario con precio)
+$compras_mes = $pdo->query("SELECT COALESCE(SUM(precio_unitario * cantidad), 0) FROM movimientos_inventario WHERE tipo = 'entrada' AND precio_unitario IS NOT NULL AND precio_unitario > 0 AND fecha >= DATE_FORMAT(NOW(), '%Y-%m-01')")->fetchColumn();
+
+// IVA cobrado estimado (19% sobre ventas netas)
+$iva_cobrado_mes = round($ventas_netas_mes * 0.19 / 1.19); // IVA incluido en precio
+
+// Valor total del inventario (stock * precio de venta)
+$valor_inventario = $pdo->query("SELECT COALESCE(SUM(stock * precio), 0) FROM productos WHERE stock > 0 AND precio > 0")->fetchColumn();
+
+// Total pedidos pendientes de pago
+$pedidos_pendientes = $pdo->query("SELECT COALESCE(SUM(total), 0) FROM pedidos WHERE estado = 'pendiente' AND fecha >= DATE_FORMAT(NOW(), '%Y-%m-01')")->fetchColumn();
 
 // ─── Layout vars ─────────────────────────────────────────────────────────────
 $page_title = 'Dashboard | Computécnicos';
@@ -153,41 +168,69 @@ include '_layout.php';
             <?php endif; ?>
         </div>
 
-        <!-- ── Reporte Contable ── -->
+        <!-- ── Resumen Contable del Mes ── -->
         <div class="adm-card">
             <div class="adm-card-title">
                 <span class="adm-card-title-text">Resumen Contable del Mes</span>
                 <a href="reporte_contable.php" class="adm-btn adm-btn-blue">Ver reporte completo</a>
             </div>
-            <div class="adm-kpi-grid" style="margin-bottom:0">
+            <div class="adm-kpi-grid" style="margin-bottom:1rem">
                 <div class="adm-kpi green">
+                    <div class="adm-kpi-icon">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    </div>
+                    <div class="adm-kpi-label">Ventas Netas</div>
+                    <div class="adm-kpi-value" style="font-size:1.5rem;color:#22c55e">
+                        $<?= number_format($ventas_netas_mes ?? 0, 0, ',', '.') ?></div>
+                    <div class="adm-kpi-sub">Pedidos cobrados del mes</div>
+                </div>
+                <div class="adm-kpi yellow">
+                    <div class="adm-kpi-icon">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"/></svg>
+                    </div>
+                    <div class="adm-kpi-label">Devoluciones</div>
+                    <div class="adm-kpi-value" style="font-size:1.5rem;color:#eab308">
+                        $<?= number_format($devoluciones_mes ?? 0, 0, ',', '.') ?></div>
+                    <div class="adm-kpi-sub">Reembolsos aprobados</div>
+                </div>
+                <div class="adm-kpi blue">
+                    <div class="adm-kpi-icon">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>
+                    </div>
                     <div class="adm-kpi-label">Compras del Mes</div>
                     <div class="adm-kpi-value" style="font-size:1.5rem">
                         $<?= number_format($compras_mes ?? 0, 0, ',', '.') ?></div>
                     <div class="adm-kpi-sub">Entradas de inventario</div>
                 </div>
-                <div class="adm-kpi blue">
-                    <div class="adm-kpi-label">IVA Pagado</div>
+            </div>
+            <div class="adm-kpi-grid" style="margin-bottom:0">
+                <div class="adm-kpi gray">
+                    <div class="adm-kpi-icon">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 14l6-6m-5.5.5h.01m4.99 5h.01M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16l3.5-2 3.5 2 3.5-2 3.5 2z"/></svg>
+                    </div>
+                    <div class="adm-kpi-label">IVA Cobrado (est.)</div>
                     <div class="adm-kpi-value" style="font-size:1.5rem">
-                        $<?= number_format($iva_pagado ?? 0, 0, ',', '.') ?></div>
-                    <div class="adm-kpi-sub">IVA en compras del mes</div>
+                        $<?= number_format($iva_cobrado_mes ?? 0, 0, ',', '.') ?></div>
+                    <div class="adm-kpi-sub">19% estimado sobre ventas</div>
                 </div>
-                <div class="adm-kpi yellow">
+                <div class="adm-kpi green">
+                    <div class="adm-kpi-icon">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4"/></svg>
+                    </div>
                     <div class="adm-kpi-label">Valor Inventario</div>
                     <div class="adm-kpi-value" style="font-size:1.5rem">
                         $<?= number_format($valor_inventario ?? 0, 0, ',', '.') ?></div>
-                    <div class="adm-kpi-sub">Precio promedio de compra</div>
+                    <div class="adm-kpi-sub">Stock actual × precio venta</div>
                 </div>
-            </div>
-            <div style="margin-top:1rem;font-size:0.75rem;color:#444;line-height:1.7">
-                <p>• <strong style="color:#666">Reporte General:</strong> Todos los movimientos de inventario con
-                    información contable</p>
-                <p>• <strong style="color:#666">Reporte de Compras:</strong> Solo entradas con datos de proveedores,
-                    facturas e impuestos</p>
-                <p>• <strong style="color:#666">Inventario Valorizado:</strong> Stock actual valorizado al precio
-                    promedio de compra</p>
-                <p>• <strong style="color:#666">Exportación Excel:</strong> Reportes profesionales para contabilidad y
-                    auditoría</p>
+                <div class="adm-kpi red">
+                    <div class="adm-kpi-icon">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    </div>
+                    <div class="adm-kpi-label">Pendiente de Cobro</div>
+                    <div class="adm-kpi-value" style="font-size:1.5rem">
+                        $<?= number_format($pedidos_pendientes ?? 0, 0, ',', '.') ?></div>
+                    <div class="adm-kpi-sub">Pedidos sin pagar este mes</div>
+                </div>
             </div>
         </div>
 
