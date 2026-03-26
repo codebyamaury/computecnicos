@@ -61,10 +61,9 @@ switch ($tipo_reporte) {
         $movimientos = $stmt->fetchAll(); $totales = [];
         break;
     case 'inventario':
-        $sql = "SELECT p.*, c.nombre AS categoria,
-                COALESCE(SUM(CASE WHEN m.tipo='entrada' THEN m.cantidad ELSE 0 END),0)-
-                COALESCE(SUM(CASE WHEN m.tipo='salida' THEN m.cantidad ELSE 0 END),0) AS stock_actual,
-                AVG(CASE WHEN m.tipo='entrada' THEN m.precio_unitario END) AS precio_promedio
+        $sql = "SELECT p.id, p.nombre, p.stock AS stock_actual, p.precio,
+                c.nombre AS categoria,
+                AVG(CASE WHEN m.tipo='entrada' AND m.precio_unitario > 0 THEN m.precio_unitario END) AS precio_promedio
                 FROM productos p LEFT JOIN categorias c ON p.id_categoria=c.id
                 LEFT JOIN movimientos_inventario m ON p.id=m.id_producto
                 GROUP BY p.id ORDER BY p.nombre";
@@ -93,12 +92,13 @@ if (isset($_GET['exportar']) && $_GET['exportar'] === 'excel') {
     $output = fopen('php://output', 'w');
     
     if ($tipo_reporte === 'inventario') {
-        fputcsv($output, ['Producto', 'Categoria', 'Stock Actual', 'Precio Promedio', 'Valor Total'], ';');
+        fputcsv($output, ['Producto', 'Categoria', 'Stock Actual', 'Precio Ref.', 'Valor Total'], ';');
         foreach ($inventario as $item) {
-            $vi = $item['stock_actual'] * ($item['precio_promedio'] ?? 0);
+            $precio_ref = $item['precio_promedio'] ?? $item['precio'] ?? 0;
+            $vi = max(0, $item['stock_actual']) * $precio_ref;
             fputcsv($output, [
                 $item['nombre'], $item['categoria'] ?? '', $item['stock_actual'], 
-                $item['precio_promedio'] ?? 0, $vi
+                $precio_ref, $vi
             ], ';');
         }
     } elseif ($tipo_reporte === 'compras') {
@@ -167,17 +167,17 @@ include '_layout.php';
     <div class="adm-kpi-grid" style="--kpi-cols:3">
         <div class="adm-kpi blue">
             <div class="adm-kpi-label">Ingresos Brutos</div>
-            <div class="adm-kpi-value text-white"><?= formatearMoneda($totales['ventas_brutas']) ?></div>
+            <div class="adm-kpi-value text-white" style="font-size:1.4rem"><?= formatearMoneda($totales['ventas_brutas']) ?></div>
             <div class="adm-kpi-sub">IVA Cobrado: <?= formatearMoneda($totales['iva_cobrado']) ?></div>
         </div>
         <div class="adm-kpi yellow">
             <div class="adm-kpi-label">Devoluciones y Cancelaciones</div>
-            <div class="adm-kpi-value" style="color:#eab308">-<?= formatearMoneda($totales['devoluciones']) ?></div>
+            <div class="adm-kpi-value" style="color:#eab308;font-size:1.4rem">-<?= formatearMoneda($totales['devoluciones']) ?></div>
             <div class="adm-kpi-sub" style="color:rgba(234,179,8,0.7)">Retorno IVA: -<?= formatearMoneda($totales['iva_devuelto']) ?></div>
         </div>
         <div class="adm-kpi green">
             <div class="adm-kpi-label">Ventas Netas Realizadas</div>
-            <div class="adm-kpi-value" style="color:#22c55e"><?= formatearMoneda($totales['ventas_netas']) ?></div>
+            <div class="adm-kpi-value" style="color:#22c55e;font-size:1.4rem"><?= formatearMoneda($totales['ventas_netas']) ?></div>
             <div class="adm-kpi-sub" style="color:rgba(34,197,94,0.7)">IVA Neto Generado: <?= formatearMoneda($totales['iva_neto']) ?></div>
         </div>
     </div>
@@ -216,14 +216,15 @@ include '_layout.php';
                 </thead>
                 <tbody>
                 <?php $valor_total=0; foreach ($inventario as $item):
-                    $vi = $item['stock_actual'] * ($item['precio_promedio'] ?? 0);
+                    $precio_ref = $item['precio_promedio'] ?? $item['precio'] ?? 0;
+                    $vi = max(0, $item['stock_actual']) * $precio_ref;
                     $valor_total += $vi;
                 ?>
                 <tr>
                     <td><strong><?= htmlspecialchars($item['nombre']) ?></strong></td>
                     <td><?= htmlspecialchars($item['categoria'] ?? '—') ?></td>
                     <td><span class="adm-badge <?= $item['stock_actual'] <= 0 ? 'adm-badge-red' : ($item['stock_actual'] <= 5 ? 'adm-badge-yellow' : 'adm-badge-green') ?>"><?= $item['stock_actual'] ?></span></td>
-                    <td><?= $item['precio_promedio'] ? formatearMoneda($item['precio_promedio']) : '—' ?></td>
+                    <td><?= $precio_ref > 0 ? formatearMoneda($precio_ref) : '—' ?></td>
                     <td style="font-weight:600"><?= formatearMoneda($vi) ?></td>
                 </tr>
                 <?php endforeach; ?>
