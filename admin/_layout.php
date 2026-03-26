@@ -46,7 +46,6 @@ $nav_items = [
     ['href' => 'usuarios.php', 'label' => 'Usuarios', 'key' => 'usuarios', 'icon' => 'users'],
     ['href' => 'pedidos.php', 'label' => 'Pedidos', 'key' => 'pedidos', 'icon' => 'clipboard-list'],
     ['href' => 'reembolsos.php', 'label' => 'Reembolsos', 'key' => 'reembolsos', 'icon' => 'rotate-ccw'],
-    ['href' => 'cupones.php', 'label' => 'Cupones', 'key' => 'cupones', 'icon' => 'ticket-percent'],
     ['href' => 'resenas.php', 'label' => 'Reseñas', 'key' => 'resenas', 'icon' => 'star'],
     ['href' => 'proveedores.php', 'label' => 'Proveedores', 'key' => 'proveedores', 'icon' => 'building-2'],
     ['href' => 'inventario.php', 'label' => 'Inventario', 'key' => 'inventario', 'icon' => 'warehouse'],

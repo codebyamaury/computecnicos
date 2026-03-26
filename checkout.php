@@ -130,23 +130,6 @@ if (!$carrito_vacio) {
     $total = max(0, $total - $combo_discount);
 }
 
-// ── Cupón de descuento ──
-$cupon_descuento = 0;
-$cupon_codigo = '';
-$cupon_aplicado = $_SESSION['cupon_aplicado'] ?? null;
-if ($cupon_aplicado && $total > 0) {
-    // Recalcular el descuento con el total actual
-    if ($cupon_aplicado['tipo_descuento'] === 'porcentaje') {
-        $cupon_descuento = round($total * ($cupon_aplicado['valor'] / 100));
-    } else {
-        $cupon_descuento = round($cupon_aplicado['valor']);
-    }
-    if ($cupon_descuento > $total) $cupon_descuento = $total;
-    $cupon_codigo = $cupon_aplicado['codigo'];
-    // Update session with recalculated discount
-    $_SESSION['cupon_aplicado']['descuento_calculado'] = $cupon_descuento;
-}
-
 // Datos del usuario si está logeado
 $nombre = $email = $telefono = $direccion = '';
 $id_usuario = null;
@@ -224,38 +207,9 @@ if (isset($_GET['pay_order']) && $id_usuario) {
             // Registrar pedido
             $pdo->beginTransaction();
 
-            // Calcular total final con cupón
-            $total_final = max(0, $total - $cupon_descuento);
-            $cupon_id_para_pedido = null;
-            $descuento_cupon_para_pedido = 0;
-
-            // Validar cupón una vez más antes de aplicar
-            if ($cupon_aplicado && $cupon_descuento > 0) {
-                $stmtCupon = $pdo->prepare('SELECT * FROM cupones WHERE id = ? AND activo = 1');
-                $stmtCupon->execute([$cupon_aplicado['id']]);
-                $cuponDB = $stmtCupon->fetch();
-                if ($cuponDB) {
-                    $expirado = !empty($cuponDB['fecha_expiracion']) && strtotime($cuponDB['fecha_expiracion']) < strtotime('today');
-                    $agotado = $cuponDB['limite_usos'] > 0 && $cuponDB['usos_actuales'] >= $cuponDB['limite_usos'];
-                    if (!$expirado && !$agotado) {
-                        $cupon_id_para_pedido = $cuponDB['id'];
-                        $descuento_cupon_para_pedido = $cupon_descuento;
-                        // Incrementar usos
-                        $pdo->prepare('UPDATE cupones SET usos_actuales = usos_actuales + 1 WHERE id = ?')->execute([$cuponDB['id']]);
-                    } else {
-                        // Cupón ya no es válido, no aplicar descuento
-                        $total_final = $total;
-                        $descuento_cupon_para_pedido = 0;
-                    }
-                } else {
-                    $total_final = $total;
-                    $descuento_cupon_para_pedido = 0;
-                }
-            }
-
             // Insertar pedido
-            $stmt = $pdo->prepare('INSERT INTO pedidos (id_usuario, fecha, estado, total, direccion_envio, cupon_id, descuento_cupon) VALUES (?, NOW(), ?, ?, ?, ?, ?)');
-            $stmt->execute([$id_usuario, 'pendiente', $total_final, $direccion, $cupon_id_para_pedido, $descuento_cupon_para_pedido]);
+            $stmt = $pdo->prepare('INSERT INTO pedidos (id_usuario, fecha, estado, total, direccion_envio) VALUES (?, NOW(), ?, ?, ?)');
+            $stmt->execute([$id_usuario, 'pendiente', $total, $direccion]);
             $id_pedido = $pdo->lastInsertId();
 
             // Insertar detalles
@@ -269,16 +223,9 @@ if (isset($_GET['pay_order']) && $id_usuario) {
 
             // Registrar estado inicial en historial
             $stmt_hist = $pdo->prepare('INSERT INTO pedido_estados (id_pedido, estado, comentario) VALUES (?, ?, ?)');
-            $comentario_pedido = 'Pedido creado desde checkout';
-            if ($descuento_cupon_para_pedido > 0) {
-                $comentario_pedido .= ' — Cupón ' . $cupon_codigo . ' (-$' . number_format($descuento_cupon_para_pedido, 0, ',', '.') . ')';
-            }
-            $stmt_hist->execute([$id_pedido, 'pendiente', $comentario_pedido]);
+            $stmt_hist->execute([$id_pedido, 'pendiente', 'Pedido creado desde checkout']);
             $pdo->commit();
             $mensaje = 'Pedido creado. Completa el pago con PayPal para finalizar.';
-
-            // Limpiar cupón de la sesión
-            unset($_SESSION['cupon_aplicado']);
 
             // Si era compra directa, limpiar la sesión temporal
             if ($es_compra_directa) {
@@ -731,37 +678,9 @@ $step_confirm = 'pending';
                                     $<?php echo number_format($combo_discount, 0, ',', '.'); ?> COP</span>
                             </div>
                         <?php endif; ?>
-
-                        <!-- Cupón de descuento -->
-                        <div id="cupon-descuento-line" class="checkout-summary-item" style="display:<?php echo $cupon_descuento > 0 ? 'flex' : 'none'; ?>">
-                            <span>Cupón <strong id="cupon-codigo-display"><?php echo e($cupon_codigo); ?></strong></span>
-                            <span class="text-green-500 font-semibold" id="cupon-descuento-valor">-$<?php echo number_format($cupon_descuento, 0, ',', '.'); ?> COP</span>
-                        </div>
-
                         <div class="checkout-summary-item total">
                             <span>Total</span>
-                            <span id="checkout-total-display">$<?php echo number_format(max(0, $total - $cupon_descuento), 0, ',', '.'); ?> COP</span>
-                        </div>
-                    </div>
-
-                    <!-- Input de cupón -->
-                    <div class="checkout-coupons" style="margin-top:1rem">
-                        <div id="cupon-form-container">
-                            <?php if ($cupon_descuento > 0): ?>
-                                <div id="cupon-aplicado-info" style="display:flex;align-items:center;justify-content:space-between;background:rgba(34,197,94,0.08);border:1px solid rgba(34,197,94,0.25);border-radius:0.625rem;padding:0.65rem 1rem">
-                                    <div style="display:flex;align-items:center;gap:8px">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-                                        <span style="color:#22c55e;font-size:0.85rem;font-weight:600"><?php echo e($cupon_codigo); ?></span>
-                                    </div>
-                                    <button type="button" onclick="quitarCupon()" style="background:none;border:none;color:#ef4444;cursor:pointer;font-size:0.8rem;font-weight:600;padding:2px 6px">Quitar</button>
-                                </div>
-                            <?php else: ?>
-                                <div class="checkout-coupon-form" id="cupon-input-form">
-                                    <input type="text" id="cupon-input" class="checkout-coupon-input" placeholder="Código de cupón" style="text-transform:uppercase">
-                                    <button type="button" id="btn-aplicar-cupon" class="checkout-coupon-btn" onclick="aplicarCupon()">Aplicar</button>
-                                </div>
-                                <div id="cupon-mensaje" style="display:none;margin-top:0.5rem;font-size:0.82rem;padding:0.4rem 0.6rem;border-radius:0.5rem"></div>
-                            <?php endif; ?>
+                            <span>$<?php echo number_format($total, 0, ',', '.'); ?> COP</span>
                         </div>
                     </div>
 
@@ -911,110 +830,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             }
         });
-    }
-});
-</script>
-
-<script>
-// ── Cupón de descuento ──
-var totalBase = <?php echo (int)$total; ?>;
-
-function formatCOP(n) {
-    return '$' + n.toLocaleString('es-CO') + ' COP';
-}
-
-async function aplicarCupon() {
-    var input = document.getElementById('cupon-input');
-    var btn = document.getElementById('btn-aplicar-cupon');
-    var msg = document.getElementById('cupon-mensaje');
-    if (!input || !btn) return;
-    var codigo = input.value.trim().toUpperCase();
-    if (!codigo) {
-        mostrarMsgCupon('Ingresa un código de cupón', 'error');
-        return;
-    }
-    btn.disabled = true;
-    btn.textContent = 'Validando...';
-    try {
-        var res = await fetch('api/validar_cupon.php', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ codigo: codigo, total: totalBase })
-        });
-        var data = await res.json();
-        if (data.ok) {
-            // Mostrar descuento aplicado
-            document.getElementById('cupon-descuento-line').style.display = 'flex';
-            document.getElementById('cupon-codigo-display').textContent = data.codigo;
-            document.getElementById('cupon-descuento-valor').textContent = '-' + formatCOP(data.descuento);
-            document.getElementById('checkout-total-display').textContent = formatCOP(Math.max(0, totalBase - data.descuento));
-            
-            // Reemplazar formulario por badge de cupón aplicado
-            document.getElementById('cupon-form-container').innerHTML = 
-                '<div id="cupon-aplicado-info" style="display:flex;align-items:center;justify-content:space-between;background:rgba(34,197,94,0.08);border:1px solid rgba(34,197,94,0.25);border-radius:0.625rem;padding:0.65rem 1rem">' +
-                    '<div style="display:flex;align-items:center;gap:8px">' +
-                        '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>' +
-                        '<span style="color:#22c55e;font-size:0.85rem;font-weight:600">' + data.codigo + '</span>' +
-                    '</div>' +
-                    '<button type="button" onclick="quitarCupon()" style="background:none;border:none;color:#ef4444;cursor:pointer;font-size:0.8rem;font-weight:600;padding:2px 6px">Quitar</button>' +
-                '</div>';
-            
-            if (typeof showToast === 'function') showToast(data.msg, 'success', 4000);
-        } else {
-            mostrarMsgCupon(data.msg, 'error');
-            btn.disabled = false;
-            btn.textContent = 'Aplicar';
-        }
-    } catch (err) {
-        mostrarMsgCupon('Error de conexión. Intenta de nuevo.', 'error');
-        btn.disabled = false;
-        btn.textContent = 'Aplicar';
-    }
-}
-
-async function quitarCupon() {
-    try {
-        await fetch('api/quitar_cupon.php', { method: 'POST' });
-        // Ocultar línea de descuento
-        document.getElementById('cupon-descuento-line').style.display = 'none';
-        document.getElementById('checkout-total-display').textContent = formatCOP(totalBase);
-        
-        // Restaurar formulario de cupón
-        document.getElementById('cupon-form-container').innerHTML = 
-            '<div class="checkout-coupon-form" id="cupon-input-form">' +
-                '<input type="text" id="cupon-input" class="checkout-coupon-input" placeholder="Código de cupón" style="text-transform:uppercase">' +
-                '<button type="button" id="btn-aplicar-cupon" class="checkout-coupon-btn" onclick="aplicarCupon()">Aplicar</button>' +
-            '</div>' +
-            '<div id="cupon-mensaje" style="display:none;margin-top:0.5rem;font-size:0.82rem;padding:0.4rem 0.6rem;border-radius:0.5rem"></div>';
-        
-        if (typeof showToast === 'function') showToast('Cupón removido', 'success', 3000);
-    } catch (err) {
-        if (typeof showToast === 'function') showToast('Error al quitar cupón', 'error', 3000);
-    }
-}
-
-function mostrarMsgCupon(texto, tipo) {
-    var msg = document.getElementById('cupon-mensaje');
-    if (!msg) return;
-    msg.textContent = texto;
-    msg.style.display = 'block';
-    if (tipo === 'error') {
-        msg.style.background = 'rgba(239,68,68,0.08)';
-        msg.style.color = '#ef4444';
-        msg.style.border = '1px solid rgba(239,68,68,0.25)';
-    } else {
-        msg.style.background = 'rgba(34,197,94,0.08)';
-        msg.style.color = '#22c55e';
-        msg.style.border = '1px solid rgba(34,197,94,0.25)';
-    }
-    setTimeout(function() { msg.style.display = 'none'; }, 5000);
-}
-
-// Enter key on coupon input
-document.addEventListener('keydown', function(e) {
-    if (e.target && e.target.id === 'cupon-input' && e.key === 'Enter') {
-        e.preventDefault();
-        aplicarCupon();
     }
 });
 </script>

@@ -141,7 +141,7 @@ if (isset($_SESSION['usuario']['id'])) {
 
 // ─── Migraciones de esquema (se ejecutan UNA SOLA VEZ) ───
     // Usa un archivo bandera para evitar consultas de esquema en cada request
-    $migrationFlag = BASE_PATH . '/logs/.schema_migrated_v9';
+    $migrationFlag = BASE_PATH . '/logs/.schema_migrated_v8';
     if (!file_exists($migrationFlag)) {
         try {
             // Crear tabla de sesiones si no existe
@@ -202,33 +202,10 @@ if (isset($_SESSION['usuario']['id'])) {
                 $pdo->exec("UPDATE usuarios SET es_principal = 1 ORDER BY id ASC LIMIT 1");
             }
 
-            // v9: Tabla de cupones de descuento
-            $pdo->exec("CREATE TABLE IF NOT EXISTS cupones (
-                id INT AUTO_INCREMENT PRIMARY KEY,
-                codigo VARCHAR(50) NOT NULL UNIQUE,
-                tipo_descuento ENUM('porcentaje','fijo') NOT NULL DEFAULT 'porcentaje',
-                valor DECIMAL(12,2) NOT NULL,
-                fecha_expiracion DATE NULL DEFAULT NULL,
-                limite_usos INT NOT NULL DEFAULT 0,
-                usos_actuales INT NOT NULL DEFAULT 0,
-                monto_minimo DECIMAL(12,2) NOT NULL DEFAULT 0,
-                activo TINYINT(1) NOT NULL DEFAULT 1,
-                created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-                INDEX idx_codigo (codigo),
-                INDEX idx_activo (activo)
-            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
-
-            // Agregar columna cupon_id a pedidos si no existe
-            $colsPed2 = $pdo->query("SHOW COLUMNS FROM pedidos")->fetchAll(PDO::FETCH_COLUMN, 0);
-            if (!in_array('cupon_id', $colsPed2)) {
-                $pdo->exec("ALTER TABLE pedidos ADD COLUMN cupon_id INT NULL DEFAULT NULL");
-                $pdo->exec("ALTER TABLE pedidos ADD COLUMN descuento_cupon DECIMAL(12,2) NOT NULL DEFAULT 0");
-            }
-
         // Marcar migraciones como completadas
         @mkdir(BASE_PATH . '/logs', 0775, true);
-        @file_put_contents($migrationFlag, date('Y-m-d H:i:s') . ' - Schema migrations v9 completed');
-        log_event('Migraciones de esquema v9 completadas exitosamente');
+        @file_put_contents($migrationFlag, date('Y-m-d H:i:s') . ' - Schema migrations v8 completed');
+        log_event('Migraciones de esquema v8 completadas exitosamente');
     } catch (Throwable $e) {
         log_event('Error en migraciones: ' . $e->getMessage());
     }
