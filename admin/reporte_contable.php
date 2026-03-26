@@ -23,7 +23,7 @@ function calcularTotales($movimientos) {
     ];
     foreach ($movimientos as $m) {
         $monto = ($m['precio_unitario'] ?? 0) * $m['cantidad'];
-        $iva = $m['iva'] ?? ($monto * 0.19); // Estimar IVA 19% si no está desglosado explícitamente
+        $iva = (!empty($m['iva'])) ? (float)$m['iva'] : round($monto * 0.19, 2); // Estimar IVA 19% si no está desglosado
 
         $motivo = mb_strtolower($m['motivo'] ?? '', 'UTF-8');
         // Un movimiento se considera derivado de un pedido si incluye las palabras clave
@@ -168,7 +168,7 @@ include '_layout.php';
         <div class="adm-kpi blue">
             <div class="adm-kpi-label">Ingresos Brutos</div>
             <div class="adm-kpi-value text-white"><?= formatearMoneda($totales['ventas_brutas']) ?></div>
-            <div class="adm-kpi-sub">IVA Copiado: <?= formatearMoneda($totales['iva_cobrado']) ?></div>
+            <div class="adm-kpi-sub">IVA Cobrado: <?= formatearMoneda($totales['iva_cobrado']) ?></div>
         </div>
         <div class="adm-kpi yellow">
             <div class="adm-kpi-label">Devoluciones y Cancelaciones</div>
