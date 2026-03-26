@@ -121,7 +121,7 @@ include '_layout.php';
             </div>
             <div class="adm-card">
                 <div class="adm-card-title"><span class="adm-card-title-text">Top 10 más vendidos</span></div>
-                <canvas id="chartMasVendidos" height="140"></canvas>
+                <canvas id="chartMasVendidos" height="300"></canvas>
             </div>
         </div>
 
@@ -282,13 +282,59 @@ include '_layout.php';
     });
 
     // Top vendidos
+    const topLabelsRaw = <?= json_encode(array_map(fn($mv) => $mv['nombre'], $mas_vendidos)) ?>;
+    const topLabels = topLabelsRaw.map(n => n.length > 25 ? n.substring(0, 25) + '…' : n);
     new Chart(document.getElementById('chartMasVendidos'), {
         type: 'bar',
         data: {
-            labels: <?= json_encode(array_map(fn($mv) => $mv['nombre'], $mas_vendidos)) ?>,
-            datasets: [{ label: 'Unidades', data: <?= json_encode(array_map(fn($mv) => (int) $mv['total_vendidos'], $mas_vendidos)) ?>, backgroundColor: 'rgba(234,179,8,0.65)', borderColor: '#eab308', borderWidth: 1, borderRadius: 6 }]
+            labels: topLabels,
+            datasets: [{
+                label: 'Unidades',
+                data: <?= json_encode(array_map(fn($mv) => (int) $mv['total_vendidos'], $mas_vendidos)) ?>,
+                backgroundColor: 'rgba(234,179,8,0.65)',
+                borderColor: '#eab308',
+                borderWidth: 1,
+                borderRadius: 6,
+                barThickness: 18
+            }]
         },
-        options: { indexAxis: 'y', plugins: { legend: { display: false } }, scales: { y: { ticks: { color: '#666', font: { size: 10 } }, grid: { color: chartDefaults.gridColor } }, x: { ticks: { color: '#666' }, grid: { color: chartDefaults.gridColor }, beginAtZero: true } } }
+        options: {
+            indexAxis: 'y',
+            responsive: true,
+            maintainAspectRatio: false,
+            layout: { padding: { left: 10, right: 20 } },
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    callbacks: {
+                        title: function(ctx) { return topLabelsRaw[ctx[0].dataIndex]; },
+                        label: function(ctx) { return ctx.parsed.x + ' unidades vendidas'; }
+                    },
+                    backgroundColor: 'rgba(20,20,20,0.95)',
+                    titleColor: '#fff',
+                    bodyColor: '#ccc',
+                    borderColor: 'rgba(234,179,8,0.3)',
+                    borderWidth: 1,
+                    padding: 10,
+                    cornerRadius: 8
+                }
+            },
+            scales: {
+                y: {
+                    ticks: {
+                        color: '#999',
+                        font: { size: 11, family: 'Inter, sans-serif', weight: '500' },
+                        padding: 8
+                    },
+                    grid: { display: false }
+                },
+                x: {
+                    ticks: { color: '#555', font: { size: 10 }, stepSize: 1 },
+                    grid: { color: 'rgba(255,255,255,0.04)' },
+                    beginAtZero: true
+                }
+            }
+        }
     });
 </script>
 
