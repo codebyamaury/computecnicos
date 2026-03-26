@@ -342,6 +342,28 @@ ADD COLUMN paypal_order_id VARCHAR(128) NULL,
 ADD COLUMN paypal_capture_id VARCHAR(128) NULL;
 
 -- =====================================
+-- FEATURE: Cupones de descuento
+-- =====================================
+CREATE TABLE IF NOT EXISTS cupones (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    codigo VARCHAR(50) NOT NULL UNIQUE,
+    tipo_descuento ENUM('porcentaje','fijo') NOT NULL DEFAULT 'porcentaje',
+    valor DECIMAL(12,2) NOT NULL,
+    fecha_expiracion DATE NULL DEFAULT NULL,
+    limite_usos INT NOT NULL DEFAULT 0,
+    usos_actuales INT NOT NULL DEFAULT 0,
+    monto_minimo DECIMAL(12,2) NOT NULL DEFAULT 0,
+    activo TINYINT(1) NOT NULL DEFAULT 1,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    INDEX idx_codigo (codigo),
+    INDEX idx_activo (activo)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+ALTER TABLE pedidos
+ADD COLUMN cupon_id INT NULL DEFAULT NULL,
+ADD COLUMN descuento_cupon DECIMAL(12,2) NOT NULL DEFAULT 0;
+
+-- =====================================
 -- DATOS DE PRUEBA
 -- =====================================
 
